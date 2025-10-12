@@ -1,0 +1,193 @@
+=== EMAIL LOG ===
+Timestamp: 2025-10-12 12:32:27
+Method: web_service
+To: eyramdela14@gmail.com
+Subject: Email Test - RansHotel System
+Message:
+This is a test email from the RansHotel booking system.
+
+If you receive this email, the email system is working correctly.
+
+Test Time: 2025-10-12 12:32:26
+System: RansHotel Booking System
+
+Best regards,
+RansHotel Team
+==================
+
+=== EMAIL LOG ===
+Timestamp: 2025-10-12 12:32:27
+Method: web_service
+To: eyramdela14@gmail.com
+Subject: Booking Confirmation - RansHotel
+Message:
+RansHotel - Booking Confirmation
+
+Dear John Doe,
+
+Thank you for choosing RansHotel! Your booking has been confirmed.
+
+BOOKING DETAILS:
+Booking ID: TEST001
+Room Type: Deluxe Room
+Check-in: January 15, 2024
+Check-out: January 17, 2024
+Duration: 2 night(s)
+Meal Plan: Breakfast Included
+Phone: +233 24 123 4567
+Total Amount: ₵1200
+
+IMPORTANT INFORMATION:
+- Check-in time: 2:00 PM
+- Check-out time: 11:00 AM
+- Please bring a valid ID for check-in
+- Contact us for any special requests
+
+CONTACT US:
+Phone: +233 (0)302 936 062
+Email: info@ranshotel.com
+Address: Tsito, Volta Region, Ghana
+
+We look forward to welcoming you to RansHotel!
+
+Best regards,
+The RansHotel Team
+==================
+
+=== EMAIL LOG ===
+Timestamp: 2025-10-12 12:32:27
+Method: web_service
+To: eyramdela14@gmail.com
+Subject: New Booking Alert - RansHotel
+Message:
+🚨 NEW BOOKING ALERT - RansHotel
+
+CUSTOMER INFORMATION:
+Name: Jane Smith
+Email: jane@example.com
+Phone: +233 24 987 6543
+Nationality: Ghanaian
+Country: Ghana
+
+BOOKING DETAILS:
+Booking ID: TEST002
+Room Type: Superior Room
+Check-in: January 20, 2024
+Check-out: January 22, 2024
+Duration: 2 night(s)
+Meal Plan: Full Board
+
+Please log into the admin panel to manage this booking.
+
+Admin Panel: http://localhost/Hotel/admin/
+Manager: Eyram Dela
+Phone: 0540202096
+==================
+
+=== EMAIL LOG ===
+Timestamp: 2025-10-12 22:23:52
+Method: web_service
+To: kuwornueyramdela2000@gmail.com
+Subject: Booking Confirmation - RansHotel
+Message:
+RansHotel - Booking Confirmation
+
+Dear Eyram Dela,
+
+Thank you for choosing RansHotel! Your booking has been confirmed.
+
+BOOKING DETAILS:
+Booking ID: 1
+Room Type: Superior Room
+Check-in: October 22, 2025
+Check-out: October 30, 2025
+Duration: 8.0416666666667 night(s)
+Meal Plan: Breakfast
+Phone: 0501550969
+Total Amount: ₵339.2
+
+IMPORTANT INFORMATION:
+- Check-in time: 2:00 PM
+- Check-out time: 11:00 AM
+- Please bring a valid ID for check-in
+- Contact us for any special requests
+
+CONTACT US:
+Phone: +233 (0)302 936 062
+Email: info@ranshotel.com
+Address: Tsito, Volta Region, Ghana
+
+We look forward to welcoming you to RansHotel!
+
+Best regards,
+The RansHotel Team
+==================
+
+=== EMAIL LOG ===
+Timestamp: 2025-10-12 23:12:46
+Method: web_service
+To: kuwornueyramdela2000@gmail.com
+Subject: Booking Confirmation - RansHotel
+Message:
+RansHotel - Booking Confirmation
+
+Dear Eyram Dela,
+
+Thank you for choosing RansHotel! Your booking has been confirmed.
+
+BOOKING DETAILS:
+Booking ID: 1
+Room Type: Single Room
+Check-in: October 14, 2025
+Check-out: October 16, 2025
+Duration: 2 night(s)
+Meal Plan: Breakfast
+Phone: 0501550969
+
+IMPORTANT INFORMATION:
+- Check-in time: 2:00 PM
+- Check-out time: 11:00 AM
+- Please bring a valid ID for check-in
+- Contact us for any special requests
+
+CONTACT US:
+Phone: +233 (0)302 936 062
+Email: info@ranshotel.com
+Address: Tsito, Volta Region, Ghana
+
+We look forward to welcoming you to RansHotel!
+
+Best regards,
+The RansHotel Team
+==================
+
+=== EMAIL LOG ===
+Timestamp: 2025-10-12 23:12:48
+Method: web_service
+To: eyramdela14@gmail.com
+Subject: New Booking Alert - RansHotel
+Message:
+🚨 NEW BOOKING ALERT - RansHotel
+
+CUSTOMER INFORMATION:
+Name: Eyram Dela
+Email: kuwornueyramdela2000@gmail.com
+Phone: 0501550969
+Nationality: Ghanaian
+Country: Ghana
+
+BOOKING DETAILS:
+Booking ID: 1
+Room Type: Single Room
+Check-in: October 14, 2025
+Check-out: October 16, 2025
+Duration: 2 night(s)
+Meal Plan: Breakfast
+
+Please log into the admin panel to manage this booking.
+
+Admin Panel: http://localhost/Hotel/admin/
+Manager: Eyram Dela
+Phone: 0540202096
+==================
+

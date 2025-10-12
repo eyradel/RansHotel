@@ -1,0 +1,313 @@
+/* Reservation Page Responsive Styles */
+
+/* Mobile Navigation */
+.navbar-header {
+    background: #2c3e50;
+    padding: 10px;
+    margin-bottom: 0;
+}
+
+.navbar-toggle {
+    border: 1px solid #fff;
+    background: transparent;
+}
+
+.navbar-toggle .icon-bar {
+    background-color: #fff;
+}
+
+.navbar-brand {
+    color: #fff !important;
+    font-weight: bold;
+}
+
+/* Mobile First Approach */
+@media (max-width: 768px) {
+    /* Hide sidebar on mobile */
+    .navbar-side {
+        display: none !important;
+    }
+    
+    /* Page wrapper adjustments */
+    #page-wrapper {
+        margin: 0 !important;
+        padding: 10px !important;
+        width: 100% !important;
+    }
+    
+    #page-inner {
+        padding: 10px !important;
+    }
+    
+    /* Header adjustments */
+    .page-header {
+        margin: 10px 0 !important;
+        padding: 10px !important;
+    }
+    
+    .page-header h1 {
+        font-size: 24px !important;
+        margin: 0 !important;
+    }
+    
+    .page-header small {
+        display: block !important;
+        font-size: 14px !important;
+        margin-top: 5px !important;
+    }
+    
+    /* Panel adjustments */
+    .panel {
+        margin-bottom: 15px !important;
+    }
+    
+    .panel-heading {
+        padding: 10px 15px !important;
+        font-size: 16px !important;
+    }
+    
+    .panel-body {
+        padding: 15px !important;
+    }
+    
+    /* Form adjustments */
+    .form-group {
+        margin-bottom: 15px !important;
+    }
+    
+    .form-group label {
+        font-size: 14px !important;
+        margin-bottom: 5px !important;
+    }
+    
+    .form-control {
+        height: 40px !important;
+        font-size: 16px !important;
+        padding: 8px 12px !important;
+    }
+    
+    select.form-control {
+        padding: 8px 12px !important;
+    }
+    
+    /* Radio buttons */
+    .radio-inline {
+        display: block !important;
+        margin-bottom: 10px !important;
+        margin-right: 0 !important;
+    }
+    
+    .radio-inline input[type="radio"] {
+        margin-right: 8px !important;
+    }
+    
+    /* Help text */
+    .help-block {
+        font-size: 12px !important;
+        margin-top: 5px !important;
+    }
+    
+    /* Pricing table */
+    .table {
+        font-size: 14px !important;
+    }
+    
+    .table td {
+        padding: 8px !important;
+    }
+    
+    /* Buttons */
+    .btn {
+        padding: 12px 20px !important;
+        font-size: 16px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .btn-lg {
+        padding: 15px 25px !important;
+        font-size: 18px !important;
+    }
+    
+    /* Alerts */
+    .alert {
+        padding: 15px !important;
+        margin-bottom: 15px !important;
+        font-size: 14px !important;
+    }
+    
+    .alert ul {
+        margin: 10px 0 !important;
+        padding-left: 20px !important;
+    }
+    
+    .alert li {
+        margin-bottom: 5px !important;
+    }
+    
+    /* Well sections */
+    .well {
+        padding: 15px !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .well h4 {
+        font-size: 18px !important;
+        margin-bottom: 15px !important;
+    }
+    
+    /* Terms and conditions */
+    .list-unstyled li {
+        margin-bottom: 8px !important;
+        font-size: 14px !important;
+    }
+    
+    /* Verification code */
+    .verification-code {
+        font-size: 18px !important;
+        font-weight: bold !important;
+        color: #337ab7 !important;
+        margin: 10px 0 !important;
+    }
+    
+    /* Button groups */
+    .button-group {
+        text-align: center !important;
+    }
+    
+    .button-group .btn {
+        width: 100% !important;
+        margin: 5px 0 !important;
+    }
+}
+
+/* Extra small devices (phones, 480px and down) */
+@media (max-width: 480px) {
+    /* Further reduce padding and margins */
+    #page-wrapper {
+        padding: 5px !important;
+    }
+    
+    #page-inner {
+        padding: 5px !important;
+    }
+    
+    .panel-body {
+        padding: 10px !important;
+    }
+    
+    .page-header h1 {
+        font-size: 20px !important;
+    }
+    
+    .panel-heading {
+        font-size: 14px !important;
+        padding: 8px 12px !important;
+    }
+    
+    .form-control {
+        height: 45px !important;
+        font-size: 16px !important; /* Prevents zoom on iOS */
+    }
+    
+    .btn {
+        padding: 15px 20px !important;
+        font-size: 16px !important;
+    }
+    
+    .alert {
+        font-size: 13px !important;
+        padding: 12px !important;
+    }
+    
+    /* Make tables more mobile-friendly */
+    .table-responsive {
+        border: none !important;
+    }
+    
+    .table {
+        font-size: 12px !important;
+    }
+    
+    .table td {
+        padding: 6px !important;
+    }
+}
+
+/* Very small devices (320px and down) */
+@media (max-width: 320px) {
+    .page-header h1 {
+        font-size: 18px !important;
+    }
+    
+    .panel-heading {
+        font-size: 13px !important;
+    }
+    
+    .form-control {
+        font-size: 14px !important;
+    }
+    
+    .btn {
+        padding: 12px 15px !important;
+        font-size: 14px !important;
+    }
+    
+    .alert {
+        font-size: 12px !important;
+    }
+}
+
+/* Landscape orientation adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+    .panel-body {
+        padding: 10px !important;
+    }
+    
+    .form-group {
+        margin-bottom: 10px !important;
+    }
+    
+    .btn {
+        padding: 10px 15px !important;
+    }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    .form-control {
+        min-height: 44px !important; /* iOS recommended touch target */
+    }
+    
+    .btn {
+        min-height: 44px !important;
+        min-width: 44px !important;
+    }
+    
+    .radio-inline {
+        min-height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    
+    .radio-inline input[type="radio"] {
+        min-width: 20px !important;
+        min-height: 20px !important;
+    }
+}
+
+/* Print styles */
+@media print {
+    .btn, .well, .alert {
+        display: none !important;
+    }
+    
+    .panel {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+    }
+    
+    .panel-heading {
+        background: #f5f5f5 !important;
+        color: #333 !important;
+    }
+}
