@@ -53,3 +53,5 @@ echo "<p><a href='index.php'>← Back to Login</a></p>";
 echo "<p><a href='fix_admin_password.php'>Fix Admin Password</a></p>";
 echo "<p><a href='test_password.php'>Test Password Hashing</a></p>";
 ?>
+
+

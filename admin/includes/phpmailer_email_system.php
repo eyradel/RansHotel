@@ -32,14 +32,14 @@ class PHPMailerEmailSystem {
         $this->smtpUsername = 'swiftforge25@gmail.com';
         $this->smtpPassword = 'vdxfxvwsyfjgsvav'; // App password
         $this->fromEmail = 'swiftforge25@gmail.com';
-        $this->fromName = 'SwiftForge Voting';
+        $this->fromName = 'RANS HOTEL';
     }
     
     /**
      * Send booking confirmation email to customer
      */
     public function sendBookingConfirmation($customerEmail, $customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount = null) {
-        $subject = "Booking Confirmation - SwiftForge Voting";
+        $subject = "Booking Confirmation - RANS HOTEL";
         $htmlBody = $this->buildBookingConfirmationHTML($customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount);
         $textBody = $this->buildBookingConfirmationText($customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount);
         
@@ -50,7 +50,7 @@ class PHPMailerEmailSystem {
      * Send new booking notification to manager
      */
     public function sendManagerNotification($customerName, $customerEmail, $customerPhone, $roomType, $checkIn, $checkOut, $bookingId, $mealPlan, $nationality, $country) {
-        $subject = "New Booking Alert - SwiftForge Voting";
+        $subject = "New Booking Alert - RANS HOTEL";
         $htmlBody = $this->buildManagerNotificationHTML($customerName, $customerEmail, $customerPhone, $roomType, $checkIn, $checkOut, $bookingId, $mealPlan, $nationality, $country);
         $textBody = $this->buildManagerNotificationText($customerName, $customerEmail, $customerPhone, $roomType, $checkIn, $checkOut, $bookingId, $mealPlan, $nationality, $country);
         
@@ -66,122 +66,131 @@ class PHPMailerEmailSystem {
         $days = (strtotime($checkOut) - strtotime($checkIn)) / (60 * 60 * 24);
         $year = date('Y');
         
-        return "<!DOCTYPE html>
-<html lang=\"en\">
-<head>
-    <meta charset=\"UTF-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-    <title>Booking Confirmation - SwiftForge Voting</title>
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }
-        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
-        .header { background-color: #1a73e8; color: white; padding: 30px; text-align: center; }
-        .header h1 { margin: 0; font-size: 28px; }
-        .header p { margin: 10px 0 0; font-size: 16px; opacity: 0.9; }
-        .content { padding: 30px; }
-        .booking-details { background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 20px; margin: 20px 0; }
-        .booking-details h3 { margin-top: 0; color: #1a73e8; }
-        .detail-row { display: flex; justify-content: space-between; margin: 10px 0; padding: 8px 0; border-bottom: 1px solid #e9ecef; }
-        .detail-row:last-child { border-bottom: none; }
-        .detail-label { font-weight: bold; color: #6c757d; }
-        .detail-value { color: #333; }
-        .total-amount { background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 15px; margin: 20px 0; text-align: center; }
-        .total-amount h3 { margin: 0; color: #155724; }
-        .info-box { background-color: #e7f3ff; border: 1px solid #b3d9ff; border-radius: 8px; padding: 20px; margin: 20px 0; }
-        .info-box h4 { margin-top: 0; color: #0066cc; }
-        .info-box ul { margin: 10px 0; padding-left: 20px; }
-        .contact-info { text-align: center; margin: 30px 0; }
-        .contact-info p { margin: 5px 0; }
-        .footer { background-color: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 14px; }
-        .btn { display: inline-block; background-color: #1a73e8; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px 0; }
-    </style>
-</head>
-<body>
-    <div class=\"container\">
-        <div class=\"header\">
-            <h1>SwiftForge Voting</h1>
-            <p>Tsito, Ghana</p>
-        </div>
+        $safeCustomerName = htmlspecialchars($customerName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $safeRoomType = htmlspecialchars($roomType, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $safeBookingId = htmlspecialchars($bookingId, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $safePhone = htmlspecialchars($phone, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $safeMealPlan = htmlspecialchars($mealPlan, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         
-        <div class=\"content\">
-            <h2 style=\"color: #1a73e8; margin-top: 0;\">Booking Confirmed! 🎉</h2>
-            
-            <p>Dear <strong>{$customerName}</strong>,</p>
-            
-            <p>Thank you for choosing SwiftForge Voting! Your booking has been confirmed and we're excited to welcome you to our beautiful hotel in Tsito, Ghana.</p>
-            
-            <div class=\"booking-details\">
-                <h3>📋 Booking Details</h3>
-                <div class=\"detail-row\">
-                    <span class=\"detail-label\">Booking ID:</span>
-                    <span class=\"detail-value\"><strong>{$bookingId}</strong></span>
-                </div>
-                <div class=\"detail-row\">
-                    <span class=\"detail-label\">Room Type:</span>
-                    <span class=\"detail-value\">{$roomType}</span>
-                </div>
-                <div class=\"detail-row\">
-                    <span class=\"detail-label\">Check-in Date:</span>
-                    <span class=\"detail-value\">{$checkInFormatted}</span>
-                </div>
-                <div class=\"detail-row\">
-                    <span class=\"detail-label\">Check-out Date:</span>
-                    <span class=\"detail-value\">{$checkOutFormatted}</span>
-                </div>
-                <div class=\"detail-row\">
-                    <span class=\"detail-label\">Duration:</span>
-                    <span class=\"detail-value\">{$days} night(s)</span>
-                </div>
-                <div class=\"detail-row\">
-                    <span class=\"detail-label\">Meal Plan:</span>
-                    <span class=\"detail-value\">{$mealPlan}</span>
-                </div>
-                <div class=\"detail-row\">
-                    <span class=\"detail-label\">Phone:</span>
-                    <span class=\"detail-value\">{$phone}</span>
-                </div>
-            </div>";
+        return "<!doctype html>\n" .
+        "<html lang=\"en\">\n" .
+        "<head>\n" .
+        "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n" .
+        "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" .
+        "  <title>Booking Confirmation - RANS HOTEL</title>\n" .
+        "  <meta name=\"x-apple-disable-message-reformatting\">\n" .
+        "</head>\n" .
+        "<body style=\"margin:0; padding:0; background:#f5f7fb; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;\">\n" .
+        "  <div style=\"display:none; font-size:1px; color:#f5f7fb; line-height:1px; max-height:0; max-width:0; opacity:0; overflow:hidden;\">Your booking confirmation is inside.\n" .
+        "  </div>\n" .
+        "  <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"background:#f5f7fb;\">\n" .
+        "    <tr>\n" .
+        "      <td align=\"center\" style=\"padding:24px;\">\n" .
+        "        <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width:640px; background:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 2px 8px rgba(16,24,40,0.06);\">\n" .
+        "          <tr>\n" .
+        "            <td style=\"background:#1a73e8; padding:24px 28px;\">\n" .
+        "              <h1 style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:20px; line-height:28px; color:#ffffff;\">RANS HOTEL</h1>\n" .
+        "              <p style=\"margin:8px 0 0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; color:#ffffff; opacity:0.9;\">Tsito, Volta Region, Ghana</p>\n" .
+        "            </td>\n" .
+        "          </tr>\n" .
+        "          <tr>\n" .
+        "            <td style=\"padding:28px;\">\n" .
+        "              <h2 style=\"margin:0 0 16px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:18px; line-height:24px; color:#1a73e8;\">Booking Confirmed! 🎉</h2>\n" .
+        "              <p style=\"margin:0 0 16px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:16px; line-height:24px; color:#111827;\">Hi <strong>" . $safeCustomerName . "</strong>,</p>\n" .
+        "              <p style=\"margin:0 0 20px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:15px; line-height:22px; color:#374151;\">Thank you for choosing RANS HOTEL! Your booking has been confirmed and we're excited to welcome you to our beautiful hotel in Tsito, Volta Region, Ghana.</p>\n" .
+        "              <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"border:1px solid #e5e7eb; border-radius:10px;\">\n" .
+        "                <tr>\n" .
+        "                  <td style=\"padding:18px 20px;\">\n" .
+        "                    <h3 style=\"margin:0 0 16px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:16px; color:#1a73e8;\">📋 Booking Details</h3>\n" .
+        "                    <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\">\n" .
+        "                      <div style=\"margin:0 0 8px; font-size:14px; color:#6b7280;\">Booking ID</div>\n" .
+        "                      <div style=\"font-size:16px; font-weight:600; color:#111827; margin-bottom:16px;\">" . $safeBookingId . "</div>\n" .
+        "                    </div>\n" .
+        "                    <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\">\n" .
+        "                      <div style=\"margin:0 0 8px; font-size:14px; color:#6b7280;\">Room Type</div>\n" .
+        "                      <div style=\"font-size:16px; font-weight:600; color:#111827; margin-bottom:16px;\">" . $safeRoomType . "</div>\n" .
+        "                    </div>\n" .
+        "                    <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\">\n" .
+        "                      <div style=\"margin:0 0 8px; font-size:14px; color:#6b7280;\">Check-in Date</div>\n" .
+        "                      <div style=\"font-size:16px; font-weight:600; color:#111827; margin-bottom:16px;\">" . $checkInFormatted . "</div>\n" .
+        "                    </div>\n" .
+        "                    <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\">\n" .
+        "                      <div style=\"margin:0 0 8px; font-size:14px; color:#6b7280;\">Check-out Date</div>\n" .
+        "                      <div style=\"font-size:16px; font-weight:600; color:#111827; margin-bottom:16px;\">" . $checkOutFormatted . "</div>\n" .
+        "                    </div>\n" .
+        "                    <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\">\n" .
+        "                      <div style=\"margin:0 0 8px; font-size:14px; color:#6b7280;\">Duration</div>\n" .
+        "                      <div style=\"font-size:16px; font-weight:600; color:#111827; margin-bottom:16px;\">" . $days . " night(s)</div>\n" .
+        "                    </div>\n" .
+        "                    <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\">\n" .
+        "                      <div style=\"margin:0 0 8px; font-size:14px; color:#6b7280;\">Meal Plan</div>\n" .
+        "                      <div style=\"font-size:16px; font-weight:600; color:#111827; margin-bottom:16px;\">" . $safeMealPlan . "</div>\n" .
+        "                    </div>\n" .
+        "                    <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\">\n" .
+        "                      <div style=\"margin:0 0 8px; font-size:14px; color:#6b7280;\">Phone</div>\n" .
+        "                      <div style=\"font-size:16px; font-weight:600; color:#111827;\">" . $safePhone . "</div>\n" .
+        "                    </div>\n" .
+        "                  </td>\n" .
+        "                </tr>\n" .
+        "              </table>";
             
         if ($totalAmount) {
-            $html .= "
-            <div class=\"total-amount\">
-                <h3>💰 Total Amount: ₵{$totalAmount}</h3>
-            </div>";
+            $safeTotalAmount = htmlspecialchars($totalAmount, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $html .= "\n" .
+            "              <div style=\"height:24px\"></div>\n" .
+            "              <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"background:#d4edda; border:1px solid #c3e6cb; border-radius:10px;\">\n" .
+            "                <tr>\n" .
+            "                  <td style=\"padding:18px 20px; text-align:center;\">\n" .
+            "                    <h3 style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:16px; color:#155724;\">💰 Total Amount: ₵" . $safeTotalAmount . "</h3>\n" .
+            "                  </td>\n" .
+            "                </tr>\n" .
+            "              </table>";
         }
         
-        $html .= "
-            <div class=\"info-box\">
-                <h4>ℹ️ Important Information</h4>
-                <ul>
-                    <li><strong>Check-in time:</strong> 2:00 PM</li>
-                    <li><strong>Check-out time:</strong> 11:00 AM</li>
-                    <li>Please bring a valid ID for check-in</li>
-                    <li>Contact us for any special requests or dietary requirements</li>
-                    <li>Free WiFi is available throughout the hotel</li>
-                </ul>
-            </div>
-            
-            <div class=\"contact-info\">
-                <h4>📞 Need Assistance?</h4>
-                <p><strong>Phone:</strong> +233 (0)302 936 062</p>
-                <p><strong>Email:</strong> info@ranshotel.com</p>
-                <p><strong>Address:</strong> Tsito, Volta Region, Ghana</p>
-                <p><strong>Website:</strong> <a href=\"https://www.ranshotel.com\">www.ranshotel.com</a></p>
-            </div>
-            
-            <p>We look forward to providing you with an exceptional stay at SwiftForge Voting!</p>
-            
-            <p>Best regards,<br>
-            <strong>The SwiftForge Voting Team</strong></p>
-        </div>
-        
-        <div class=\"footer\">
-            <p>© {$year} SwiftForge Voting. All rights reserved.</p>
-            <p>Tsito, Volta Region, Ghana</p>
-        </div>
-    </div>
-</body>
-</html>";
+        $html .= "\n" .
+        "              <div style=\"height:24px\"></div>\n" .
+        "              <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"background:#e7f3ff; border:1px solid #b3d9ff; border-radius:10px;\">\n" .
+        "                <tr>\n" .
+        "                  <td style=\"padding:18px 20px;\">\n" .
+        "                    <h4 style=\"margin:0 0 12px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:15px; color:#0066cc;\">ℹ️ Important Information</h4>\n" .
+        "                    <ul style=\"margin:0; padding-left:20px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; color:#374151;\">\n" .
+        "                      <li><strong>Check-in time:</strong> 2:00 PM</li>\n" .
+        "                      <li><strong>Check-out time:</strong> 11:00 AM</li>\n" .
+        "                      <li>Please bring a valid ID for check-in</li>\n" .
+        "                      <li>Contact us for any special requests or dietary requirements</li>\n" .
+        "                      <li>Free WiFi is available throughout the hotel</li>\n" .
+        "                    </ul>\n" .
+        "                  </td>\n" .
+        "                </tr>\n" .
+        "              </table>\n" .
+        "              <div style=\"height:24px\"></div>\n" .
+        "              <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"text-align:center;\">\n" .
+        "                <tr>\n" .
+        "                  <td>\n" .
+        "                    <h4 style=\"margin:0 0 12px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:15px; color:#1a73e8;\">📞 Need Assistance?</h4>\n" .
+        "                    <p style=\"margin:4px 0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; color:#374151;\"><strong>Phone:</strong> +233 (0)302 936 062</p>\n" .
+        "                    <p style=\"margin:4px 0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; color:#374151;\"><strong>Email:</strong> swiftforge25@gmail.com</p>\n" .
+        "                    <p style=\"margin:4px 0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; color:#374151;\"><strong>Address:</strong> Tsito, Volta Region, Ghana</p>\n" .
+        "                  </td>\n" .
+        "                </tr>\n" .
+        "              </table>\n" .
+        "              <div style=\"height:24px\"></div>\n" .
+        "              <p style=\"margin:0 0 16px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:15px; line-height:22px; color:#374151;\">We look forward to providing you with an exceptional stay at RANS HOTEL!</p>\n" .
+        "              <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:15px; line-height:22px; color:#374151;\">Best regards,<br><strong>The RANS HOTEL Team</strong></p>\n" .
+        "            </td>\n" .
+        "          </tr>\n" .
+        "          <tr>\n" .
+        "            <td style=\"background:#f9fafb; padding:18px 28px; text-align:center;\">\n" .
+        "              <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:12px; line-height:18px; color:#6b7280;\">© " . $year . " RANS HOTEL. All rights reserved.</p>\n" .
+        "              <p style=\"margin:4px 0 0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:12px; line-height:18px; color:#6b7280;\">Tsito, Volta Region, Ghana</p>\n" .
+        "            </td>\n" .
+        "          </tr>\n" .
+        "        </table>\n" .
+        "      </td>\n" .
+        "    </tr>\n" .
+        "  </table>\n" .
+        "</body>\n" .
+        "</html>\n";
         
         return $html;
     }
@@ -194,9 +203,9 @@ class PHPMailerEmailSystem {
         $checkOutFormatted = date('F j, Y', strtotime($checkOut));
         $days = (strtotime($checkOut) - strtotime($checkIn)) / (60 * 60 * 24);
         
-        $text = "SwiftForge Voting - Booking Confirmation\n\n";
+        $text = "RANS HOTEL - Booking Confirmation\n\n";
         $text .= "Dear {$customerName},\n\n";
-        $text .= "Thank you for choosing SwiftForge Voting! Your booking has been confirmed.\n\n";
+        $text .= "Thank you for choosing RANS HOTEL! Your booking has been confirmed.\n\n";
         $text .= "BOOKING DETAILS:\n";
         $text .= "Booking ID: {$bookingId}\n";
         $text .= "Room Type: {$roomType}\n";
@@ -217,11 +226,11 @@ class PHPMailerEmailSystem {
         $text .= "- Contact us for any special requests\n\n";
         $text .= "CONTACT US:\n";
         $text .= "Phone: +233 (0)302 936 062\n";
-        $text .= "Email: info@ranshotel.com\n";
+        $text .= "Email: swiftforge25@gmail.com\n";
         $text .= "Address: Tsito, Volta Region, Ghana\n\n";
-        $text .= "We look forward to welcoming you to SwiftForge Voting!\n\n";
+        $text .= "We look forward to welcoming you to RANS HOTEL!\n\n";
         $text .= "Best regards,\n";
-        $text .= "The SwiftForge Voting Team";
+        $text .= "The RANS HOTEL Team";
         
         return $text;
     }
@@ -380,7 +389,7 @@ class PHPMailerEmailSystem {
     /**
      * Send email using PHPMailer
      */
-    private function sendEmail($to, $subject, $htmlBody, $textBody) {
+    public function sendEmail($to, $subject, $htmlBody, $textBody) {
         $mail = new PHPMailer(true);
         
         try {
@@ -400,6 +409,7 @@ class PHPMailerEmailSystem {
             // Content
             $mail->isHTML(true);
             $mail->Subject = $subject;
+            $mail->CharSet = 'UTF-8';
             $mail->Body = $htmlBody;
             $mail->AltBody = $textBody;
             

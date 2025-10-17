@@ -18,7 +18,7 @@ if($id=="Not Allowed")
 	$sql ="UPDATE `contact` SET `approval`= '$approval' WHERE id = '$eid' ";
 	if(mysqli_query($con,$sql))
 	{
-		echo '<script>alert("New Room Added") </script>' ;
+		echo '<script>alert("Subscriber Permission Updated Successfully!") </script>' ;
 		header("Location: messages.php");
 	}
 }
@@ -26,7 +26,7 @@ else {
 $sql ="UPDATE `contact` SET `approval`= '$napproval' WHERE id = '$eid' ";
 	if(mysqli_query($con,$sql))
 	{
-		echo '<script>alert("New Room Added") </script>' ;
+		echo '<script>alert("Subscriber Permission Updated Successfully!") </script>' ;
 		header("Location: messages.php");
 	}
 

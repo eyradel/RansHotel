@@ -22,7 +22,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
             $row = mysqli_fetch_assoc($result);
             $_SESSION['user'] = $row['usname'];
             $_SESSION['user_id'] = $row['id'];
-            header("location: home.php");
+            header("location: dashboard_simple.php");
             exit();
         } else {
             $error_message = "Invalid username or password.";
@@ -140,3 +140,5 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </body>
 </html>
+
+

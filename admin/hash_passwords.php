@@ -117,3 +117,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['hash_passwords'])) {
 echo "<hr>";
 echo "<p><a href='index.php'>← Back to Login</a></p>";
 ?>
+
+

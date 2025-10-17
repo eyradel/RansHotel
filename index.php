@@ -29,6 +29,146 @@ PricingHelper::initializePricingTables($con);
 <!--fonts-->
 <style>
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+
+/* Carousel Fixes */
+.rslides {
+    position: relative;
+    list-style: none;
+    overflow: hidden;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.rslides li {
+    -webkit-backface-visibility: hidden;
+    position: absolute;
+    display: none;
+    width: 100%;
+    left: 0;
+    top: 0;
+}
+
+.rslides li:first-child {
+    position: relative;
+    display: block;
+    float: left;
+}
+
+.rslides img {
+    display: block;
+    height: auto;
+    float: left;
+    width: 100%;
+    border: 0;
+}
+
+.callbacks_container {
+    position: relative;
+    float: left;
+    width: 100%;
+}
+
+.callbacks {
+    position: relative;
+    list-style: none;
+    overflow: hidden;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.callbacks li {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    top: 0;
+}
+
+.callbacks_tabs {
+    list-style: none;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    margin: 0;
+    padding: 0;
+}
+
+.callbacks_tabs li {
+    display: inline-block;
+    margin: 0 7px;
+}
+
+.callbacks_tabs a {
+    text-indent: -9999px;
+    overflow: hidden;
+    display: block;
+    width: 12px;
+    height: 12px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.callbacks_tabs .rslides_here a {
+    background: #ffce14;
+}
+
+.callbacks_tabs a:hover {
+    background: rgba(255,255,255,0.6);
+}
+
+/* Feature Cards Responsive */
+@media (max-width: 768px) {
+    .feature-cards-section .feature-card {
+        border-right: none !important;
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 20px;
+    }
+    
+    .feature-cards-section .feature-card:last-child {
+        border-bottom: none;
+    }
+    
+    .feature-cards-section h3 {
+        font-size: 20px !important;
+        margin-bottom: 30px !important;
+    }
+    
+    .feature-icon i {
+        font-size: 36px !important;
+    }
+    
+    .feature-text {
+        font-size: 12px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .feature-cards-section {
+        padding: 40px 0 !important;
+    }
+    
+    .feature-cards-section h3 {
+        font-size: 18px !important;
+        margin-bottom: 25px !important;
+    }
+    
+    .feature-icon i {
+        font-size: 32px !important;
+    }
+    
+    .feature-text {
+        font-size: 11px !important;
+    }
+    
+    .feature-accent {
+        width: 40px !important;
+        height: 2px !important;
+    }
+}
 </style>
 <!--//fonts-->
 </head>
@@ -146,6 +286,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 			<div class="clearfix"> </div>
 			<!--banner Slider starts Here-->
 		</div>
+		<!-- Carousel Navigation -->
+		<ul class="callbacks_tabs">
+			<li><a href="#" class="callbacks1_s1">1</a></li>
+			<li><a href="#" class="callbacks1_s2">2</a></li>
+			<li><a href="#" class="callbacks1_s3">3</a></li>
+		</ul>
 		    <div class="thim-click-to-bottom">
 				<a href="#about" class="scroll">
 					<i class="fa fa-long-arrow-down" aria-hidden="true"></i>
@@ -238,6 +384,53 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     </div>
 </div>
  	<!-- //about -->
+<!-- Feature Cards Section -->
+<div class="feature-cards-section" style="background-color: #f8f9fa; padding: 60px 0;">
+    <div class="container">
+        <h3 class="title-w3-agileits title-black-wthree" style="text-align: center; margin-bottom: 50px; color: #ffce14; font-size: 24px; font-weight: 600;">
+            FIND OUR FRIENDLY WELCOMING RECEPTION
+        </h3>
+        <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-12 feature-card" style="text-align: center; padding: 20px; border-right: 1px solid #dee2e6;">
+                <div class="feature-icon" style="margin-bottom: 20px;">
+                    <i class="fa fa-bed" style="font-size: 48px; color: #2c3e50;"></i>
+                </div>
+                <div class="feature-text" style="color: #2c3e50; font-size: 14px; font-weight: 600; text-transform: uppercase; margin-bottom: 15px;">
+                    MASTER BEDROOMS
+                </div>
+                <div class="feature-accent" style="width: 60px; height: 3px; background-color: #ffce14; margin: 0 auto;"></div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12 feature-card" style="text-align: center; padding: 20px; border-right: 1px solid #dee2e6;">
+                <div class="feature-icon" style="margin-bottom: 20px;">
+                    <i class="fa fa-building" style="font-size: 48px; color: #2c3e50;"></i>
+                </div>
+                <div class="feature-text" style="color: #2c3e50; font-size: 14px; font-weight: 600; text-transform: uppercase; margin-bottom: 15px;">
+                    SEA VIEW BALCONY
+                </div>
+                <div class="feature-accent" style="width: 60px; height: 3px; background-color: #ffce14; margin: 0 auto;"></div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12 feature-card" style="text-align: center; padding: 20px; border-right: 1px solid #dee2e6;">
+                <div class="feature-icon" style="margin-bottom: 20px;">
+                    <i class="fa fa-coffee" style="font-size: 48px; color: #2c3e50;"></i>
+                </div>
+                <div class="feature-text" style="color: #2c3e50; font-size: 14px; font-weight: 600; text-transform: uppercase; margin-bottom: 15px;">
+                    LARGE CAFE
+                </div>
+                <div class="feature-accent" style="width: 60px; height: 3px; background-color: #ffce14; margin: 0 auto;"></div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12 feature-card" style="text-align: center; padding: 20px;">
+                <div class="feature-icon" style="margin-bottom: 20px;">
+                    <i class="fa fa-wifi" style="font-size: 48px; color: #2c3e50;"></i>
+                </div>
+                <div class="feature-text" style="color: #2c3e50; font-size: 14px; font-weight: 600; text-transform: uppercase; margin-bottom: 15px;">
+                    WIFI COVERAGE
+                </div>
+                <div class="feature-accent" style="width: 60px; height: 3px; background-color: #ffce14; margin: 0 auto;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- //Feature Cards Section -->
 <!--sevices-->
 <div class="advantages">
 	<div class="container">
@@ -725,6 +918,25 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <!--/footer -->
 <!-- js -->
 <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+<!-- ResponsiveSlides for carousel -->
+<script src="js/responsiveslides.min.js"></script>
+<script>
+$(function() {
+    $("#slider4").responsiveSlides({
+        auto: true,
+        pager: true,
+        nav: true,
+        speed: 500,
+        namespace: "callbacks",
+        before: function () {
+            $('.events').append("<li>before event fired.</li>");
+        },
+        after: function () {
+            $('.events').append("<li>after event fired.</li>");
+        }
+    });
+});
+</script>
 <!-- contact form -->
 <script src="js/jqBootstrapValidation.js"></script>
 

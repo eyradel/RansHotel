@@ -5,6 +5,8 @@ if(!isset($_SESSION['user'])) {
 }
 
 include('db.php');
+include('includes/access_control.php');
+initAccessControl('user_management');
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
@@ -20,6 +22,8 @@ include('db.php');
     <link href="assets/css/font-awesome.css" rel="stylesheet" />
     <!-- Custom Styles-->
     <link href="assets/css/custom-styles.css" rel="stylesheet" />
+    <!-- Professional Admin Styles-->
+    <link href="assets/css/professional-admin.css" rel="stylesheet" />
     <!-- Responsive Admin Styles-->
     <link href="assets/css/responsive-admin.css" rel="stylesheet" />
     <!-- Google Fonts-->
@@ -30,24 +34,13 @@ include('db.php');
         <nav class="navbar-default navbar-side" role="navigation">
             <div class="sidebar-collapse">
                 <ul class="nav" id="main-menu">
-                    <li>
-                        <a href="home.php"><i class="fa fa-dashboard"></i> Dashboard</a>
-                    </li>
-                    <li>
-                        <a href="reservation.php"><i class="fa fa-calendar"></i> Reservations</a>
-                    </li>
-                    <li>
-                        <a href="roombook.php"><i class="fa fa-bed"></i> Room Bookings</a>
-                    </li>
-                    <li>
-                        <a href="notifications.php"><i class="fa fa-bell"></i> Notifications</a>
-                    </li>
-                    <li>
-                        <a href="user_management.php" class="active-menu"><i class="fa fa-users"></i> User Management</a>
-                    </li>
-                    <li>
-                        <a href="settings.php"><i class="fa fa-cog"></i> Settings</a>
-                    </li>
+                    <?php
+                    $menu = getNavigationMenu();
+                    foreach ($menu as $item) {
+                        $activeClass = (basename($_SERVER['PHP_SELF']) == basename($item['url'])) ? 'active-menu' : '';
+                        echo '<li><a class="' . $activeClass . '" href="' . $item['url'] . '"><i class="fa ' . $item['icon'] . '"></i> ' . $item['text'] . '</a></li>';
+                    }
+                    ?>
                     <li>
                         <a href="logout.php"><i class="fa fa-sign-out"></i> Logout</a>
                     </li>
@@ -301,3 +294,5 @@ include('db.php');
     </script>
 </body>
 </html>
+
+

@@ -2,7 +2,7 @@
  session_start();  
  if(isset($_SESSION["user"]))  
  {  
-      header("location:home.php");  
+      header("location:dashboard_simple.php");  
       exit();
  }  
 
@@ -24,28 +24,59 @@
        // Hash the password with MD5 for security
        $hashed_password = md5($mypassword);
        
-       // Query with hashed password
-       $sql = "SELECT id, usname FROM login WHERE usname = '$myusername' AND pass = '$hashed_password'";
-       $result = mysqli_query($con, $sql);
+       // Check if using new database structure with roles
+       $checkNewStructure = "SHOW COLUMNS FROM login LIKE 'role'";
+       $structureResult = mysqli_query($con, $checkNewStructure);
+       
+       if(mysqli_num_rows($structureResult) > 0) {
+           // New database structure with roles
+           $sql = "SELECT id, usname, full_name, role, email, phone, is_active FROM login 
+                   WHERE usname = '$myusername' AND pass = '$hashed_password' AND is_active = 1";
+           $result = mysqli_query($con, $sql);
+           
+           if($result && mysqli_num_rows($result) == 1) {
+               $row = mysqli_fetch_assoc($result);
+               
+               // Set session variables
+               $_SESSION['user'] = $row['usname'];
+               $_SESSION['user_id'] = $row['id'];
+               $_SESSION['full_name'] = $row['full_name'];
+               $_SESSION['role'] = $row['role'];
+               $_SESSION['email'] = $row['email'];
+               $_SESSION['login_time'] = time();
+           } else {
+               $error_message = "Invalid username or password. Please try again.";
+           }
+       } else {
+           // Old database structure (fallback)
+           $sql = "SELECT id, usname FROM login WHERE usname = '$myusername' AND pass = '$hashed_password'";
+           $result = mysqli_query($con, $sql);
+           
+           if($result && mysqli_num_rows($result) == 1) {
+               $row = mysqli_fetch_assoc($result);
+               
+               // Set session variables
+               $_SESSION['user'] = $row['usname'];
+               $_SESSION['user_id'] = $row['id'];
+               $_SESSION['role'] = 'admin'; // Default role for old system
+               $_SESSION['login_time'] = time();
+           } else {
+               $error_message = "Invalid username or password. Please try again.";
+           }
+       }
        
        // Debug information
-       $debug_info = "Username: '$myusername', Original Password: '$mypassword', MD5 Hash: '$hashed_password', Query: '$sql'";
+       $debug_info = "Username: '$myusername', Original Password: '$mypassword', MD5 Hash: '$hashed_password'";
        error_log("Login Debug: " . $debug_info);
        
-       if($result && mysqli_num_rows($result) == 1) {
-          $row = mysqli_fetch_assoc($result);
-          
-          // Set session variables
-          $_SESSION['user'] = $row['usname'];
-          $_SESSION['user_id'] = $row['id'];
-          $_SESSION['login_time'] = time();
+       if(isset($_SESSION['user'])) {
           
           // Log successful login
           $log_message = "Admin login successful: " . $myusername . " at " . date('Y-m-d H:i:s');
           error_log($log_message);
           
           // Redirect to admin dashboard
-          header("location: home.php");
+          header("location: dashboard_simple.php");
           exit();
        } else {
           $error_message = "Invalid username or password. Please try again.";

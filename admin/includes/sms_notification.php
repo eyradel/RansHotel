@@ -72,7 +72,7 @@ class SMSNotification {
     /**
      * Core SMS sending function
      */
-    private function sendSMS($phone, $message) {
+    public function sendSMS($phone, $message) {
         // Clean phone number (remove spaces, dashes, etc.)
         $phone = preg_replace('/[^0-9+]/', '', $phone);
         

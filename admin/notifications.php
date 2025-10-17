@@ -1,10 +1,14 @@
 <?php
 session_start();
-if(!isset($_SESSION['admin'])){
+if(!isset($_SESSION['user'])){
     header("location:index.php");
 }
 include('db.php');
+include('includes/access_control.php');
+initAccessControl('notifications');
 require_once 'includes/notification_manager.php';
+require_once 'includes/email_notification.php';
+require_once 'includes/sms_notification.php';
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
@@ -94,11 +98,47 @@ require_once 'includes/notification_manager.php';
                         
                         if($notificationType == 'both') {
                             $results = $notificationManager->sendBulkNotification($message, $customers);
+                            
+                            // Process nested results for both SMS and email
+                            $successCount = 0;
+                            $failCount = 0;
+                            
+                            // Count SMS results
+                            if(isset($results['sms'])) {
+                                foreach($results['sms'] as $result) {
+                                    if(is_array($result) && isset($result['success']) && $result['success']) {
+                                        $successCount++;
+                                    } else {
+                                        $failCount++;
+                                    }
+                                }
+                            }
+                            
+                            // Count email results
+                            if(isset($results['email'])) {
+                                foreach($results['email'] as $result) {
+                                    if(is_array($result) && isset($result['success']) && $result['success']) {
+                                        $successCount++;
+                                    } else {
+                                        $failCount++;
+                                    }
+                                }
+                            }
                         } elseif($notificationType == 'sms') {
                             $smsNotification = new SMSNotification();
                             $results = [];
                             foreach($customers as $customer) {
                                 $results[] = $smsNotification->sendSMS($customer['phone'], $message);
+                            }
+                            
+                            $successCount = 0;
+                            $failCount = 0;
+                            foreach($results as $result) {
+                                if(is_array($result) && isset($result['success']) && $result['success']) {
+                                    $successCount++;
+                                } else {
+                                    $failCount++;
+                                }
                             }
                         } elseif($notificationType == 'email') {
                             $emailNotification = new EmailNotification();
@@ -111,15 +151,15 @@ require_once 'includes/notification_manager.php';
                                     $message
                                 );
                             }
-                        }
-                        
-                        $successCount = 0;
-                        $failCount = 0;
-                        foreach($results as $result) {
-                            if(is_array($result) && isset($result['success']) && $result['success']) {
-                                $successCount++;
-                            } else {
-                                $failCount++;
+                            
+                            $successCount = 0;
+                            $failCount = 0;
+                            foreach($results as $result) {
+                                if(is_array($result) && isset($result['success']) && $result['success']) {
+                                    $successCount++;
+                                } else {
+                                    $failCount++;
+                                }
                             }
                         }
                         
@@ -328,3 +368,5 @@ require_once 'includes/notification_manager.php';
     </script>
 </body>
 </html>
+
+

@@ -440,7 +440,7 @@ class EmailNotification {
     /**
      * Core email sending function using SMTP
      */
-    private function sendEmail($to, $subject, $htmlBody, $altBody) {
+    public function sendEmail($to, $subject, $htmlBody, $altBody) {
         // Try SMTP first, fallback to mail() if SMTP fails
         $smtpResult = $this->sendEmailViaSMTP($to, $subject, $htmlBody, $altBody);
         

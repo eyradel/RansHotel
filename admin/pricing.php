@@ -6,6 +6,8 @@ if(!isset($_SESSION["user"]))
 }
 
 include('db.php');
+include('includes/access_control.php');
+initAccessControl('pricing');
 
 // Handle form submissions
 $message = '';

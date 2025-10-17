@@ -4,6 +4,10 @@ if(!isset($_SESSION["user"]))
 {
  header("location:index.php");
 }
+
+// Include access control system
+include('includes/access_control.php');
+initAccessControl('delete_room');
 ob_start();
 ?> 
 

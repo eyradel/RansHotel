@@ -14,7 +14,7 @@ define('MANAGER_PHONE', '0540202096');
 // Hotel Information
 define('HOTEL_NAME', 'RANS HOTEL');
 define('HOTEL_PHONE', '+233 (0)302 936 062');
-define('HOTEL_EMAIL', 'info@ranshotel.com');
+define('HOTEL_EMAIL', 'swiftforge25@gmail.com');
 define('HOTEL_ADDRESS', 'Tsito, Volta Region, Ghana');
 
 // Email Service URLs (replace with your actual service URLs)
@@ -27,7 +27,7 @@ define('SMTP_PORT', 465); // SSL port for Gmail
 define('SMTP_USERNAME', 'swiftforge25@gmail.com');
 define('SMTP_PASSWORD', 'vdxfxvwsyfjgsvav');
 define('SMTP_FROM_EMAIL', 'swiftforge25@gmail.com');
-define('SMTP_FROM_NAME', 'SwiftForge Voting');
+define('SMTP_FROM_NAME', 'RANS HOTEL');
 
 // Email Templates
 define('EMAIL_TEMPLATE_BOOKING_CONFIRMATION', 'booking_confirmation');
