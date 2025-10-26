@@ -12,7 +12,7 @@ include ('db.php');
 							
 						
 				}
-			header("Location: usersetting.php");
+			header("Location: user_settings.php");
 		
 ?>
 

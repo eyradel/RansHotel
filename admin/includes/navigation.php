@@ -35,7 +35,7 @@ if (!function_exists('getNavigationMenu')) {
                     </div>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                    <a class="dropdown-item" href="usersetting.php">
+                    <a class="dropdown-item" href="user_settings.php">
                         <i class="fa fa-user mr-2"></i>Profile
                     </a>
                     <a class="dropdown-item" href="settings.php">

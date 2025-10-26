@@ -62,8 +62,8 @@ initAccessControl('room_booking');
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Room Booking - RansHotel</title>
-    <meta name="description" content="Manage room bookings at RansHotel - Located in Tsito, Ghana">
+    <title>Booking Details - RansHotel</title>
+    <meta name="description" content="View booking details at RansHotel - Located in Tsito, Ghana">
     <meta name="author" content="RansHotel">
     <!-- Bootstrap Styles-->
     <link href="assets/css/bootstrap.css" rel="stylesheet" />
@@ -98,7 +98,7 @@ initAccessControl('room_booking');
                         <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a href="usersetting.php"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                        <li><a href="user_settings.php"><i class="fa fa-user fa-fw"></i> User Profile</a>
                         </li>
                         <li><a href="settings.php"><i class="fa fa-gear fa-fw"></i> Settings</a>
                         </li>
@@ -123,7 +123,7 @@ initAccessControl('room_booking');
                         <a href="messages.php"><i class="fa fa-desktop"></i> News Letters</a>
                     </li>
 					<li>
-                        <a class="active-menu" href="roombook.php"><i class="fa fa-bar-chart-o"></i> Room Booking</a>
+                        <a class="active-menu" href="booking_details.php"><i class="fa fa-bar-chart-o"></i> Booking Details</a>
                     </li>
                     <li>
                         <a href="payment.php"><i class="fa fa-qrcode"></i> Payment</a>
@@ -159,7 +159,7 @@ initAccessControl('room_booking');
                 <div class="row">
                     <div class="col-md-12">
                         <h1 class="page-header">
-                            Room Booking<small>	<?php echo  $curdate; ?> </small>
+                            Booking Details<small>	<?php echo  $curdate; ?> </small>
                         </h1>
                     </div>
 					
@@ -325,7 +325,7 @@ initAccessControl('room_booking');
 								$csc = $csc + 1;
 							}
 							
-										if($cs=="Guest House" )
+									if($cs=="Guest House" )
 							{
 								$cgh = $cgh + 1;
 							}
@@ -609,7 +609,7 @@ initAccessControl('room_booking');
 															}
 															
 															echo "<script type='text/javascript'> alert('Booking Confirmed!\\n\\nCustomer Notifications:\\n" . $statusMessage . "')</script>";
-															echo "<script type='text/javascript'> window.location='roombook.php'</script>";
+															echo "<script type='text/javascript'> window.location='booking_details.php'</script>";
 															}
 															
 															

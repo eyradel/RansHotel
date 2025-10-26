@@ -12,7 +12,7 @@ ob_start();
 <head>
       <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RansHotel</title>
+    <title>RansHotel - User Settings</title>
 	<!-- Bootstrap Styles-->
     <link href="assets/css/bootstrap.css" rel="stylesheet" />
      <!-- FontAwesome Styles-->
@@ -43,7 +43,7 @@ ob_start();
                         <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a href="usersetting.php"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                        <li><a href="user_settings.php"><i class="fa fa-user fa-fw"></i> User Profile</a>
                         </li>
                         <li><a href="settings.php"><i class="fa fa-gear fa-fw"></i> Settings</a>
                         </li>
@@ -128,7 +128,7 @@ ob_start();
 													<td><button class='btn btn-primary btn' data-toggle='modal' data-target='#myModal'>
 															 Update 
 													</button></td>
-													<td><a href=usersettingdel.php?eid=".$id ." <button class='btn btn-danger'> <i class='fa fa-edit' ></i> Delete</button></td>
+													<td><a href=user_settings_delete.php?eid=".$id ." <button class='btn btn-danger'> <i class='fa fa-edit' ></i> Delete</button></td>
 												</tr>";
 											}
 											else
@@ -141,7 +141,7 @@ ob_start();
 													<td><button class='btn btn-primary btn' data-toggle='modal' data-target='#myModal'>
                               Update 
                             </button></td>
-													<td><a href=usersettingdel.php?eid=".$id ." <button class='btn btn-danger'> <i class='fa fa-edit' ></i> Delete</button></td>
+													<td><a href=user_settings_delete.php?eid=".$id ." <button class='btn btn-danger'> <i class='fa fa-edit' ></i> Delete</button></td>
 												</tr>";
 											
 											}
@@ -206,7 +206,7 @@ ob_start();
 							
 						
 							}
-						header("Location: usersetting.php");
+						header("Location: user_settings.php");
 						}
 						?>
 						
@@ -262,7 +262,7 @@ ob_start();
 				
 					}
 				
-				header("Location: usersetting.php");
+				header("Location: user_settings.php");
 				
 				}
 				ob_end_flush();

@@ -21,6 +21,8 @@ initAccessControl('add_room');
     <link href="assets/css/font-awesome.css" rel="stylesheet" />
         <!-- Custom Styles-->
     <link href="assets/css/custom-styles.css" rel="stylesheet" />
+    <!-- Hotel Color Scheme -->
+    <link href="../css/hotel-colors.css" rel="stylesheet" />
      <!-- Google Fonts-->
    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
 </head>
@@ -106,10 +108,9 @@ initAccessControl('add_room');
                                             <label>Type Of Room *</label>
                                             <select name="troom"  class="form-control" required>
 												<option value selected ></option>
-                                                <option value="Superior Room">SUPERIOR ROOM</option>
-                                                <option value="Deluxe Room">DELUXE ROOM</option>
-												<option value="Guest House">GUEST HOUSE</option>
-												<option value="Single Room">SINGLE ROOM</option>
+                                                <option value="Standard">STANDARD ROOM</option>
+                                                <option value="Mini Executive">MINI EXECUTIVE ROOM</option>
+												<option value="Executive">EXECUTIVE ROOM</option>
                                             </select>
                               </div>
 							  
@@ -118,11 +119,6 @@ initAccessControl('add_room');
                                             <select name="bed" class="form-control" required>
 												<option value selected ></option>
                                                 <option value="Single">Single</option>
-                                                <option value="Double">Double</option>
-												<option value="Triple">Triple</option>
-                                                <option value="Quad">Quad</option>
-												<option value="Triple">None</option>
-                                                                                             
                                             </select>
                                             
                                </div>

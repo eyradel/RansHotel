@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Details of Book key</title>
+		<title>Booking Invoice - RansHotel</title>
 		
 		<style>
 		/* reset */
@@ -192,11 +192,11 @@ tr:hover .cut { opacity: 1; }
 									
 	?>
 		<header>
-			<h1>Information of Guest</h1>
+			<h1>Booking Invoice</h1>
 			<address >
-				<p>Rans,</p>
-				<p>New Kalmunani Road,<br>Battialoa,<br>Sri Lanka.</p>
-				<p>(+94) 65 222 44 55</p>
+				<p>RansHotel,</p>
+				<p>Tsito,<br>Ghana.</p>
+				<p>(+233) XX XXX XXXX</p>
 			</address>
 			<span><img alt="" src="assets/img/sun.png"></span>
 		</header>
@@ -205,32 +205,32 @@ tr:hover .cut { opacity: 1; }
 			<address >
 				
 				<p><br></p>
-				<p>Coustomer Name  : -  <?php echo $title.$Fname." ".$lname;?><br></p>
+				<p>Customer Name: <?php echo $title.$Fname." ".$lname;?><br></p>
 			</address>
 			<table class="meta">
 				<tr>
-					<th><span >Customer ID</span></th>
+					<th><span >Booking ID</span></th>
 					<td><span ><?php echo $id; ?></span></td>
 				</tr>
 				<tr>
-					<th><span >Check in Date</span></th>
+					<th><span >Check-in Date</span></th>
 					<td><span ><?php echo $cin_date; ?> </span></td>
 				</tr>
 				<tr>
-					<th><span >Check out Date</span></th>
+					<th><span >Check-out Date</span></th>
 					<td><span ><?php echo $cout_date; ?> </span></td>
 				</tr>
 				
 			</table>
 			<table >
 					<tr> 
-						<td>Customer phone : -  <?php echo $phone; ?> </td>
+						<td>Phone: <?php echo $phone; ?> </td>
 						
-						<td>Customer email : -  <?php echo $email; ?> </td>
+						<td>Email: <?php echo $email; ?> </td>
 					</tr>
 					<tr> 
-						<td>Customer Country : -  <?php echo $country; ?> </td>
-						<td>Customer National : -  <?php echo $National; ?> </td>
+						<td>Country: <?php echo $country; ?> </td>
+						<td>Nationality: <?php echo $National; ?> </td>
 					</tr>
 				</table>
 				<br>
@@ -238,8 +238,8 @@ tr:hover .cut { opacity: 1; }
 			<table class="inventory">
 				<thead>
 					<tr>
-						<th><span >Item</span></th>
-						<th><span >No of Days</span></th>
+						<th><span >Service</span></th>
+						<th><span >Duration (Days)</span></th>
 						
 					</tr>
 				</thead>
@@ -251,7 +251,7 @@ tr:hover .cut { opacity: 1; }
 						
 					</tr>
 					<tr>
-						<td><span ><?php echo $Bed_type; ?>  Bed </span></td>
+						<td><span ><?php echo $Bed_type; ?> Bed </span></td>
 						<td><span ><?php echo $nodays; ?></span></td>
 						
 					</tr>
@@ -266,9 +266,9 @@ tr:hover .cut { opacity: 1; }
 			
 		</article>
 		<aside>
-			<h1><span >Contact us</span></h1>
+			<h1><span >Contact Information</span></h1>
 			<div >
-				<p align="center">Email :- info@Rans.com || Web :- www.Rans.com || Phone :- +94 65 222 44 55 </p>
+				<p align="center">Email: info@ranshotel.com || Web: www.ranshotel.com || Phone: +233 XX XXX XXXX </p>
 			</div>
 		</aside>
 	</body>

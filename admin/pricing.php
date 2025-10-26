@@ -162,48 +162,53 @@ if ($meal_result) {
     <link href="assets/css/font-awesome.css" rel="stylesheet" />
         <!-- Custom Styles-->
     <link href="assets/css/custom-styles.css" rel="stylesheet" />
+    <!-- Hotel Color Scheme -->
+    <link href="../css/hotel-colors.css" rel="stylesheet" />
      <!-- Google Fonts-->
    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
    <style>
    .pricing-card {
-       background: #fff;
+       background: var(--background-light);
        border-radius: 10px;
        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
        margin-bottom: 20px;
        padding: 20px;
+       border: 1px solid var(--border-dark);
    }
    .price-display {
        font-size: 1.5em;
        font-weight: bold;
-       color: #1a73e8;
+       color: var(--primary-gold);
    }
    .form-group label {
        font-weight: 600;
-       color: #333;
+       color: var(--text-primary);
    }
    .btn-update {
-       background: #1a73e8;
+       background: var(--gradient-primary);
        border: none;
-       color: white;
+       color: var(--text-light);
        padding: 8px 20px;
        border-radius: 5px;
        cursor: pointer;
+       transition: all 0.3s ease;
    }
    .btn-update:hover {
-       background: #1557b0;
+       background: linear-gradient(135deg, var(--primary-gold-dark) 0%, var(--accent-orange-dark) 100%);
+       transform: translateY(-1px);
    }
    .alert-success {
-       background: #d4edda;
-       color: #155724;
-       border: 1px solid #c3e6cb;
+       background: rgba(40, 167, 69, 0.1);
+       color: var(--success-green);
+       border: 1px solid var(--success-green);
        padding: 10px;
        border-radius: 5px;
        margin-bottom: 20px;
    }
    .alert-error {
-       background: #f8d7da;
-       color: #721c24;
-       border: 1px solid #f5c6cb;
+       background: rgba(220, 53, 69, 0.1);
+       color: var(--error-red);
+       border: 1px solid var(--error-red);
        padding: 10px;
        border-radius: 5px;
        margin-bottom: 20px;
@@ -310,10 +315,9 @@ if ($meal_result) {
                                             <label>Room Type</label>
                                             <select name="room_type" class="form-control" required>
                                                 <option value="">Select Room Type</option>
-                                                <option value="Superior Room">Superior Room</option>
-                                                <option value="Deluxe Room">Deluxe Room</option>
-                                                <option value="Guest House">Guest House</option>
-                                                <option value="Single Room">Single Room</option>
+                                                <option value="Standard">Standard Room</option>
+                                                <option value="Mini Executive">Mini Executive Room</option>
+                                                <option value="Executive">Executive Room</option>
                                             </select>
                                         </div>
                                         <div class="form-group">
@@ -321,9 +325,6 @@ if ($meal_result) {
                                             <select name="bedding_type" class="form-control" required>
                                                 <option value="">Select Bedding Type</option>
                                                 <option value="Single">Single</option>
-                                                <option value="Double">Double</option>
-                                                <option value="Triple">Triple</option>
-                                                <option value="Quad">Quad</option>
                                             </select>
                                         </div>
                                         <div class="form-group">

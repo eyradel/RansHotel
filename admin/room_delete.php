@@ -23,7 +23,7 @@ $rre=mysqli_query($con,$rsql);
 <head>
       <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RansHotel</title>
+    <title>RansHotel - Delete Room</title>
 	<!-- Bootstrap Styles-->
     <link href="assets/css/bootstrap.css" rel="stylesheet" />
      <!-- FontAwesome Styles-->
@@ -79,7 +79,7 @@ $rre=mysqli_query($con,$rsql);
                         <a   href="room.php"><i class="fa fa-plus-circle"></i>Add Room</a>
                     </li>
                     <li>
-                        <a  class="active-menu" href="roomdel.php"><i class="fa fa-pencil-square-o"></i> Delete Room</a>
+                        <a  class="active-menu" href="room_delete.php"><i class="fa fa-pencil-square-o"></i> Delete Room</a>
                     </li>
 					
 
@@ -143,7 +143,7 @@ $rre=mysqli_query($con,$rsql);
 								{
 								 echo '<script type="text/javascript">alert("Delete the Room") </script>' ;
 										
-										header("Location: roomdel.php");
+										header("Location: room_delete.php");
 								}else {
 									echo '<script>alert("Sorry ! Check The System") </script>' ;
 								}

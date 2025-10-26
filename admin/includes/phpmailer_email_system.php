@@ -72,6 +72,23 @@ class PHPMailerEmailSystem {
         $safePhone = htmlspecialchars($phone, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $safeMealPlan = htmlspecialchars($mealPlan, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         
+        // Calculate pricing breakdown
+        $roomPrice = 0;
+        $mealPrice = 0;
+        $subtotal = 0;
+        $tax = 0;
+        $serviceCharge = 0;
+        $finalTotal = 0;
+        
+        if ($totalAmount) {
+            $finalTotal = $totalAmount;
+            $subtotal = $finalTotal / 1.25; // Reverse calculate subtotal (15% tax + 10% service = 25%)
+            $tax = $subtotal * 0.15;
+            $serviceCharge = $subtotal * 0.10;
+            $roomPrice = $subtotal * 0.8; // Estimate room cost as 80% of subtotal
+            $mealPrice = $subtotal * 0.2; // Estimate meal cost as 20% of subtotal
+        }
+        
         return "<!doctype html>\n" .
         "<html lang=\"en\">\n" .
         "<head>\n" .
@@ -88,101 +105,92 @@ class PHPMailerEmailSystem {
         "      <td align=\"center\" style=\"padding:24px;\">\n" .
         "        <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width:640px; background:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 2px 8px rgba(16,24,40,0.06);\">\n" .
         "          <tr>\n" .
-        "            <td style=\"background:#1a73e8; padding:24px 28px;\">\n" .
-        "              <h1 style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:20px; line-height:28px; color:#ffffff;\">RANS HOTEL</h1>\n" .
-        "              <p style=\"margin:8px 0 0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; color:#ffffff; opacity:0.9;\">Tsito, Volta Region, Ghana</p>\n" .
+        "            <td style=\"background:#1e3a8a; padding:24px 28px;\">\n" .
+        "              <h1 style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:24px; line-height:32px; color:#ffffff; text-align:center;\">RANS HOTEL</h1>\n" .
+        "              <p style=\"margin:8px 0 0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:16px; color:#ffffff; opacity:0.9; text-align:center;\">Tsito, Volta Region, Ghana</p>\n" .
         "            </td>\n" .
         "          </tr>\n" .
         "          <tr>\n" .
-        "            <td style=\"padding:28px;\">\n" .
-        "              <h2 style=\"margin:0 0 16px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:18px; line-height:24px; color:#1a73e8;\">Booking Confirmed! 🎉</h2>\n" .
-        "              <p style=\"margin:0 0 16px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:16px; line-height:24px; color:#111827;\">Hi <strong>" . $safeCustomerName . "</strong>,</p>\n" .
-        "              <p style=\"margin:0 0 20px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:15px; line-height:22px; color:#374151;\">Thank you for choosing RANS HOTEL! Your booking has been confirmed and we're excited to welcome you to our beautiful hotel in Tsito, Volta Region, Ghana.</p>\n" .
-        "              <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"border:1px solid #e5e7eb; border-radius:10px;\">\n" .
-        "                <tr>\n" .
-        "                  <td style=\"padding:18px 20px;\">\n" .
-        "                    <h3 style=\"margin:0 0 16px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:16px; color:#1a73e8;\">📋 Booking Details</h3>\n" .
-        "                    <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\">\n" .
-        "                      <div style=\"margin:0 0 8px; font-size:14px; color:#6b7280;\">Booking ID</div>\n" .
-        "                      <div style=\"font-size:16px; font-weight:600; color:#111827; margin-bottom:16px;\">" . $safeBookingId . "</div>\n" .
-        "                    </div>\n" .
-        "                    <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\">\n" .
-        "                      <div style=\"margin:0 0 8px; font-size:14px; color:#6b7280;\">Room Type</div>\n" .
-        "                      <div style=\"font-size:16px; font-weight:600; color:#111827; margin-bottom:16px;\">" . $safeRoomType . "</div>\n" .
-        "                    </div>\n" .
-        "                    <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\">\n" .
-        "                      <div style=\"margin:0 0 8px; font-size:14px; color:#6b7280;\">Check-in Date</div>\n" .
-        "                      <div style=\"font-size:16px; font-weight:600; color:#111827; margin-bottom:16px;\">" . $checkInFormatted . "</div>\n" .
-        "                    </div>\n" .
-        "                    <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\">\n" .
-        "                      <div style=\"margin:0 0 8px; font-size:14px; color:#6b7280;\">Check-out Date</div>\n" .
-        "                      <div style=\"font-size:16px; font-weight:600; color:#111827; margin-bottom:16px;\">" . $checkOutFormatted . "</div>\n" .
-        "                    </div>\n" .
-        "                    <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\">\n" .
-        "                      <div style=\"margin:0 0 8px; font-size:14px; color:#6b7280;\">Duration</div>\n" .
-        "                      <div style=\"font-size:16px; font-weight:600; color:#111827; margin-bottom:16px;\">" . $days . " night(s)</div>\n" .
-        "                    </div>\n" .
-        "                    <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\">\n" .
-        "                      <div style=\"margin:0 0 8px; font-size:14px; color:#6b7280;\">Meal Plan</div>\n" .
-        "                      <div style=\"font-size:16px; font-weight:600; color:#111827; margin-bottom:16px;\">" . $safeMealPlan . "</div>\n" .
-        "                    </div>\n" .
-        "                    <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\">\n" .
-        "                      <div style=\"margin:0 0 8px; font-size:14px; color:#6b7280;\">Phone</div>\n" .
-        "                      <div style=\"font-size:16px; font-weight:600; color:#111827;\">" . $safePhone . "</div>\n" .
-        "                    </div>\n" .
-        "                  </td>\n" .
-        "                </tr>\n" .
-        "              </table>";
-            
-        if ($totalAmount) {
-            $safeTotalAmount = htmlspecialchars($totalAmount, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-            $html .= "\n" .
-            "              <div style=\"height:24px\"></div>\n" .
-            "              <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"background:#d4edda; border:1px solid #c3e6cb; border-radius:10px;\">\n" .
-            "                <tr>\n" .
-            "                  <td style=\"padding:18px 20px; text-align:center;\">\n" .
-            "                    <h3 style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:16px; color:#155724;\">💰 Total Amount: ₵" . $safeTotalAmount . "</h3>\n" .
-            "                  </td>\n" .
-            "                </tr>\n" .
-            "              </table>";
-        }
-        
-        $html .= "\n" .
-        "              <div style=\"height:24px\"></div>\n" .
-        "              <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"background:#e7f3ff; border:1px solid #b3d9ff; border-radius:10px;\">\n" .
-        "                <tr>\n" .
-        "                  <td style=\"padding:18px 20px;\">\n" .
-        "                    <h4 style=\"margin:0 0 12px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:15px; color:#0066cc;\">ℹ️ Important Information</h4>\n" .
-        "                    <ul style=\"margin:0; padding-left:20px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; color:#374151;\">\n" .
-        "                      <li><strong>Check-in time:</strong> 2:00 PM</li>\n" .
-        "                      <li><strong>Check-out time:</strong> 11:00 AM</li>\n" .
-        "                      <li>Please bring a valid ID for check-in</li>\n" .
-        "                      <li>Contact us for any special requests or dietary requirements</li>\n" .
-        "                      <li>Free WiFi is available throughout the hotel</li>\n" .
-        "                    </ul>\n" .
-        "                  </td>\n" .
-        "                </tr>\n" .
-        "              </table>\n" .
-        "              <div style=\"height:24px\"></div>\n" .
-        "              <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"text-align:center;\">\n" .
-        "                <tr>\n" .
-        "                  <td>\n" .
-        "                    <h4 style=\"margin:0 0 12px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:15px; color:#1a73e8;\">📞 Need Assistance?</h4>\n" .
-        "                    <p style=\"margin:4px 0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; color:#374151;\"><strong>Phone:</strong> +233 (0)302 936 062</p>\n" .
-        "                    <p style=\"margin:4px 0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; color:#374151;\"><strong>Email:</strong> swiftforge25@gmail.com</p>\n" .
-        "                    <p style=\"margin:4px 0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; color:#374151;\"><strong>Address:</strong> Tsito, Volta Region, Ghana</p>\n" .
-        "                  </td>\n" .
-        "                </tr>\n" .
-        "              </table>\n" .
-        "              <div style=\"height:24px\"></div>\n" .
-        "              <p style=\"margin:0 0 16px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:15px; line-height:22px; color:#374151;\">We look forward to providing you with an exceptional stay at RANS HOTEL!</p>\n" .
-        "              <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:15px; line-height:22px; color:#374151;\">Best regards,<br><strong>The RANS HOTEL Team</strong></p>\n" .
+        "            <td style=\"padding:0;\">\n" .
+        "              <!-- Personal Information & Stay Details Section (Light Gray Background) -->\n" .
+        "              <div style=\"background:#f8fafc; padding:24px 28px;\">\n" .
+        "                <div style=\"margin-bottom:24px;\">\n" .
+        "                  <h3 style=\"margin:0 0 12px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:18px; color:#1e3a8a; border-bottom:2px solid #d4af37; padding-bottom:8px;\">Personal Information</h3>\n" .
+        "                  <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:8px;\">\n" .
+        "                    <span style=\"font-weight:600; color:#374151;\">Name:</span>\n" .
+        "                    <span style=\"color:#374151; margin-left:8px;\">" . $safeCustomerName . "</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:8px;\">\n" .
+        "                    <span style=\"font-weight:600; color:#374151;\">Phone:</span>\n" .
+        "                    <span style=\"color:#374151; margin-left:8px;\">" . $safePhone . "</span>\n" .
+        "                  </div>\n" .
+        "                </div>\n" .
+        "                <div>\n" .
+        "                  <h3 style=\"margin:0 0 12px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:18px; color:#1e3a8a; border-bottom:2px solid #d4af37; padding-bottom:8px;\">Stay Details</h3>\n" .
+        "                  <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:8px;\">\n" .
+        "                    <span style=\"font-weight:600; color:#374151;\">Room Type:</span>\n" .
+        "                    <span style=\"color:#374151; margin-left:8px;\">" . $safeRoomType . "</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:8px;\">\n" .
+        "                    <span style=\"font-weight:600; color:#374151;\">Check-in:</span>\n" .
+        "                    <span style=\"color:#374151; margin-left:8px;\">" . $checkIn . "</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:8px;\">\n" .
+        "                    <span style=\"font-weight:600; color:#374151;\">Check-out:</span>\n" .
+        "                    <span style=\"color:#374151; margin-left:8px;\">" . $checkOut . "</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:8px;\">\n" .
+        "                    <span style=\"font-weight:600; color:#374151;\">Duration:</span>\n" .
+        "                    <span style=\"color:#374151; margin-left:8px;\">" . $days . " nights</span>\n" .
+        "                  </div>\n" .
+        "                </div>\n" .
+        "              </div>\n" .
+        "              \n" .
+        "              <!-- Pricing Summary Section (Dark Blue Background) -->\n" .
+        "              <div style=\"background:#1e3a8a; padding:24px 28px;\">\n" .
+        "                <h3 style=\"margin:0 0 20px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:20px; color:#d4af37; text-align:center; font-weight:600;\">Pricing Summary</h3>\n" .
+        "                <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\">\n" .
+        "                  <div style=\"display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #374151;\">\n" .
+        "                    <span style=\"color:#e5e7eb;\">Room Cost:</span>\n" .
+        "                    <span style=\"color:#e5e7eb; font-weight:600;\">C" . number_format($roomPrice, 2) . "</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #374151;\">\n" .
+        "                    <span style=\"color:#e5e7eb;\">Meal Cost:</span>\n" .
+        "                    <span style=\"color:#e5e7eb; font-weight:600;\">C" . number_format($mealPrice, 2) . "</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #374151;\">\n" .
+        "                    <span style=\"color:#e5e7eb;\">Subtotal:</span>\n" .
+        "                    <span style=\"color:#e5e7eb; font-weight:600;\">C" . number_format($subtotal, 2) . "</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #374151;\">\n" .
+        "                    <span style=\"color:#e5e7eb;\">Tax (15%):</span>\n" .
+        "                    <span style=\"color:#e5e7eb; font-weight:600;\">C" . number_format($tax, 2) . "</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:2px solid #d4af37;\">\n" .
+        "                    <span style=\"color:#e5e7eb;\">Service Charge (10%):</span>\n" .
+        "                    <span style=\"color:#e5e7eb; font-weight:600;\">C" . number_format($serviceCharge, 2) . "</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"display:flex; justify-content:space-between; align-items:center; padding:12px 0 0; margin-top:8px;\">\n" .
+        "                    <span style=\"color:#e5e7eb; font-weight:600; font-size:16px;\">Total Amount:</span>\n" .
+        "                    <span style=\"color:#d4af37; font-weight:700; font-size:18px;\">C" . number_format($finalTotal, 2) . "</span>\n" .
+        "                  </div>\n" .
+        "                </div>\n" .
+        "              </div>\n" .
         "            </td>\n" .
         "          </tr>\n" .
         "          <tr>\n" .
-        "            <td style=\"background:#f9fafb; padding:18px 28px; text-align:center;\">\n" .
-        "              <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:12px; line-height:18px; color:#6b7280;\">© " . $year . " RANS HOTEL. All rights reserved.</p>\n" .
-        "              <p style=\"margin:4px 0 0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:12px; line-height:18px; color:#6b7280;\">Tsito, Volta Region, Ghana</p>\n" .
+        "            <td style=\"padding:24px 28px; background:#ffffff;\">\n" .
+        "              <div style=\"margin:16px 0; padding:16px; background:#f0f9ff; border-radius:8px; border-left:4px solid #0ea5e9;\">\n" .
+        "                <h4 style=\"margin:0 0 8px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; color:#0c4a6e;\">Contact Information</h4>\n" .
+        "                <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:13px; color:#075985;\">If you have any questions or need to make changes to your booking, please contact us at <strong>+233 (0)302 936 062</strong> or email us at <strong>info@ranshotel.com</strong></p>\n" .
+        "              </div>\n" .
+        "              <p style=\"margin:0 0 16px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; color:#6b7280;\">We look forward to welcoming you to RANS HOTEL and providing you with an exceptional stay experience.</p>\n" .
+        "              <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; color:#6b7280;\">Best regards,<br><strong>The RANS HOTEL Team</strong></p>\n" .
+        "            </td>\n" .
+        "          </tr>\n" .
+        "          <tr>\n" .
+        "            <td style=\"background:#f8fafc; padding:20px 28px; text-align:center;\">\n" .
+        "              <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:12px; color:#6b7280;\">© " . $year . " RANS HOTEL. All rights reserved. | Tsito, Volta Region, Ghana</p>\n" .
         "            </td>\n" .
         "          </tr>\n" .
         "        </table>\n" .
@@ -190,9 +198,7 @@ class PHPMailerEmailSystem {
         "    </tr>\n" .
         "  </table>\n" .
         "</body>\n" .
-        "</html>\n";
-        
-        return $html;
+        "</html>";
     }
     
     /**
@@ -216,7 +222,7 @@ class PHPMailerEmailSystem {
         $text .= "Phone: {$phone}\n";
         
         if ($totalAmount) {
-            $text .= "Total Amount: ₵{$totalAmount}\n";
+            $text .= "Total Amount: C{$totalAmount}\n";
         }
         
         $text .= "\nIMPORTANT INFORMATION:\n";

@@ -24,7 +24,8 @@ PricingHelper::initializePricingTables($con);
 <link href="css/easy-responsive-tabs.css" rel='stylesheet' type='text/css'/>
 <link rel="stylesheet" href="css/flexslider.css" type="text/css" media="screen" property="" />
 <link rel="stylesheet" href="css/jquery-ui.css" />
-<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="css/classic-design-system.css" rel="stylesheet" type="text/css" media="all" />
 <script type="text/javascript" src="js/modernizr-2.6.2.min.js"></script>
 <!--fonts-->
 <style>
@@ -124,7 +125,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 @media (max-width: 768px) {
     .feature-cards-section .feature-card {
         border-right: none !important;
-        border-bottom: 1px solid #dee2e6;
+        border-bottom: 1px solid var(--border-light);
         margin-bottom: 20px;
     }
     
@@ -319,7 +320,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <!-- //Modal1 -->
 <div id="availability-agileits">
 <div class="col-md-12 book-form-left-w3layouts">
-	<a href="admin/reservation.php"><h2>ROOM RESERVATION</h2></a>
+	<a href="admin/reservation_classic.php"><h2>ROOM RESERVATION</h2></a>
 </div>
 
 			<div class="clearfix"> </div>
@@ -342,14 +343,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 					<li>
 						<div class="w3_grid_effect">
 							<span class="cbp-ig-icon w3_cube"></span>
-							<h4 class="cbp-ig-title">SEA VIEW BALCONY</h4>
-							<span class="cbp-ig-category">Rans</span>
-						</div>
-					</li>
-					<li>
-						<div class="w3_grid_effect">
-							<span class="cbp-ig-icon w3_users"></span>
-							<h4 class="cbp-ig-title">LARGE CAFE</h4>
+							<h4 class="cbp-ig-title">MOUNTAIN VIEW</h4>
 							<span class="cbp-ig-category">Rans</span>
 						</div>
 					</li>
@@ -391,7 +385,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
             FIND OUR FRIENDLY WELCOMING RECEPTION
         </h3>
         <div class="row">
-            <div class="col-md-3 col-sm-6 col-xs-12 feature-card" style="text-align: center; padding: 20px; border-right: 1px solid #dee2e6;">
+            <div class="col-md-4 col-sm-6 col-xs-12 feature-card" style="text-align: center; padding: 20px; border-right: 1px solid #dee2e6;">
                 <div class="feature-icon" style="margin-bottom: 20px;">
                     <i class="fa fa-bed" style="font-size: 48px; color: #2c3e50;"></i>
                 </div>
@@ -400,25 +394,16 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
                 </div>
                 <div class="feature-accent" style="width: 60px; height: 3px; background-color: #ffce14; margin: 0 auto;"></div>
             </div>
-            <div class="col-md-3 col-sm-6 col-xs-12 feature-card" style="text-align: center; padding: 20px; border-right: 1px solid #dee2e6;">
+            <div class="col-md-4 col-sm-6 col-xs-12 feature-card" style="text-align: center; padding: 20px; border-right: 1px solid #dee2e6;">
                 <div class="feature-icon" style="margin-bottom: 20px;">
-                    <i class="fa fa-building" style="font-size: 48px; color: #2c3e50;"></i>
+                    <i class="fa fa-picture-o" style="font-size: 48px; color: #2c3e50;"></i>
                 </div>
                 <div class="feature-text" style="color: #2c3e50; font-size: 14px; font-weight: 600; text-transform: uppercase; margin-bottom: 15px;">
-                    SEA VIEW BALCONY
+                    MOUNTAIN VIEW
                 </div>
                 <div class="feature-accent" style="width: 60px; height: 3px; background-color: #ffce14; margin: 0 auto;"></div>
             </div>
-            <div class="col-md-3 col-sm-6 col-xs-12 feature-card" style="text-align: center; padding: 20px; border-right: 1px solid #dee2e6;">
-                <div class="feature-icon" style="margin-bottom: 20px;">
-                    <i class="fa fa-coffee" style="font-size: 48px; color: #2c3e50;"></i>
-                </div>
-                <div class="feature-text" style="color: #2c3e50; font-size: 14px; font-weight: 600; text-transform: uppercase; margin-bottom: 15px;">
-                    LARGE CAFE
-                </div>
-                <div class="feature-accent" style="width: 60px; height: 3px; background-color: #ffce14; margin: 0 auto;"></div>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12 feature-card" style="text-align: center; padding: 20px;">
+            <div class="col-md-4 col-sm-6 col-xs-12 feature-card" style="text-align: center; padding: 20px;">
                 <div class="feature-icon" style="margin-bottom: 20px;">
                     <i class="fa fa-wifi" style="font-size: 48px; color: #2c3e50;"></i>
                 </div>
@@ -679,17 +664,15 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 				 }
 				 
 				 $roomImages = [
-					 'Deluxe Room' => 'r1.jpg',
-					 'Superior Room' => 'r2.jpg', 
-					 'Guest House' => 'r3.jpg',
-					 'Single Room' => 'r4.jpg'
+					 'Standard' => 'r1.jpg',
+					 'Mini Executive' => 'r2.jpg', 
+					 'Executive' => 'r3.jpg'
 				 ];
 				 
 				 $roomStars = [
-					 'Deluxe Room' => 4,
-					 'Superior Room' => 4,
-					 'Guest House' => 3,
-					 'Single Room' => 2
+					 'Standard' => 3,
+					 'Mini Executive' => 4,
+					 'Executive' => 5
 				 ];
 				 
 				 foreach ($roomTypes as $roomType => $minPrice) {
@@ -719,7 +702,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 					 echo "</div>";
 					 echo "<div class='price-selet'>";
 					 echo "<h3><span>₵</span>" . number_format($minPrice, 0) . "</h3>";
-					 echo "<a href='admin/reservation.php'>Book Now</a>";
+					 echo "<a href='admin/reservation_classic.php'>Book Now</a>";
 					 echo "</div>";
 					 echo "</div>";
 					 echo "</div>";
