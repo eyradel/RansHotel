@@ -5,7 +5,7 @@ include('includes/unified_layout.php');
 
 // Check if user is logged in
 if (!isLoggedIn()) {
-    header('Location: login_improved.php');
+    header('Location: index.php');
     exit();
 }
 

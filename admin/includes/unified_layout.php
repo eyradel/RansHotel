@@ -15,6 +15,7 @@ if (!function_exists('getNavigationMenu')) {
  * Start admin page with unified layout
  */
 function startUnifiedAdminPage($title = 'Admin', $description = 'RansHotel Admin') {
+    $embed = isset($_GET['embed']) && $_GET['embed'] == '1';
     // Get user info for display in navbar/sidebar
     $userName = $_SESSION['full_name'] ?? $_SESSION['user'] ?? 'Admin';
     $userRole = getCurrentUserRole();
@@ -44,10 +45,14 @@ function startUnifiedAdminPage($title = 'Admin', $description = 'RansHotel Admin
 <body>
     <div class=\"min-h-screen bg-gray-50\">
         ";
-        include(__DIR__ . '/navbar.php'); // Include the unified navbar
-        include(__DIR__ . '/sidebar.php'); // Include the unified sidebar
+        if (!$embed) {
+            include(__DIR__ . '/navbar.php'); // Include the unified navbar
+            include(__DIR__ . '/sidebar.php'); // Include the unified sidebar
+            echo "<div class=\"lg:ml-64\" id=\"mainWrapper\">";
+        } else {
+            echo "<div id=\"mainWrapper\">"; // No left margin when embedded
+        }
         echo "
-        <div class=\"lg:ml-64\" id=\"mainWrapper\">
             <main class=\"min-h-screen\">
                 <!-- Page-specific content starts here -->";
 }
@@ -56,6 +61,7 @@ function startUnifiedAdminPage($title = 'Admin', $description = 'RansHotel Admin
  * End admin page with unified layout
  */
 function endUnifiedAdminPage() {
+    $embed = isset($_GET['embed']) && $_GET['embed'] == '1';
     echo "
                 <!-- Page-specific content ends here -->
             </main>

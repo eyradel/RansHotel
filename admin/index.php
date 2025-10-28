@@ -1,4 +1,11 @@
 <?php  
+ // Enable error reporting for debugging
+ error_reporting(E_ALL);
+ ini_set('display_errors', 1);
+ 
+ // Simple test to see if PHP is working
+ echo "<!-- PHP is working -->";
+ 
  session_start();  
  if(isset($_SESSION["user"]))  
  {  
@@ -13,6 +20,11 @@
  $success_message = '';
  
  if($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Debug: Show what was posted
+    echo "<div style='background: yellow; padding: 10px; margin: 10px; border: 2px solid red;'>";
+    echo "DEBUG: Form submitted! Username: " . (isset($_POST['user']) ? $_POST['user'] : 'NOT SET') . " | Password: " . (isset($_POST['pass']) ? 'SET' : 'NOT SET');
+    echo "</div>";
+    
     // Validate input
     if(empty($_POST['user']) || empty($_POST['pass'])) {
        $error_message = "Please enter both username and password.";
@@ -31,7 +43,7 @@
        if(mysqli_num_rows($structureResult) > 0) {
            // New database structure with roles
            $sql = "SELECT id, usname, full_name, role, email, phone, is_active FROM login 
-                   WHERE usname = '$myusername' AND pass = '$hashed_password' AND is_active = 1";
+                   WHERE usname = '$myusername' AND (pass = '$mypassword' OR pass = '$hashed_password') AND is_active = 1";
            $result = mysqli_query($con, $sql);
            
            if($result && mysqli_num_rows($result) == 1) {
@@ -49,7 +61,7 @@
            }
        } else {
            // Old database structure (fallback)
-           $sql = "SELECT id, usname FROM login WHERE usname = '$myusername' AND pass = '$hashed_password'";
+           $sql = "SELECT id, usname FROM login WHERE usname = '$myusername' AND (pass = '$mypassword' OR pass = '$hashed_password')";
            $result = mysqli_query($con, $sql);
            
            if($result && mysqli_num_rows($result) == 1) {
@@ -237,7 +249,7 @@
           </div>
         <?php endif; ?>
         
-        <form method="post" id="loginForm">
+        <form method="post" id="loginForm" action="">
           <div class="form-group">
             <label for="user">Username</label>
             <input type="text" id="user" name="user" placeholder="Enter your username" 

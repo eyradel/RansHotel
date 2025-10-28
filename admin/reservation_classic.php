@@ -100,12 +100,25 @@ if ($_POST) {
         $error_message = "Error: " . mysqli_error($con);
     }
 }
-// Start admin page with unified layout
+// Start page (always through unified layout; it now supports embed mode and hides chrome when embed=1)
 startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Located in Tsito, Ghana');
 ?>
     
     <style>
         /* Page-specific styles */
+        /* Form-only centering */
+        .reservation-form { max-width: 820px; margin-left: auto; margin-right: auto; }
+        @media (min-width: 1200px) { .reservation-form { max-width: 860px; } }
+        /* Ensure the form container centers the card */
+        #main-content { display: flex; justify-content: center; width: 100%; }
+        #main-content > .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            width: 100%;
+        }
+        #main-content > .container .reservation-form { width: 100%; }
+        
         .hero-section {
             background: linear-gradient(135deg, var(--classic-navy) 0%, var(--classic-navy-light) 100%);
             color: var(--classic-white);
@@ -135,13 +148,17 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
             margin: calc(var(--space-20) * -1) auto 0;
             position: relative;
             z-index: 10;
-            max-width: 700px;
+            max-width: 860px;
+            width: 100%;
             overflow: hidden;
         }
         
         /* Onboarding Wizard Styles */
         .wizard-container {
             position: relative;
+            max-width: 860px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .progress-bar {
@@ -160,7 +177,10 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
         
         .step-indicator {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
+            align-items: center;
+            gap: var(--space-8);
+            flex-wrap: wrap;
             margin-bottom: var(--space-6);
             padding: 0 var(--space-3);
         }
@@ -327,7 +347,7 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
             gap: var(--space-6);
             margin-bottom: var(--space-4);
             width: 100%;
-            max-width: 650px;
+            max-width: 800px;
             margin-left: auto;
             margin-right: auto;
         }
@@ -388,6 +408,21 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
             padding: var(--space-8);
             margin-top: var(--space-8);
         }
+
+        /* Room allocation info card */
+        .allocation-card {
+            background: #ffffff;
+            border: 1px solid var(--classic-gray-light);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            margin-top: var(--space-6);
+        }
+        .allocation-card h4 { margin-bottom: var(--space-3); color: var(--classic-navy); }
+        .allocation-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-4); }
+        @media (min-width: 768px) { .allocation-grid { grid-template-columns: 1fr 1fr; } }
+        .allocation-section { background: #fafafa; border-radius: var(--radius-md); padding: var(--space-4); border: 1px dashed var(--classic-gray-light); }
+        .allocation-section h5 { margin: 0 0 var(--space-2) 0; color: var(--classic-gold); font-weight: 700; }
+        .allocation-list { margin: 0; padding-left: var(--space-5); }
         
         .pricing-item {
             display: flex;
@@ -1158,6 +1193,40 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
                                         <input type="date" name="cout" id="cout" class="form-control" required min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>" onchange="updatePricing()">
                                     </div>
                                 </div>
+                                
+                                <!-- Room Allocation Info -->
+                                <div class="allocation-card">
+                                    <h4>RANS HOTEL ROOM ALLOCATION</h4>
+                                    <div class="allocation-grid">
+                                        <div class="allocation-section">
+                                            <h5>Standard Rooms - Ground Floor</h5>
+                                            <ul class="allocation-list">
+                                                <li>Chad 30, Senegal 23, Liberia 32, Namibia 19</li>
+                                                <li>Libya 25, Morocco 14, Algeria 27, Gabon 16, Equatorial Guinea 29</li>
+                                                <li>Mali 22, Nigeria 31, Togo 24, Côte d’Ivoire 21, Lesotho 18</li>
+                                                <li>Egypt 13, Tunisia 26, Sudan 15, Niger 28, Botswana 17</li>
+                                            </ul>
+                                        </div>
+                                        <div class="allocation-section">
+                                            <h5>Top Floor</h5>
+                                            <ul class="allocation-list">
+                                                <li>Ethiopia 4 (Mini Executive), Rwanda 3 (Mini Executive), South Africa 2 (Executive)</li>
+                                                <li>Ghana 1 (Executive), Burundi 5 (Mini Executive), Kenya 6 (Mini Executive)</li>
+                                                <li>Gambia 12 (Mini Executive), Zimbabwe 11 (Mini Executive), Swaziland 10 (Mini Executive)</li>
+                                                <li>Malawi 9 (Mini Executive), Angola 8 (Mini Executive), DR Congo 7 (Mini Executive)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="allocation-section" style="margin-top: var(--space-4);">
+                                        <h5>Other Facilities (for Booking Purposes)</h5>
+                                        <ul class="allocation-list">
+                                            <li>Garden</li>
+                                            <li>Open-grounds</li>
+                                            <li>Dance floor</li>
+                                            <li>Bar</li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
@@ -1591,7 +1660,4 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
             showToast('<?php echo addslashes($error_message); ?>', 'error');
         <?php endif; ?>
     </script>
-<?php
-// End admin page with unified layout
-endUnifiedAdminPage();
-?>
+<?php endUnifiedAdminPage(); ?>

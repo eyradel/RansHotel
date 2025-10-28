@@ -170,6 +170,107 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
         height: 2px !important;
     }
 }
+
+/* Make room card images responsive */
+.price-gd-top img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* Always render room name below image to avoid overlap */
+.price-gd-top h4 {
+    position: static;
+    background: #000;
+    color: #fff;
+    padding: 10px 12px;
+    margin: 0;
+    text-align: center;
+}
+
+/* Banner-bottom responsiveness: headline and three feature items */
+.banner-bottom .agileits_banner_bottom h3 {
+    text-align: center;
+    line-height: 1.4;
+    margin-bottom: 25px;
+}
+
+.w3ls_banner_bottom_grids .cbp-ig-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 0;
+    margin: 0;
+}
+
+.w3ls_banner_bottom_grids .cbp-ig-grid li {
+    list-style: none;
+    flex: 1 1 30%;
+    min-width: 220px;
+}
+
+@media (max-width: 992px) {
+    .banner-bottom .agileits_banner_bottom h3 { font-size: 20px; }
+}
+
+@media (max-width: 768px) {
+    .w3ls_banner_bottom_grids .cbp-ig-grid li { flex: 1 1 48%; }
+}
+
+@media (max-width: 480px) {
+    .w3ls_banner_bottom_grids .cbp-ig-grid { gap: 12px; }
+    .w3ls_banner_bottom_grids .cbp-ig-grid li { flex: 1 1 100%; }
+}
+
+/* Global responsive helpers */
+img { max-width: 100%; height: auto; }
+
+/* High-quality carousel rendering */
+.w3layouts-banner-top {
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+@media (min-width: 769px) {
+    .w3layouts-banner-top { min-height: 70vh; }
+}
+@media (max-width: 768px) {
+    .w3layouts-banner-top { min-height: 50vh; }
+}
+
+/* Navbar spacing on small screens */
+@media (max-width: 768px) {
+    .w3_navigation .navbar-default .navbar-nav > li > a {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+    .navbar-header .navbar-brand { font-size: 20px; }
+}
+
+/* Banner slider text scaling */
+.agileits-banner-info h3 { font-size: 36px; }
+.agileits-banner-info p { font-size: 16px; }
+@media (max-width: 992px) {
+    .agileits-banner-info h3 { font-size: 28px; }
+    .agileits-banner-info p { font-size: 14px; }
+}
+@media (max-width: 768px) {
+    .agileits-banner-info h3 { font-size: 22px; }
+    .agileits-banner-info p { font-size: 13px; }
+}
+
+/* Gallery grid tighten spacing on mobile */
+@media (max-width: 576px) {
+    .portfolio-w3ls .gallery-grid { margin-bottom: 12px; }
+}
+
+/* Modal responsiveness */
+@media (max-width: 576px) {
+    .modal-dialog { width: 95%; margin: 10px auto; }
+}
+
+/* Visitors slider images */
+.w3layouts_work_grid_left img { width: 100%; height: auto; }
 </style>
 <!--//fonts-->
 </head>
@@ -240,8 +341,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 			<div class="callbacks_container">
 				<ul class="rslides callbacks callbacks1" id="slider4">
 					<li>
-						<div class="w3layouts-banner-top">
-
+						<div class="w3layouts-banner-top" data-bg="images/rans/Rans Hotel-18.jpg" style="background-image:url(''); background-size:cover; background-position:center;">
 							<div class="container">
 								<div class="agileits-banner-info">
 								<h4>Rans</h4>
@@ -250,12 +350,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 									<div class="agileits_w3layouts_more menu__item">
 				<a href="#" class="menu__link" data-toggle="modal" data-target="#myModal">Learn More</a>
 			</div>
-								</div>	
+									</div>	
+								</div>
 							</div>
-						</div>
-					</li>
+						</li>
 					<li>
-						<div class="w3layouts-banner-top w3layouts-banner-top1">
+						<div class="w3layouts-banner-top w3layouts-banner-top1" data-bg="images/rans/Rans Hotel-47.jpg" style="background-image:url(''); background-size:cover; background-position:center;">
 							<div class="container">
 								<div class="agileits-banner-info">
 								<h4>Rans</h4>
@@ -264,12 +364,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 									<div class="agileits_w3layouts_more menu__item">
 				<a href="#" class="menu__link" data-toggle="modal" data-target="#myModal">Learn More</a>
 			</div>
-								</div>	
+									</div>	
+								</div>
 							</div>
-						</div>
-					</li>
+						</li>
 					<li>
-						<div class="w3layouts-banner-top w3layouts-banner-top2">
+						<div class="w3layouts-banner-top w3layouts-banner-top2" data-bg="images/rans/Rans Hotel-67.jpg" style="background-image:url(''); background-size:cover; background-position:center;">
 							<div class="container">
 								<div class="agileits-banner-info">
 								<h4>Rans</h4>
@@ -280,9 +380,37 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 										</div>
 								</div>
 							</div>
-						</div>
-					</li>
-				</ul>
+							</div>
+						</li>
+					<li>
+						<div class="w3layouts-banner-top" data-bg="images/rans/Rans Hotel-4.jpg" style="background-image:url(''); background-size:cover; background-position:center;">
+							<div class="container">
+								<div class="agileits-banner-info">
+								<h4>Rans</h4>
+									<h3>Comfort with scenic views</h3>
+										<p>Relax and unwind at Rans Hotel</p>
+									<div class="agileits_w3layouts_more menu__item">
+				<a href="#" class="menu__link" data-toggle="modal" data-target="#myModal">Learn More</a>
+			</div>
+									</div>	
+								</div>
+							</div>
+						</li>
+					<li>
+						<div class="w3layouts-banner-top" data-bg="images/rans/Rans Hotel-9.jpg" style="background-image:url(''); background-size:cover; background-position:center;">
+							<div class="container">
+								<div class="agileits-banner-info">
+								<h4>Rans</h4>
+									<h3>Experience premium hospitality</h3>
+										<p>Your comfort is our priority</p>
+									<div class="agileits_w3layouts_more menu__item">
+				<a href="#" class="menu__link" data-toggle="modal" data-target="#myModal">Learn More</a>
+			</div>
+									</div>	
+								</div>
+							</div>
+						</li>
+					</ul>
 			</div>
 			<div class="clearfix"> </div>
 			<!--banner Slider starts Here-->
@@ -310,7 +438,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 									<div class="modal-header">
 										<button type="button" class="close" data-dismiss="modal">&times;</button>
 										<h4>SUN  <span>RISE</span></h4>
-										<img src="images/1.jpg" alt=" " class="img-responsive">
+                                        <img src="images/rans/Rans Hotel-1.jpg" alt=" " class="img-responsive" loading="lazy">
 										<h5>We know what you love</h5>
 										<p>Providing guests unique and enchanting views from their rooms with its exceptional amenities, makes Star Hotel one of bests in its kind.Try our food menu, awesome services and friendly staff while you are here.</p>
 									</div>
@@ -336,7 +464,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 					<li>
 						<div class="w3_grid_effect">
 							<span class="cbp-ig-icon w3_road"></span>
-							<h4 class="cbp-ig-title">MASTER BEDROOMS</h4>
+							<h4 class="cbp-ig-title">COMFORT</h4>
 							<span class="cbp-ig-category">Rans</span>
 						</div>
 					</li>
@@ -365,9 +493,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 				   <div class="ab-w3l-spa">
                             <h3 class="title-w3-agileits title-black-wthree">About Our Rans</h3> 
 						   <p class="about-para-w3ls">RANS Hotel is located in the Volta region of Ghana, just 22km (13 miles) away from the city of Ho. Our hotel is situated in a beautiful and serene environment, surrounded by lush greenery and stunning views. We offer our guests a peaceful and relaxing getaway from the hustle and bustle of city life.</p>
-						   <img src="images/about.jpg" class="img-responsive" alt="Hair Salon">
+                           <img src="images/rans/Rans Hotel-60.jpg" class="img-responsive" alt="Hair Salon" loading="lazy">
 										<div class="w3l-slider-img">
-											<img src="images/a1.jpg" class="img-responsive" alt="Hair Salon">
+                                            <img src="images/rans/Rans Hotel-63.jpg" class="img-responsive" alt="Hair Salon" loading="lazy">
 										</div>
                                        <div class="w3ls-info-about">
 										    <h4>You'll love all the amenities we offer!</h4>
@@ -390,7 +518,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
                     <i class="fa fa-bed" style="font-size: 48px; color: #2c3e50;"></i>
                 </div>
                 <div class="feature-text" style="color: #2c3e50; font-size: 14px; font-weight: 600; text-transform: uppercase; margin-bottom: 15px;">
-                    MASTER BEDROOMS
+                    COMFORT
                 </div>
                 <div class="feature-accent" style="width: 60px; height: 3px; background-color: #ffce14; margin: 0 auto;"></div>
             </div>
@@ -447,108 +575,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 	</div>
 </div>
 <!--//sevices-->
-<!-- team -->
-<div class="team" id="team">
-	<div class="container">
-			<h3 class="title-w3-agileits title-black-wthree">Meet Our Team</h3>
-			<div id="horizontalTab">
-					<ul class="resp-tabs-list">
-					<li>
-						<img src="images/teams1.jpg" alt=" " class="img-responsive" />
-					</li>
-					<li>
-						<img src="images/teams2.jpg" alt=" " class="img-responsive" />
-					</li>
-					<li>
-						<img src="images/teams3.jpg" alt=" " class="img-responsive" />
-					</li>
-					<li>
-						<img src="images/teams4.jpg" alt=" " class="img-responsive" />
-					</li>
-					</ul>
-					<div class="resp-tabs-container">
-					<div class="tab1">
-						<div class="col-md-6 team-img-w3-agile">
-						</div>
-						<div class="col-md-6 team-Info-agileits">
-							<h4>Lucas Jimenez</h4>
-							<span>Manager</span>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis.Lorem ipsum dolor .</p>
-						<div class="social-bnr-agileits footer-icons-agileinfo">
-							<ul class="social-icons3">
-								<li><a href="#" class="fa fa-facebook icon-border facebook"> </a></li>
-								<li><a href="#" class="fa fa-twitter icon-border twitter"> </a></li>
-								<li><a href="#" class="fa fa-google-plus icon-border googleplus"> </a></li> 
-								<li><a href="#" class="fa fa-rss icon-border rss"> </a></li>
-							</ul>
-						</div>							
-						</div>
-						<div class="clearfix"> </div>
-					</div>
-					<div class="tab2">
-					<div class="col-md-6 team-img-w3-agile">
-						</div>
-						<div class="col-md-6 team-Info-agileits">
-							<h4>Sarah Connor</h4>
-							<span>Receptionist</span>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis.Lorem ipsum dolor .</p>	
-						<div class="social-bnr-agileits footer-icons-agileinfo">
-							<ul class="social-icons3">
-								<li><a href="#" class="fa fa-facebook icon-border facebook"> </a></li>
-								<li><a href="#" class="fa fa-twitter icon-border twitter"> </a></li>
-								<li><a href="#" class="fa fa-google-plus icon-border googleplus"> </a></li> 
-								<li><a href="#" class="fa fa-rss icon-border rss"> </a></li>
-							</ul>
-						</div>							
-						</div>
-						<div class="clearfix"> </div>
-					</div>
-					<div class="tab3">
-						<div class="col-md-6 team-img-w3-agile">
-						</div>
-						<div class="col-md-6 team-Info-agileits">
-							<h4>Ivan Simpson</h4>
-							<span>Manager</span>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis.Lorem ipsum dolor .</p>
-						<div class="social-bnr-agileits footer-icons-agileinfo">
-							<ul class="social-icons3">
-								<li><a href="#" class="fa fa-facebook icon-border facebook"> </a></li>
-								<li><a href="#" class="fa fa-twitter icon-border twitter"> </a></li>
-								<li><a href="#" class="fa fa-google-plus icon-border googleplus"> </a></li> 
-								<li><a href="#" class="fa fa-rss icon-border rss"> </a></li>
-							</ul>
-						</div>							
-						</div>
-						<div class="clearfix"> </div>
-					</div>
-					<div class="tab4">
-					<div class="col-md-6 team-img-w3-agile">
-						</div>
-						<div class="col-md-6 team-Info-agileits">
-							<h4>Marc Gutierrez</h4>
-							<span>Receptionist</span>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis.Lorem ipsum dolor .</p>
-						<div class="social-bnr-agileits footer-icons-agileinfo">
-							<ul class="social-icons3">
-								<li><a href="#" class="fa fa-facebook icon-border facebook"> </a></li>
-								<li><a href="#" class="fa fa-twitter icon-border twitter"> </a></li>
-								<li><a href="#" class="fa fa-google-plus icon-border googleplus"> </a></li> 
-								<li><a href="#" class="fa fa-rss icon-border rss"> </a></li>
-							</ul>
-						</div>							
-						</div>
-						<div class="clearfix"> </div>
-					</div>
-					</div>
-			</div>
-	</div>
-</div>
-<!-- //team -->
+<!-- team removed -->
 <!-- Gallery -->
 <section class="portfolio-w3ls" id="gallery">
 		 <h3 class="title-w3-agileits title-black-wthree">Our Gallery</h3>
 				<div class="col-md-3 col-sm-6 col-xs-12 gallery-grid gallery1">
-					<a href="images/g1.jpg" class="swipebox"><img src="images/g1.jpg" class="img-responsive" alt="Gallery Image">
+						<a href="images/rans/Rans Hotel-69.jpg" class="swipebox"><img src="images/rans/Rans Hotel-69.jpg" class="img-responsive" alt="Gallery Image" loading="lazy">
 						<div class="textbox">
 						<h4>Rans</h4>
 							<p><i class="fa fa-picture-o" aria-hidden="true"></i></p>
@@ -556,7 +588,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 				</a>
 				</div>
 				<div class="col-md-3 col-sm-6 col-xs-12 gallery-grid gallery1">
-					<a href="images/g2.jpg" class="swipebox"><img src="images/g2.jpg" class="img-responsive" alt="Gallery Image">
+						<a href="images/rans/Rans Hotel-68.jpg" class="swipebox"><img src="images/rans/Rans Hotel-68.jpg" class="img-responsive" alt="Gallery Image" loading="lazy">
 						<div class="textbox">
 						<h4>Rans</h4>
 							<p><i class="fa fa-picture-o" aria-hidden="true"></i></p>
@@ -564,7 +596,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 				</a>
 				</div>
 				<div class="col-md-3 col-sm-6 col-xs-12 gallery-grid gallery1">
-					<a href="images/g3.jpg" class="swipebox"><img src="images/g3.jpg" class="img-responsive" alt="Gallery Image">
+						<a href="images/rans/Rans Hotel-67.jpg" class="swipebox"><img src="images/rans/Rans Hotel-67.jpg" class="img-responsive" alt="Gallery Image" loading="lazy">
 						<div class="textbox">
 						<h4>Rans</h4>
 							<p><i class="fa fa-picture-o" aria-hidden="true"></i></p>
@@ -572,7 +604,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 				</a>
 				</div>
 				<div class="col-md-3 col-sm-6 col-xs-12 gallery-grid gallery1">
-					<a href="images/g4.jpg" class="swipebox"><img src="images/g4.jpg" class="img-responsive" alt="Gallery Image">
+						<a href="images/rans/Rans Hotel-66.jpg" class="swipebox"><img src="images/rans/Rans Hotel-66.jpg" class="img-responsive" alt="Gallery Image" loading="lazy">
 						<div class="textbox">
 						<h4>Rans</h4>
 							<p><i class="fa fa-picture-o" aria-hidden="true"></i></p>
@@ -580,7 +612,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 				</a>
 				</div>
 				<div class="col-md-3 col-sm-6 col-xs-12 gallery-grid gallery1">
-					<a href="images/g5.jpg" class="swipebox"><img src="images/g5.jpg" class="img-responsive" alt="/">
+						<a href="images/rans/Rans Hotel-65.jpg" class="swipebox"><img src="images/rans/Rans Hotel-65.jpg" class="img-responsive" alt="/" loading="lazy">
 						<div class="textbox">
 						<h4>Rans</h4>
 							<p><i class="fa fa-picture-o" aria-hidden="true"></i></p>
@@ -588,7 +620,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 					</a>
 				</div>
 				<div class="col-md-3 col-sm-6 col-xs-12 gallery-grid gallery1">
-					<a href="images/g6.jpg" class="swipebox"><img src="images/g6.jpg" class="img-responsive" alt="/">
+						<a href="images/rans/Rans Hotel-63.jpg" class="swipebox"><img src="images/rans/Rans Hotel-63.jpg" class="img-responsive" alt="/" loading="lazy">
 						<div class="textbox">
 						<h4>Rans</h4>
 							<p><i class="fa fa-picture-o" aria-hidden="true"></i></p>
@@ -596,7 +628,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 				   </a>
 				</div>
 				<div class="col-md-3 col-sm-6 col-xs-12 gallery-grid gallery1">
-					<a href="images/g6.jpg" class="swipebox"><img src="images/g7.jpg" class="img-responsive" alt="/">
+						<a href="images/rans/Rans Hotel-60.jpg" class="swipebox"><img src="images/rans/Rans Hotel-60.jpg" class="img-responsive" alt="/" loading="lazy">
 						<div class="textbox">
 						<h4>Rans</h4>
 							<p><i class="fa fa-picture-o" aria-hidden="true"></i></p>
@@ -604,7 +636,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 				   </a>
 				</div>
 				<div class="col-md-3 col-sm-6 col-xs-12 gallery-grid gallery1">
-					<a href="images/g6.jpg" class="swipebox"><img src="images/g8.jpg" class="img-responsive" alt="/">
+						<a href="images/rans/Rans Hotel-57.jpg" class="swipebox"><img src="images/rans/Rans Hotel-57.jpg" class="img-responsive" alt="/" loading="lazy">
 						<div class="textbox">
 						<h4>Rans</h4>
 							<p><i class="fa fa-picture-o" aria-hidden="true"></i></p>
@@ -612,7 +644,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 				   </a>
 				</div>
 					<div class="col-md-3 col-sm-6 col-xs-12 gallery-grid gallery1">
-					<a href="images/g9.jpg" class="swipebox"><img src="images/g9.jpg" class="img-responsive" alt="/">
+						<a href="images/rans/Rans Hotel-56.jpg" class="swipebox"><img src="images/rans/Rans Hotel-56.jpg" class="img-responsive" alt="/" loading="lazy">
 						<div class="textbox">
 						<h4>Rans</h4>
 							<p><i class="fa fa-picture-o" aria-hidden="true"></i></p>
@@ -620,7 +652,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 				</a>
 				</div>
 				<div class="col-md-3 col-sm-6 col-xs-12 gallery-grid gallery1">
-					<a href="images/g10.jpg" class="swipebox"><img src="images/g10.jpg" class="img-responsive" alt="/">
+						<a href="images/rans/Rans Hotel-47.jpg" class="swipebox"><img src="images/rans/Rans Hotel-47.jpg" class="img-responsive" alt="/" loading="lazy">
 						<div class="textbox">
 						<h4>Rans</h4>
 							<p><i class="fa fa-picture-o" aria-hidden="true"></i></p>
@@ -628,7 +660,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 				</a>
 				</div>
 				<div class="col-md-3 col-sm-6 col-xs-12 gallery-grid gallery1">
-					<a href="images/g4.jpg" class="swipebox"><img src="images/g4.jpg" class="img-responsive" alt="/">
+						<a href="images/rans/Rans Hotel-9.jpg" class="swipebox"><img src="images/rans/Rans Hotel-9.jpg" class="img-responsive" alt="/" loading="lazy">
 						<div class="textbox">
 						<h4>Rans</h4>
 							<p><i class="fa fa-picture-o" aria-hidden="true"></i></p>
@@ -636,7 +668,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 				</a>
 				</div>
 				<div class="col-md-3 col-sm-6 col-xs-12 gallery-grid gallery1">
-					<a href="images/g2.jpg" class="swipebox"><img src="images/g2.jpg" class="img-responsive" alt="/">
+						<a href="images/rans/Rans Hotel-8.jpg" class="swipebox"><img src="images/rans/Rans Hotel-8.jpg" class="img-responsive" alt="/" loading="lazy">
 						<div class="textbox">
 						<h4>Rans</h4>
 							<p><i class="fa fa-picture-o" aria-hidden="true"></i></p>
@@ -663,11 +695,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 					 }
 				 }
 				 
-				 $roomImages = [
-					 'Standard' => 'r1.jpg',
-					 'Mini Executive' => 'r2.jpg', 
-					 'Executive' => 'r3.jpg'
-				 ];
+                 $roomImages = [
+                     'Standard' => 'rans/Rans Hotel-58.jpg',
+                     'Mini Executive' => 'rans/Rans Hotel-69.jpg', 
+                     'Executive' => 'rans/Rans Hotel-63.jpg'
+                 ];
 				 
 				 $roomStars = [
 					 'Standard' => 3,
@@ -677,12 +709,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 				 
 				 foreach ($roomTypes as $roomType => $minPrice) {
 					 $stars = $roomStars[$roomType] ?? 3;
-					 $image = $roomImages[$roomType] ?? 'r1.jpg';
+                     $image = $roomImages[$roomType] ?? 'rans/Rans Hotel-58.jpg';
 					 
 					 echo "<div class='col-md-3 col-sm-6 col-xs-12 price-grid'>";
 					 echo "<div class='price-block agile'>";
 					 echo "<div class='price-gd-top'>";
-					 echo "<img src='images/$image' alt='$roomType' class='img-responsive' />";
+                     echo "<img src='images/$image' alt='$roomType' class='img-responsive' loading='lazy' />";
 					 echo "<h4>$roomType</h4>";
 					 echo "</div>";
 					 echo "<div class='price-gd-bottom'>";
@@ -702,7 +734,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 					 echo "</div>";
 					 echo "<div class='price-selet'>";
 					 echo "<h3><span>₵</span>" . number_format($minPrice, 0) . "</h3>";
-					 echo "<a href='admin/reservation_classic.php'>Book Now</a>";
+                     echo "<a href='admin/reservation_classic.php?embed=1'>Book Now</a>";
 					 echo "</div>";
 					 echo "</div>";
 					 echo "</div>";
@@ -725,9 +757,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 					<ul class="slides">
 						<li>
 							<div class="w3layouts_work_grid_left">
-								<img src="images/5.jpg" alt=" " class="img-responsive" />
+								<img src="images/rans/Rans Hotel-6.jpg" alt=" " class="img-responsive" />
 								<div class="w3layouts_work_grid_left_pos">
-									<img src="images/c1.jpg" alt=" " class="img-responsive" />
+									<img src="images/rans/Rans Hotel-4.jpg" alt=" " class="img-responsive" />
 								</div>
 							</div>
 							<div class="w3layouts_work_grid_right">
@@ -749,9 +781,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 						</li>
 						<li>
 							<div class="w3layouts_work_grid_left">
-								<img src="images/5.jpg" alt=" " class="img-responsive" />
+								<img src="images/rans/Rans Hotel-3.jpg" alt=" " class="img-responsive" />
 								<div class="w3layouts_work_grid_left_pos">
-									<img src="images/c2.jpg" alt=" " class="img-responsive" />
+									<img src="images/rans/Rans Hotel-1.jpg" alt=" " class="img-responsive" />
 								</div>
 							</div>
 							<div class="w3layouts_work_grid_right">
@@ -773,9 +805,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 						</li>
 						<li>
 							<div class="w3layouts_work_grid_left">
-								<img src="images/5.jpg" alt=" " class="img-responsive" />
+								<img src="images/rans/Rans Hotel-15.jpg" alt=" " class="img-responsive" />
 								<div class="w3layouts_work_grid_left_pos">
-									<img src="images/c3.jpg" alt=" " class="img-responsive" />
+									<img src="images/rans/Rans Hotel-16.jpg" alt=" " class="img-responsive" />
 								</div>
 							</div>
 							<div class="w3layouts_work_grid_right">
@@ -797,9 +829,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 						</li>
 						<li>
 							<div class="w3layouts_work_grid_left">
-								<img src="images/5.jpg" alt=" " class="img-responsive" />
+								<img src="images/rans/Rans Hotel-18.jpg" alt=" " class="img-responsive" />
 								<div class="w3layouts_work_grid_left_pos">
-									<img src="images/c4.jpg" alt=" " class="img-responsive" />
+									<img src="images/rans/Rans Hotel-17.jpg" alt=" " class="img-responsive" />
 								</div>
 							</div>
 							<div class="w3layouts_work_grid_right">
@@ -918,6 +950,37 @@ $(function() {
             $('.events').append("<li>after event fired.</li>");
         }
     });
+    // Lazy-load carousel background images
+    var bgObserver = ('IntersectionObserver' in window) ? new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+            if(entry.isIntersecting){
+                var el = entry.target;
+                var bg = el.getAttribute('data-bg');
+                if(bg){ el.style.backgroundImage = "url('" + bg + "')"; el.removeAttribute('data-bg'); }
+                bgObserver.unobserve(el);
+            }
+        });
+    }, { root: null, rootMargin: '200px', threshold: 0.01 }) : null;
+
+    if(bgObserver){
+        $(".w3layouts-banner-top").each(function(){ bgObserver.observe(this); });
+    } else {
+        // Fallback: set immediately
+        $(".w3layouts-banner-top").each(function(){
+            var bg = this.getAttribute('data-bg');
+            if(bg){ this.style.backgroundImage = "url('" + bg + "')"; this.removeAttribute('data-bg'); }
+        });
+    }
+    // Fix gallery URLs with spaces (encode to avoid empty items)
+    $(".portfolio-w3ls .gallery-grid a").each(function(){
+        var href = this.getAttribute('href');
+        if(href && href.indexOf(' ') >= 0){ this.setAttribute('href', href.replace(/ /g, '%20')); }
+        var img = this.querySelector('img');
+        if(img){
+            var src = img.getAttribute('src');
+            if(src && src.indexOf(' ') >= 0){ img.setAttribute('src', src.replace(/ /g, '%20')); }
+        }
+    });
 });
 </script>
 <!-- contact form -->
@@ -934,12 +997,12 @@ $(function() {
 <!-- //Calendar -->
 <!-- gallery popup -->
 <link rel="stylesheet" href="css/swipebox.css">
-				<script src="js/jquery.swipebox.min.js"></script> 
-					<script type="text/javascript">
-						jQuery(function(₵) {
-							$(".swipebox").swipebox();
-						});
-					</script>
+                <script src="js/jquery.swipebox.min.js"></script> 
+                    <script type="text/javascript">
+                        jQuery(function($) {
+                            $(".swipebox").swipebox();
+                        });
+                    </script>
 <!-- //gallery popup -->
 <!-- start-smoth-scrolling -->
 <script type="text/javascript" src="js/move-top.js"></script>
