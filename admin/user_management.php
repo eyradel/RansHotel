@@ -6,57 +6,22 @@ if(!isset($_SESSION['user'])) {
 
 include('db.php');
 include('includes/access_control.php');
+include('includes/unified_layout.php');
 initAccessControl('user_management');
+// Start admin page with components
+startUnifiedAdminPage('User Management', 'Manage admin users and staff for RansHotel');
 ?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>User Management - RansHotel</title>
-    <meta name="description" content="Manage admin users and staff for RansHotel">
-    <meta name="author" content="RansHotel">
-    <!-- Bootstrap Styles-->
-    <link href="assets/css/bootstrap.css" rel="stylesheet" />
-    <!-- FontAwesome Styles-->
-    <link href="assets/css/font-awesome.css" rel="stylesheet" />
-    <!-- Custom Styles-->
-    <link href="assets/css/custom-styles.css" rel="stylesheet" />
-    <!-- Professional Admin Styles-->
-    <link href="assets/css/professional-admin.css" rel="stylesheet" />
-    <!-- Responsive Admin Styles-->
-    <link href="assets/css/responsive-admin.css" rel="stylesheet" />
-    <!-- Google Fonts-->
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
-</head>
-<body>
-    <div id="wrapper">
-        <nav class="navbar-default navbar-side" role="navigation">
-            <div class="sidebar-collapse">
-                <ul class="nav" id="main-menu">
-                    <?php
-                    $menu = getNavigationMenu();
-                    foreach ($menu as $item) {
-                        $activeClass = (basename($_SERVER['PHP_SELF']) == basename($item['url'])) ? 'active-menu' : '';
-                        echo '<li><a class="' . $activeClass . '" href="' . $item['url'] . '"><i class="fa ' . $item['icon'] . '"></i> ' . $item['text'] . '</a></li>';
-                    }
-                    ?>
-                    <li>
-                        <a href="logout.php"><i class="fa fa-sign-out"></i> Logout</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-       
-        <div id="page-wrapper">
-            <div id="page-inner">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h1 class="page-header">
-                            User Management <small>Manage Admin Users and Staff</small>
-                        </h1>
-                    </div>
+    <div class="p-4 sm:p-6 lg:p-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <div class="flex items-center space-x-3 mb-2">
+                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <i class="fa fa-users text-white text-lg"></i>
                 </div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">User Management</h1>
+            </div>
+            <p class="text-gray-600">Manage admin users and staff for RansHotel</p>
+        </div>
 
                 <?php
                 // Handle form submissions
@@ -76,16 +41,16 @@ initAccessControl('user_management');
                     $result = mysqli_stmt_get_result($stmt);
                     
                     if(mysqli_num_rows($result) > 0) {
-                        echo "<div class='alert alert-danger'>Username already exists!</div>";
+                        echo "<div class='bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4'>Username already exists!</div>";
                     } else {
                         $insertUser = "INSERT INTO login (usname, pass, full_name, email, phone, role) VALUES (?, MD5(?), ?, ?, ?, ?)";
                         $stmt = mysqli_prepare($con, $insertUser);
                         mysqli_stmt_bind_param($stmt, "ssssss", $username, $password, $full_name, $email, $phone, $role);
                         
                         if(mysqli_stmt_execute($stmt)) {
-                            echo "<div class='alert alert-success'>User added successfully!</div>";
+                            echo "<div class='bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4'>User added successfully!</div>";
                         } else {
-                            echo "<div class='alert alert-danger'>Error adding user: " . mysqli_error($con) . "</div>";
+                            echo "<div class='bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4'>Error adding user: " . mysqli_error($con) . "</div>";
                         }
                     }
                 }
@@ -104,9 +69,9 @@ initAccessControl('user_management');
                     mysqli_stmt_bind_param($stmt, "sssssii", $username, $full_name, $email, $phone, $role, $is_active, $user_id);
                     
                     if(mysqli_stmt_execute($stmt)) {
-                        echo "<div class='alert alert-success'>User updated successfully!</div>";
+                        echo "<div class='bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4'>User updated successfully!</div>";
                     } else {
-                        echo "<div class='alert alert-danger'>Error updating user: " . mysqli_error($con) . "</div>";
+                        echo "<div class='bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4'>Error updating user: " . mysqli_error($con) . "</div>";
                     }
                 }
                 
@@ -119,83 +84,84 @@ initAccessControl('user_management');
                     mysqli_stmt_bind_param($stmt, "si", $new_password, $user_id);
                     
                     if(mysqli_stmt_execute($stmt)) {
-                        echo "<div class='alert alert-success'>Password reset successfully!</div>";
+                        echo "<div class='bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4'>Password reset successfully!</div>";
                     } else {
-                        echo "<div class='alert alert-danger'>Error resetting password: " . mysqli_error($con) . "</div>";
+                        echo "<div class='bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4'>Error resetting password: " . mysqli_error($con) . "</div>";
                     }
                 }
                 ?>
 
-                <div class="row">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                     <!-- Add New User Form -->
-                    <div class="col-md-6">
-                        <div class="panel panel-primary">
-                            <div class="panel-heading">
-                                Add New User
-                            </div>
-                            <div class="panel-body">
-                                <form method="post">
-                                    <div class="form-group">
-                                        <label>Username</label>
-                                        <input type="text" name="username" class="form-control" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Password</label>
-                                        <input type="password" name="password" class="form-control" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Full Name</label>
-                                        <input type="text" name="full_name" class="form-control" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Email</label>
-                                        <input type="email" name="email" class="form-control" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Phone</label>
-                                        <input type="text" name="phone" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Role</label>
-                                        <select name="role" class="form-control" required>
-                                            <option value="staff">Staff</option>
-                                            <option value="manager">Manager</option>
-                                            <option value="admin">Admin</option>
-                                        </select>
-                                    </div>
-                                    <button type="submit" name="add_user" class="btn btn-primary">
-                                        <i class="fa fa-plus"></i> Add User
-                                    </button>
-                                </form>
-                            </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                            <h3 class="text-lg font-semibold text-gray-900">Add New User</h3>
+                        </div>
+                        <div class="p-6">
+                            <form method="post" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                                    <input type="text" name="username" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                                    <input type="password" name="password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                    <input type="text" name="full_name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input type="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                    <input type="text" name="phone" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                                    <select name="role" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                                        <option value="staff">Staff</option>
+                                        <option value="manager">Manager</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                                <button type="submit" name="add_user" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium flex items-center justify-center space-x-2">
+                                    <i class="fa fa-plus"></i>
+                                    <span>Add User</span>
+                                </button>
+                            </form>
                         </div>
                     </div>
                     
                     <!-- System Information -->
-                    <div class="col-md-6">
-                        <div class="panel panel-info">
-                            <div class="panel-heading">
-                                System Information
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                            <h3 class="text-lg font-semibold text-gray-900">System Information</h3>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">Current User</h4>
+                                <div class="space-y-1 text-sm">
+                                    <p><span class="font-medium text-gray-600">Username:</span> <?php echo $_SESSION['user']; ?></p>
+                                    <p><span class="font-medium text-gray-600">Full Name:</span> <?php echo $_SESSION['full_name'] ?? 'N/A'; ?></p>
+                                    <p><span class="font-medium text-gray-600">Role:</span> <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"><?php echo $_SESSION['role'] ?? 'admin'; ?></span></p>
+                                    <p><span class="font-medium text-gray-600">Email:</span> <?php echo $_SESSION['email'] ?? 'N/A'; ?></p>
+                                </div>
                             </div>
-                            <div class="panel-body">
-                                <h4>Current User</h4>
-                                <p><strong>Username:</strong> <?php echo $_SESSION['user']; ?></p>
-                                <p><strong>Full Name:</strong> <?php echo $_SESSION['full_name'] ?? 'N/A'; ?></p>
-                                <p><strong>Role:</strong> <?php echo $_SESSION['role'] ?? 'admin'; ?></p>
-                                <p><strong>Email:</strong> <?php echo $_SESSION['email'] ?? 'N/A'; ?></p>
-                                
-                                <hr>
-                                
-                                <h4>Database Status</h4>
+                            
+                            <div class="border-t border-gray-200 pt-4">
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">Database Status</h4>
                                 <?php
                                 $checkNewStructure = "SHOW COLUMNS FROM login LIKE 'role'";
                                 $structureResult = mysqli_query($con, $checkNewStructure);
                                 
                                 if(mysqli_num_rows($structureResult) > 0) {
-                                    echo "<p class='text-success'><i class='fa fa-check'></i> Enhanced database structure active</p>";
+                                    echo "<p class='text-green-700 text-sm flex items-center'><i class='fa fa-check mr-2'></i> Enhanced database structure active</p>";
                                 } else {
-                                    echo "<p class='text-warning'><i class='fa fa-warning'></i> Using legacy database structure</p>";
-                                    echo "<p><small>Run database_updates.sql to enable enhanced features</small></p>";
+                                    echo "<p class='text-yellow-700 text-sm flex items-center'><i class='fa fa-warning mr-2'></i> Using legacy database structure</p>";
+                                    echo "<p class='text-xs text-gray-500 mt-1'>Run database_updates.sql to enable enhanced features</p>";
                                 }
                                 ?>
                             </div>
@@ -204,64 +170,69 @@ initAccessControl('user_management');
                 </div>
 
                 <!-- Users List -->
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                System Users
-                            </div>
-                            <div class="panel-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-bordered table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Username</th>
-                                                <th>Full Name</th>
-                                                <th>Email</th>
-                                                <th>Phone</th>
-                                                <th>Role</th>
-                                                <th>Status</th>
-                                                <th>Last Login</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-                                            $sql = "SELECT * FROM login ORDER BY id ASC";
-                                            $query = mysqli_query($con, $sql);
-                                            while($row = mysqli_fetch_assoc($query)) {
-                                                echo "<tr>";
-                                                echo "<td>{$row['id']}</td>";
-                                                echo "<td>{$row['usname']}</td>";
-                                                echo "<td>" . ($row['full_name'] ?? 'N/A') . "</td>";
-                                                echo "<td>" . ($row['email'] ?? 'N/A') . "</td>";
-                                                echo "<td>" . ($row['phone'] ?? 'N/A') . "</td>";
-                                                echo "<td><span class='label label-info'>" . ($row['role'] ?? 'admin') . "</span></td>";
-                                                echo "<td>";
-                                                if(isset($row['is_active'])) {
-                                                    echo $row['is_active'] ? "<span class='label label-success'>Active</span>" : "<span class='label label-danger'>Inactive</span>";
-                                                } else {
-                                                    echo "<span class='label label-success'>Active</span>";
-                                                }
-                                                echo "</td>";
-                                                echo "<td>" . ($row['last_login'] ?? 'Never') . "</td>";
-                                                echo "<td>";
-                                                echo "<button class='btn btn-sm btn-primary' onclick='editUser({$row['id']})'><i class='fa fa-edit'></i></button> ";
-                                                echo "<button class='btn btn-sm btn-warning' onclick='resetPassword({$row['id']})'><i class='fa fa-key'></i></button>";
-                                                echo "</td>";
-                                                echo "</tr>";
-                                            }
-                                            ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                        <h3 class="text-lg font-semibold text-gray-900">System Users</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Full Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Login</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <?php
+                                $sql = "SELECT * FROM login ORDER BY id ASC";
+                                $query = mysqli_query($con, $sql);
+                                while($row = mysqli_fetch_assoc($query)) {
+                                    echo "<tr class='hover:bg-gray-50'>";
+                                    echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>{$row['id']}</td>";
+                                    echo "<td class='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900'>{$row['usname']}</td>";
+                                    echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>" . ($row['full_name'] ?? 'N/A') . "</td>";
+                                    echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>" . ($row['email'] ?? 'N/A') . "</td>";
+                                    echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>" . ($row['phone'] ?? 'N/A') . "</td>";
+                                    echo "<td class='px-6 py-4 whitespace-nowrap'>";
+                                    $role = $row['role'] ?? 'admin';
+                                    $roleColors = ['admin' => 'bg-red-100 text-red-800', 'manager' => 'bg-yellow-100 text-yellow-800', 'staff' => 'bg-blue-100 text-blue-800'];
+                                    $roleColor = $roleColors[$role] ?? 'bg-gray-100 text-gray-800';
+                                    echo "<span class='px-2 py-1 text-xs font-medium rounded-full {$roleColor}'>" . ucfirst($role) . "</span>";
+                                    echo "</td>";
+                                    echo "<td class='px-6 py-4 whitespace-nowrap'>";
+                                    if(isset($row['is_active'])) {
+                                        if($row['is_active']) {
+                                            echo "<span class='px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800'>Active</span>";
+                                        } else {
+                                            echo "<span class='px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800'>Inactive</span>";
+                                        }
+                                    } else {
+                                        echo "<span class='px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800'>Active</span>";
+                                    }
+                                    echo "</td>";
+                                    echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>" . ($row['last_login'] ?? 'Never') . "</td>";
+                                    echo "<td class='px-6 py-4 whitespace-nowrap text-sm font-medium'>";
+                                    echo "<div class='flex space-x-2'>";
+                                    echo "<button class='text-blue-600 hover:text-blue-900' onclick='editUser({$row['id']})' title='Edit'><i class='fa fa-edit'></i></button>";
+                                    echo "<button class='text-yellow-600 hover:text-yellow-900' onclick='resetPassword({$row['id']})' title='Reset Password'><i class='fa fa-key'></i></button>";
+                                    echo "</div>";
+                                    echo "</td>";
+                                    echo "</tr>";
+                                }
+                                ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
-        </div>
+                </div>
+        
     </div>
     
     <!-- JS Scripts-->
@@ -292,7 +263,9 @@ initAccessControl('user_management');
         }
     }
     </script>
-</body>
-</html>
+<?php
+// End admin page with components
+endUnifiedAdminPage();
+?>
 
 

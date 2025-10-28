@@ -1,6 +1,6 @@
 <?php
 /**
- * Professional Navigation Component
+ * Modern Professional Navigation Component
  * RansHotel Admin System
  */
 
@@ -9,91 +9,146 @@ if (!function_exists('getNavigationMenu')) {
 }
 ?>
 
-<!-- Professional Top Navigation -->
-<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--primary-color); box-shadow: var(--shadow);">
-    <div class="container-fluid">
-        <!-- Mobile Menu Toggle -->
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        
-        <!-- Brand -->
-        <a class="navbar-brand font-weight-bold" href="dashboard.php">
-            RansHotel Admin
-        </a>
-        
-        <!-- User Menu -->
-        <div class="navbar-nav ml-auto">
-            <div class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <div class="user-avatar mr-2">
-                        <i class="fa fa-user-circle fa-lg"></i>
-                    </div>
-                    <div class="user-info d-none d-md-block">
-                        <div class="user-name"><?php echo $_SESSION['full_name'] ?? $_SESSION['user']; ?></div>
-                        <div class="user-role text-muted small"><?php echo ucfirst(getCurrentUserRole()); ?></div>
-                    </div>
+<!-- Modern Sidebar Navigation -->
+<div class="admin-layout">
+    <!-- Sidebar -->
+    <nav class="modern-sidebar" id="modernSidebar">
+        <!-- Sidebar Header -->
+        <div class="sidebar-header">
+            <div class="brand-section">
+                <div class="brand-logo">
+                    <i class="fa fa-hotel"></i>
+                </div>
+                <div class="brand-info">
+                    <h4 class="brand-name">RansHotel</h4>
+                    <span class="brand-subtitle">Admin Panel</span>
+                </div>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- User Profile Section -->
+        <div class="user-profile-section">
+            <div class="user-avatar">
+                <div class="avatar-circle">
+                    <?php 
+                    $userName = $_SESSION['full_name'] ?? $_SESSION['user'] ?? 'Admin';
+                    echo strtoupper(substr($userName, 0, 1)); 
+                    ?>
+                </div>
+            </div>
+            <div class="user-details">
+                <div class="user-name"><?php echo htmlspecialchars($userName); ?></div>
+                <div class="user-role"><?php echo ucfirst(getCurrentUserRole()); ?></div>
+            </div>
+            <div class="user-status">
+                <span class="status-indicator online"></span>
+            </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <div class="sidebar-menu">
+            <ul class="nav-menu">
+                <?php
+                $menu = getNavigationMenu();
+                $currentPage = basename($_SERVER['PHP_SELF']);
+                
+                foreach ($menu as $item) {
+                    $isActive = ($currentPage == basename($item['url'])) ? 'active' : '';
+                    $icon = $item['icon'];
+                    $text = $item['text'];
+                    $url = $item['url'];
+                    
+                    echo "<li class='nav-item $isActive'>";
+                    echo "<a class='nav-link' href='$url'>";
+                    echo "<div class='nav-icon'>";
+                    echo "<i class='fa $icon'></i>";
+                    echo "</div>";
+                    echo "<span class='nav-text'>$text</span>";
+                    echo "<div class='nav-indicator'></div>";
+                    echo "</a>";
+                    echo "</li>";
+                }
+                ?>
+            </ul>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer">
+            <div class="footer-actions">
+                <a href="user_settings.php" class="footer-action" title="Profile">
+                    <i class="fa fa-user"></i>
                 </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                    <a class="dropdown-item" href="user_settings.php">
-                        <i class="fa fa-user mr-2"></i>Profile
-                    </a>
-                    <a class="dropdown-item" href="settings.php">
-                        <i class="fa fa-cog mr-2"></i>Settings
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="logout.php">
-                        <i class="fa fa-sign-out mr-2"></i>Logout
-                    </a>
+                <a href="settings.php" class="footer-action" title="Settings">
+                    <i class="fa fa-cog"></i>
+                </a>
+                <a href="logout.php" class="footer-action logout" title="Logout">
+                    <i class="fa fa-sign-out"></i>
+                </a>
+            </div>
+            <div class="footer-info">
+                <div class="version-info">
+                    <span class="version">v2.0</span>
+                    <span class="status online">Online</span>
                 </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<!-- Professional Sidebar -->
-<div class="container-fluid">
-    <div class="row">
-        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-            <div class="sidebar-sticky pt-3">
-                <ul class="nav flex-column">
-                    <?php
-                    $menu = getNavigationMenu();
-                    $currentPage = basename($_SERVER['PHP_SELF']);
-                    
-                    foreach ($menu as $item) {
-                        $isActive = ($currentPage == basename($item['url'])) ? 'active' : '';
-                        $icon = $item['icon'];
-                        $text = $item['text'];
-                        $url = $item['url'];
-                        
-                        echo "<li class='nav-item'>";
-                        echo "<a class='nav-link $isActive' href='$url'>";
-                        echo "<i class='fa $icon mr-2'></i>";
-                        echo "$text";
-                        echo "</a>";
-                        echo "</li>";
-                    }
-                    ?>
-                    
-                    <li class="nav-item">
-                        <a class="nav-link" href="logout.php">
-                            <i class="fa fa-sign-out mr-2"></i>Logout
-                        </a>
-                    </li>
-                </ul>
-                
-                <!-- Sidebar Footer -->
-                <div class="sidebar-footer mt-auto p-3">
-                    <div class="text-center">
-                        <small class="text-muted">
-                            RansHotel Admin v2.0<br>
-                            <span class="badge badge-success">Online</span>
-                        </small>
+    <!-- Main Content Area -->
+    <div class="main-content-wrapper">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <div class="page-title">
+                    <h1 class="current-page-title">
+                        <?php
+                        $currentPage = basename($_SERVER['PHP_SELF'], '.php');
+                        $pageTitles = [
+                            'dashboard_classic' => 'Dashboard',
+                            'reservation_classic' => 'Reservations',
+                            'booking_details' => 'Booking Details',
+                            'room' => 'Room Management',
+                            'pricing' => 'Pricing Management',
+                            'notifications' => 'Notifications',
+                            'user_management' => 'User Management',
+                            'payment' => 'Payment Management',
+                            'profit' => 'Profit Reports',
+                            'settings' => 'Settings',
+                            'user_settings' => 'User Settings',
+                            'room_delete' => 'Delete Room',
+                            'access_denied' => 'Access Denied'
+                        ];
+                        echo $pageTitles[$currentPage] ?? ucfirst(str_replace('_', ' ', $currentPage));
+                        ?>
+                    </h1>
+                    <p class="page-subtitle">Manage your hotel operations efficiently</p>
+                </div>
+            </div>
+            
+            <div class="top-bar-right">
+                <div class="top-bar-actions">
+                    <div class="notification-bell">
+                        <i class="fa fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="user-menu">
+                        <div class="user-avatar-small">
+                            <?php echo strtoupper(substr($userName, 0, 1)); ?>
+                        </div>
+                        <div class="user-info">
+                            <span class="user-name-small"><?php echo htmlspecialchars($userName); ?></span>
+                            <span class="user-role-small"><?php echo ucfirst(getCurrentUserRole()); ?></span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </nav>
+        </header>
 
-        <!-- Main Content Area -->
-        <main role="main" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+        <!-- Main Content -->
+        <main class="main-content">

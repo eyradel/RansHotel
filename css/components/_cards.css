@@ -1,0 +1,101 @@
+/* Card Components */
+.card {
+    background: var(--classic-white);
+    border: 1px solid var(--classic-gray-light);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: all var(--transition-normal);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    background: var(--classic-gray-light);
+    border-bottom: 1px solid var(--classic-gray-light);
+    padding: var(--space-4);
+}
+
+.card-header h5 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--classic-navy);
+}
+
+.card-body {
+    padding: var(--space-6);
+}
+
+.card-footer {
+    background: var(--classic-gray-light);
+    border-top: 1px solid var(--classic-gray-light);
+    padding: var(--space-4);
+}
+
+/* Card Variants */
+.card-primary {
+    border-left: 4px solid var(--classic-gold);
+}
+
+.card-success {
+    border-left: 4px solid #4caf50;
+}
+
+.card-warning {
+    border-left: 4px solid #ff9800;
+}
+
+.card-danger {
+    border-left: 4px solid #f44336;
+}
+
+.card-info {
+    border-left: 4px solid #2196f3;
+}
+
+/* Simple Card Variant */
+.simple-card {
+    background: var(--classic-white);
+    border: 1px solid #e0e0e0;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.simple-card .card-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+    padding: var(--space-4);
+}
+
+.simple-card .card-body {
+    padding: var(--space-6);
+}
+
+/* Modern Card Variant */
+.modern-card {
+    background: var(--classic-white);
+    border: none;
+    border-radius: var(--radius-xl);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all var(--transition-normal);
+}
+
+.modern-card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+.modern-card .card-header {
+    background: linear-gradient(135deg, var(--classic-navy) 0%, var(--classic-navy-light) 100%);
+    color: var(--classic-white);
+    border: none;
+    padding: var(--space-6);
+}
+
+.modern-card .card-body {
+    padding: var(--space-8);
+}

@@ -10,6 +10,6 @@ include('includes/access_control.php');
 initAccessControl('dashboard');
 
 // Redirect to the new consistent dashboard
-header("location:dashboard_simple.php");
+header("location:dashboard_classic.php");
 exit();
 ?>

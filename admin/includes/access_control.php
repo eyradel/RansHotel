@@ -173,17 +173,17 @@ function getNavigationMenu() {
     
     // Dashboard - available to all
     if (canAccess('dashboard')) {
-        $menu[] = ['url' => 'dashboard_simple.php', 'icon' => 'fa-dashboard', 'text' => 'Dashboard'];
+        $menu[] = ['url' => 'dashboard_classic.php', 'icon' => 'fa-dashboard', 'text' => 'Dashboard'];
     }
     
     // Room Booking - available to all
     if (canAccess('room_booking')) {
-        $menu[] = ['url' => 'roombook.php', 'icon' => 'fa-bar-chart-o', 'text' => 'Room Booking'];
+        $menu[] = ['url' => 'booking_details.php', 'icon' => 'fa-bar-chart-o', 'text' => 'Room Booking'];
     }
     
     // Reservations - available to all
     if (canAccess('reservations')) {
-        $menu[] = ['url' => 'reservation.php', 'icon' => 'fa-calendar', 'text' => 'Reservations'];
+        $menu[] = ['url' => 'reservation_classic.php', 'icon' => 'fa-calendar', 'text' => 'Reservations'];
     }
     
     // Notifications - available to all
@@ -213,12 +213,12 @@ function getNavigationMenu() {
     
     // User Management - admin only
     if (canAccess('user_management')) {
-        $menu[] = ['url' => 'user_management_pro.php', 'icon' => 'fa-users', 'text' => 'User Management'];
+        $menu[] = ['url' => 'user_management.php', 'icon' => 'fa-users', 'text' => 'User Management'];
     }
     
     // Room Management - admin and manager only
     if (canAccess('room_management')) {
-        $menu[] = ['url' => 'settings.php', 'icon' => 'fa-cog', 'text' => 'Room Management'];
+        $menu[] = ['url' => 'room.php', 'icon' => 'fa-bed', 'text' => 'Room Management'];
     }
     
     return $menu;

@@ -439,6 +439,286 @@ class PHPMailerEmailSystem {
     }
     
     /**
+     * Send cancellation email to customer
+     */
+    public function sendCancellationEmail($customerEmail, $customerName, $bookingId) {
+        $subject = "Booking Cancellation - RANS HOTEL";
+        $htmlBody = $this->buildCancellationEmailHTML($customerName, $bookingId);
+        $textBody = $this->buildCancellationEmailText($customerName, $bookingId);
+        
+        return $this->sendEmail($customerEmail, $subject, $htmlBody, $textBody);
+    }
+    
+    /**
+     * Send check-in reminder email to customer
+     */
+    public function sendCheckInReminder($customerEmail, $customerName, $checkIn, $roomType) {
+        $subject = "Check-in Reminder - RANS HOTEL";
+        $htmlBody = $this->buildCheckInReminderHTML($customerName, $checkIn, $roomType);
+        $textBody = $this->buildCheckInReminderText($customerName, $checkIn, $roomType);
+        
+        return $this->sendEmail($customerEmail, $subject, $htmlBody, $textBody);
+    }
+    
+    /**
+     * Build HTML cancellation email
+     */
+    private function buildCancellationEmailHTML($customerName, $bookingId) {
+        $year = date('Y');
+        
+        $safeCustomerName = htmlspecialchars($customerName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $safeBookingId = htmlspecialchars($bookingId, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        
+        return "<!doctype html>\n" .
+        "<html lang=\"en\">\n" .
+        "<head>\n" .
+        "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n" .
+        "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" .
+        "  <title>Booking Cancellation - RANS HOTEL</title>\n" .
+        "  <meta name=\"x-apple-disable-message-reformatting\">\n" .
+        "</head>\n" .
+        "<body style=\"margin:0; padding:0; background:#f5f7fb; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;\">\n" .
+        "  <div style=\"display:none; font-size:1px; color:#f5f7fb; line-height:1px; max-height:0; max-width:0; opacity:0; overflow:hidden;\">Your booking cancellation confirmation is inside.\n" .
+        "  </div>\n" .
+        "  <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"background:#f5f7fb;\">\n" .
+        "    <tr>\n" .
+        "      <td align=\"center\" style=\"padding:24px;\">\n" .
+        "        <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width:640px; background:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 2px 8px rgba(16,24,40,0.06);\">\n" .
+        "          <tr>\n" .
+        "            <td style=\"background:#dc2626; padding:24px 28px;\">\n" .
+        "              <h1 style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:24px; line-height:32px; color:#ffffff; text-align:center;\">RANS HOTEL</h1>\n" .
+        "              <p style=\"margin:8px 0 0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:16px; color:#ffffff; opacity:0.9; text-align:center;\">Tsito, Volta Region, Ghana</p>\n" .
+        "            </td>\n" .
+        "          </tr>\n" .
+        "          <tr>\n" .
+        "            <td style=\"padding:0;\">\n" .
+        "              <!-- Cancellation Header Section -->\n" .
+        "              <div style=\"background:#fef2f2; padding:24px 28px; border-left:4px solid #dc2626;\">\n" .
+        "                <h2 style=\"margin:0 0 12px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:20px; color:#dc2626; text-align:center;\">❌ Booking Cancelled</h2>\n" .
+        "                <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:16px; color:#dc2626; text-align:center; font-weight:500;\">We're sorry to see you go, but we understand plans change.</p>\n" .
+        "              </div>\n" .
+        "              \n" .
+        "              <!-- Cancellation Details Section -->\n" .
+        "              <div style=\"background:#f8fafc; padding:24px 28px;\">\n" .
+        "                <h3 style=\"margin:0 0 16px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:18px; color:#1e3a8a; border-bottom:2px solid #d4af37; padding-bottom:8px;\">Cancellation Details</h3>\n" .
+        "                <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:12px;\">\n" .
+        "                  <span style=\"font-weight:600; color:#374151;\">Guest Name:</span>\n" .
+        "                  <span style=\"color:#374151; margin-left:8px;\">" . $safeCustomerName . "</span>\n" .
+        "                </div>\n" .
+        "                <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:12px;\">\n" .
+        "                  <span style=\"font-weight:600; color:#374151;\">Booking ID:</span>\n" .
+        "                  <span style=\"color:#1e3a8a; margin-left:8px; font-weight:600;\">" . $safeBookingId . "</span>\n" .
+        "                </div>\n" .
+        "                <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:12px;\">\n" .
+        "                  <span style=\"font-weight:600; color:#374151;\">Cancellation Date:</span>\n" .
+        "                  <span style=\"color:#374151; margin-left:8px;\">" . date('F j, Y \a\t g:i A') . "</span>\n" .
+        "                </div>\n" .
+        "              </div>\n" .
+        "              \n" .
+        "              <!-- Refund Information Section -->\n" .
+        "              <div style=\"background:#1e3a8a; padding:24px 28px;\">\n" .
+        "                <h3 style=\"margin:0 0 16px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:18px; color:#d4af37; text-align:center;\">Refund Information</h3>\n" .
+        "                <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#e5e7eb;\">\n" .
+        "                  <div style=\"margin-bottom:12px; padding:8px 0; border-bottom:1px solid #374151;\">\n" .
+        "                    <span style=\"font-weight:600;\">Refund Status:</span>\n" .
+        "                    <span style=\"margin-left:8px;\">Processing</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"margin-bottom:12px; padding:8px 0; border-bottom:1px solid #374151;\">\n" .
+        "                    <span style=\"font-weight:600;\">Processing Time:</span>\n" .
+        "                    <span style=\"margin-left:8px;\">3-5 business days</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"padding:8px 0;\">\n" .
+        "                    <span style=\"font-weight:600;\">Refund Method:</span>\n" .
+        "                    <span style=\"margin-left:8px;\">Original payment method</span>\n" .
+        "                  </div>\n" .
+        "                </div>\n" .
+        "              </div>\n" .
+        "            </td>\n" .
+        "          </tr>\n" .
+        "          <tr>\n" .
+        "            <td style=\"padding:24px 28px; background:#ffffff;\">\n" .
+        "              <div style=\"margin:16px 0; padding:16px; background:#f0f9ff; border-radius:8px; border-left:4px solid #0ea5e9;\">\n" .
+        "                <h4 style=\"margin:0 0 8px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; color:#0c4a6e;\">Questions About Your Cancellation?</h4>\n" .
+        "                <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:13px; color:#075985;\">If you have any questions about your cancellation or refund, please contact us at <strong>+233 (0)302 936 062</strong> or email us at <strong>info@ranshotel.com</strong></p>\n" .
+        "              </div>\n" .
+        "              <p style=\"margin:0 0 16px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; color:#6b7280;\">We hope to welcome you back to RANS HOTEL in the future.</p>\n" .
+        "              <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; color:#6b7280;\">Thank you for considering RANS HOTEL.<br><strong>The RANS HOTEL Team</strong></p>\n" .
+        "            </td>\n" .
+        "          </tr>\n" .
+        "          <tr>\n" .
+        "            <td style=\"background:#f8fafc; padding:20px 28px; text-align:center;\">\n" .
+        "              <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:12px; color:#6b7280;\">© " . $year . " RANS HOTEL. All rights reserved. | Tsito, Volta Region, Ghana</p>\n" .
+        "            </td>\n" .
+        "          </tr>\n" .
+        "        </table>\n" .
+        "      </td>\n" .
+        "    </tr>\n" .
+        "  </table>\n" .
+        "</body>\n" .
+        "</html>";
+    }
+    
+    /**
+     * Build text cancellation email
+     */
+    private function buildCancellationEmailText($customerName, $bookingId) {
+        $text = "RANS HOTEL - Booking Cancellation\n\n";
+        $text .= "Dear {$customerName},\n\n";
+        $text .= "We're sorry to see you go, but we understand plans change.\n\n";
+        $text .= "CANCELLATION DETAILS:\n";
+        $text .= "Guest Name: {$customerName}\n";
+        $text .= "Booking ID: {$bookingId}\n";
+        $text .= "Cancellation Date: " . date('F j, Y \a\t g:i A') . "\n\n";
+        $text .= "REFUND INFORMATION:\n";
+        $text .= "- Refund Status: Processing\n";
+        $text .= "- Processing Time: 3-5 business days\n";
+        $text .= "- Refund Method: Original payment method\n\n";
+        $text .= "CONTACT US:\n";
+        $text .= "Phone: +233 (0)302 936 062\n";
+        $text .= "Email: info@ranshotel.com\n";
+        $text .= "Address: Tsito, Volta Region, Ghana\n\n";
+        $text .= "We hope to welcome you back to RANS HOTEL in the future.\n\n";
+        $text .= "Thank you for considering RANS HOTEL.\n\n";
+        $text .= "Best regards,\n";
+        $text .= "The RANS HOTEL Team";
+        
+        return $text;
+    }
+    
+    /**
+     * Build HTML check-in reminder email
+     */
+    private function buildCheckInReminderHTML($customerName, $checkIn, $roomType) {
+        $checkInFormatted = date('F j, Y', strtotime($checkIn));
+        $year = date('Y');
+        
+        $safeCustomerName = htmlspecialchars($customerName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $safeRoomType = htmlspecialchars($roomType, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        
+        return "<!doctype html>\n" .
+        "<html lang=\"en\">\n" .
+        "<head>\n" .
+        "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n" .
+        "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" .
+        "  <title>Check-in Reminder - RANS HOTEL</title>\n" .
+        "  <meta name=\"x-apple-disable-message-reformatting\">\n" .
+        "</head>\n" .
+        "<body style=\"margin:0; padding:0; background:#f5f7fb; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;\">\n" .
+        "  <div style=\"display:none; font-size:1px; color:#f5f7fb; line-height:1px; max-height:0; max-width:0; opacity:0; overflow:hidden;\">Your check-in reminder is inside.\n" .
+        "  </div>\n" .
+        "  <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"background:#f5f7fb;\">\n" .
+        "    <tr>\n" .
+        "      <td align=\"center\" style=\"padding:24px;\">\n" .
+        "        <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width:640px; background:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 2px 8px rgba(16,24,40,0.06);\">\n" .
+        "          <tr>\n" .
+        "            <td style=\"background:#1e3a8a; padding:24px 28px;\">\n" .
+        "              <h1 style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:24px; line-height:32px; color:#ffffff; text-align:center;\">RANS HOTEL</h1>\n" .
+        "              <p style=\"margin:8px 0 0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:16px; color:#ffffff; opacity:0.9; text-align:center;\">Tsito, Volta Region, Ghana</p>\n" .
+        "            </td>\n" .
+        "          </tr>\n" .
+        "          <tr>\n" .
+        "            <td style=\"padding:0;\">\n" .
+        "              <!-- Reminder Header Section -->\n" .
+        "              <div style=\"background:#fef3c7; padding:24px 28px; border-left:4px solid #f59e0b;\">\n" .
+        "                <h2 style=\"margin:0 0 12px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:20px; color:#92400e; text-align:center;\">⏰ Check-in Reminder</h2>\n" .
+        "                <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:16px; color:#92400e; text-align:center; font-weight:500;\">We're excited to welcome you to RANS HOTEL!</p>\n" .
+        "              </div>\n" .
+        "              \n" .
+        "              <!-- Booking Details Section -->\n" .
+        "              <div style=\"background:#f8fafc; padding:24px 28px;\">\n" .
+        "                <h3 style=\"margin:0 0 16px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:18px; color:#1e3a8a; border-bottom:2px solid #d4af37; padding-bottom:8px;\">Your Stay Details</h3>\n" .
+        "                <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:12px;\">\n" .
+        "                  <span style=\"font-weight:600; color:#374151;\">Guest Name:</span>\n" .
+        "                  <span style=\"color:#374151; margin-left:8px;\">" . $safeCustomerName . "</span>\n" .
+        "                </div>\n" .
+        "                <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:12px;\">\n" .
+        "                  <span style=\"font-weight:600; color:#374151;\">Room Type:</span>\n" .
+        "                  <span style=\"color:#374151; margin-left:8px;\">" . $safeRoomType . "</span>\n" .
+        "                </div>\n" .
+        "                <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:12px;\">\n" .
+        "                  <span style=\"font-weight:600; color:#374151;\">Check-in Date:</span>\n" .
+        "                  <span style=\"color:#1e3a8a; margin-left:8px; font-weight:600;\">" . $checkInFormatted . "</span>\n" .
+        "                </div>\n" .
+        "              </div>\n" .
+        "              \n" .
+        "              <!-- Important Information Section -->\n" .
+        "              <div style=\"background:#1e3a8a; padding:24px 28px;\">\n" .
+        "                <h3 style=\"margin:0 0 16px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:18px; color:#d4af37; text-align:center;\">Important Check-in Information</h3>\n" .
+        "                <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#e5e7eb;\">\n" .
+        "                  <div style=\"margin-bottom:12px; padding:8px 0; border-bottom:1px solid #374151;\">\n" .
+        "                    <span style=\"font-weight:600;\">Check-in Time:</span>\n" .
+        "                    <span style=\"margin-left:8px;\">2:00 PM onwards</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"margin-bottom:12px; padding:8px 0; border-bottom:1px solid #374151;\">\n" .
+        "                    <span style=\"font-weight:600;\">Check-out Time:</span>\n" .
+        "                    <span style=\"margin-left:8px;\">11:00 AM</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"margin-bottom:12px; padding:8px 0; border-bottom:1px solid #374151;\">\n" .
+        "                    <span style=\"font-weight:600;\">Required Documents:</span>\n" .
+        "                    <span style=\"margin-left:8px;\">Valid ID or Passport</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"padding:8px 0;\">\n" .
+        "                    <span style=\"font-weight:600;\">Special Requests:</span>\n" .
+        "                    <span style=\"margin-left:8px;\">Contact us in advance</span>\n" .
+        "                  </div>\n" .
+        "                </div>\n" .
+        "              </div>\n" .
+        "            </td>\n" .
+        "          </tr>\n" .
+        "          <tr>\n" .
+        "            <td style=\"padding:24px 28px; background:#ffffff;\">\n" .
+        "              <div style=\"margin:16px 0; padding:16px; background:#f0f9ff; border-radius:8px; border-left:4px solid #0ea5e9;\">\n" .
+        "                <h4 style=\"margin:0 0 8px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; color:#0c4a6e;\">Need Assistance?</h4>\n" .
+        "                <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:13px; color:#075985;\">If you have any questions or need to make changes to your booking, please contact us at <strong>+233 (0)302 936 062</strong> or email us at <strong>info@ranshotel.com</strong></p>\n" .
+        "              </div>\n" .
+        "              <p style=\"margin:0 0 16px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; color:#6b7280;\">We look forward to providing you with an exceptional stay experience at RANS HOTEL.</p>\n" .
+        "              <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; color:#6b7280;\">Safe travels and see you soon!<br><strong>The RANS HOTEL Team</strong></p>\n" .
+        "            </td>\n" .
+        "          </tr>\n" .
+        "          <tr>\n" .
+        "            <td style=\"background:#f8fafc; padding:20px 28px; text-align:center;\">\n" .
+        "              <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:12px; color:#6b7280;\">© " . $year . " RANS HOTEL. All rights reserved. | Tsito, Volta Region, Ghana</p>\n" .
+        "            </td>\n" .
+        "          </tr>\n" .
+        "        </table>\n" .
+        "      </td>\n" .
+        "    </tr>\n" .
+        "  </table>\n" .
+        "</body>\n" .
+        "</html>";
+    }
+    
+    /**
+     * Build text check-in reminder email
+     */
+    private function buildCheckInReminderText($customerName, $checkIn, $roomType) {
+        $checkInFormatted = date('F j, Y', strtotime($checkIn));
+        
+        $text = "RANS HOTEL - Check-in Reminder\n\n";
+        $text .= "Dear {$customerName},\n\n";
+        $text .= "We're excited to welcome you to RANS HOTEL!\n\n";
+        $text .= "YOUR STAY DETAILS:\n";
+        $text .= "Guest Name: {$customerName}\n";
+        $text .= "Room Type: {$roomType}\n";
+        $text .= "Check-in Date: {$checkInFormatted}\n\n";
+        $text .= "IMPORTANT CHECK-IN INFORMATION:\n";
+        $text .= "- Check-in Time: 2:00 PM onwards\n";
+        $text .= "- Check-out Time: 11:00 AM\n";
+        $text .= "- Required Documents: Valid ID or Passport\n";
+        $text .= "- Special Requests: Contact us in advance\n\n";
+        $text .= "CONTACT US:\n";
+        $text .= "Phone: +233 (0)302 936 062\n";
+        $text .= "Email: info@ranshotel.com\n";
+        $text .= "Address: Tsito, Volta Region, Ghana\n\n";
+        $text .= "We look forward to providing you with an exceptional stay experience!\n\n";
+        $text .= "Safe travels and see you soon!\n\n";
+        $text .= "Best regards,\n";
+        $text .= "The RANS HOTEL Team";
+        
+        return $text;
+    }
+    
+    /**
      * Test email functionality
      */
     public function testEmail($testEmail = null) {

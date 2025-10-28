@@ -2,7 +2,7 @@
  session_start();  
  if(isset($_SESSION["user"]))  
  {  
-      header("location:dashboard_simple.php");  
+      header("location:dashboard_classic.php");  
       exit();
  }  
 
@@ -76,7 +76,7 @@
           error_log($log_message);
           
           // Redirect to admin dashboard
-          header("location: dashboard_simple.php");
+          header("location: dashboard_classic.php");
           exit();
        } else {
           $error_message = "Invalid username or password. Please try again.";

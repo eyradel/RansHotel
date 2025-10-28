@@ -7,222 +7,82 @@ if(!isset($_SESSION["user"]))
 
 // Include access control system
 include('includes/access_control.php');
+include('includes/unified_layout.php');
 initAccessControl('payment');
-?> 
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-      <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RansHotel</title>
-	<!-- Bootstrap Styles-->
-    <link href="assets/css/bootstrap.css" rel="stylesheet" />
-     <!-- FontAwesome Styles-->
-    <link href="assets/css/font-awesome.css" rel="stylesheet" />
-     <!-- Morris Chart Styles-->
-   
-        <!-- Custom Styles-->
-    <link href="assets/css/custom-styles.css" rel="stylesheet" />
-     <!-- Google Fonts-->
-   <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
-     <!-- TABLE STYLES-->
-    <link href="assets/js/dataTables/dataTables.bootstrap.css" rel="stylesheet" />
-</head>
-<body>
-    <div id="wrapper">
-        
-        <nav class="navbar navbar-default top-navbar" role="navigation">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="home.php"><?php echo $_SESSION["user"]; ?> </a>
-            </div>
 
-            <ul class="nav navbar-top-links navbar-right">
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
-                        <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-user">
-                        <li><a href="usersetting.php"><i class="fa fa-user fa-fw"></i> User Profile</a>
-                        </li>
-                        <li><a href="settings.php"><i class="fa fa-gear fa-fw"></i> Settings</a>
-                        </li>
-                        <li class="divider"></li>
-                        <li><a href="logout.php"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
-                        </li>
-                    </ul>
-                    <!-- /.dropdown-user -->
-                </li>
-                <!-- /.dropdown -->
-            </ul>
-        </nav>
-        <!--/. NAV TOP  -->
-        <nav class="navbar-default navbar-side" role="navigation">
-            <div class="sidebar-collapse">
-                <ul class="nav" id="main-menu">
-
-                    <li>
-                        <a href="home.php"><i class="fa fa-dashboard"></i> Status</a>
-                    </li>
-                    <li>
-                        <a  href="messages.php"><i class="fa fa-desktop"></i> News Letters</a>
-                    </li>
-					<li>
-                        <a href="roombook.php"><i class="fa fa-bar-chart-o"></i>Room Booking</a>
-                    </li>
-                    <li>
-                        <a class="active-menu" href="payment.php"><i class="fa fa-qrcode"></i> Payment</a>
-                    </li>
-                    <li>
-                        <a  href="profit.php"><i class="fa fa-qrcode"></i> Profit</a>
-                    </li>
-                    <li>
-                        <a href="pricing.php"><i class="fa fa-dollar"></i> Pricing Management</a>
-                    </li>
-                    <li>
-                        <a href="logout.php" ><i class="fa fa-sign-out fa-fw"></i> Logout</a>
-                    </li>
-                    
-
-                    
-            </div>
-
-        </nav>
-        <!-- /. NAV SIDE  -->
-        <div id="page-wrapper" >
-            <div id="page-inner">
-			 <div class="row">
-                    <div class="col-md-12">
-                        <h1 class="page-header">
-                           Payment Details<small> </small>
-                        </h1>
-                    </div>
-                </div> 
-                 <!-- /. ROW  -->
-				 
-				 
-            <div class="row">
-                <div class="col-md-12">
-                    <!-- Advanced Tables -->
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-bordered table-hover" id="dataTables-example">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-											<th>Room type</th>
-                                            <th>Bed Type</th>
-                                            <th>Check in</th>
-											<th>Check out</th>
-											<th>No of Room</th>
-											<th>Meal Type</th>
-											
-                                            <th>Room Rent</th>
-											<th>Bed Rent</th>
-											<th>Meals </th>
-											<th>Gr.Total</th>
-											<th>Print</th>
-                                            
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        
-									<?php
-										include ('db.php');
-										$sql="select * from payment";
-										$re = mysqli_query($con,$sql);
-										while($row = mysqli_fetch_array($re))
-										{
-										
-											$id = $row['id'];
-											
-											if($id % 2 ==1 )
-											{
-												echo"<tr class='gradeC'>
-													<td>".$row['title']." ".$row['fname']." ".$row['lname']."</td>
-													<td>".$row['troom']."</td>
-													<td>".$row['tbed']."</td>
-													<td>".$row['cin']."</td>
-													<td>".$row['cout']."</td>
-													<td>".$row['nroom']."</td>
-													<td>".$row['meal']."</td>
-													
-													<td>".$row['ttot']."</td>
-													<td>".$row['mepr']."</td>
-													<td>".$row['btot']."</td>
-													<td>".$row['fintot']."</td>
-													<td><a href=print.php?pid=".$id ." <button class='btn btn-primary'> <i class='fa fa-print' ></i> Print</button></td>
-													</tr>";
-											}
-											else
-											{
-												echo"<tr class='gradeU'>
-													<td>".$row['title']." ".$row['fname']." ".$row['lname']."</td>
-													<td>".$row['troom']."</td>
-													<td>".$row['tbed']."</td>
-													<td>".$row['cin']."</td>
-													<td>".$row['cout']."</td>
-													<td>".$row['nroom']."</td>
-													<td>".$row['meal']."</td>
-													
-													<td>".$row['ttot']."</td>
-													<td>".$row['mepr']."</td>
-													<td>".$row['btot']."</td>
-													<td>".$row['fintot']."</td>
-													<td><a href=print.php?pid=".$id ." <button class='btn btn-primary'> <i class='fa fa-print' ></i> Print</button></td>
-													</tr>";
-											
-											}
-										
-										}
-										
-									?>
-                                        
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                        </div>
-                    </div>
-                    <!--End Advanced Tables -->
+// Start admin page with components
+startUnifiedAdminPage('Payment Management', 'Manage payment details and transactions for RansHotel');
+?>
+    <div class="p-4 sm:p-6 lg:p-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <div class="flex items-center space-x-3 mb-2">
+                <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+                    <i class="fa fa-qrcode text-white text-lg"></i>
                 </div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Payment Details</h1>
             </div>
-                <!-- /. ROW  -->
-            
-                </div>
-               
+            <p class="text-gray-600">Manage payment details and transactions for RansHotel</p>
+        </div>
+
+        <!-- Payment Table -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h3 class="text-lg font-semibold text-gray-900">Payment Transactions</h3>
             </div>
-        
-               
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200" id="dataTables-example">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room Type</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bed Type</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check In</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check Out</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No of Rooms</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Meal Type</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room Rent</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bed Rent</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Meals</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <?php
+                        include ('db.php');
+                        $sql="select * from payment";
+                        $re = mysqli_query($con,$sql);
+                        while($row = mysqli_fetch_array($re))
+                        {
+                            $id = $row['id'];
+                            echo"<tr class='hover:bg-gray-50'>
+                                <td class='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900'>".$row['title']." ".$row['fname']." ".$row['lname']."</td>
+                                <td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>".$row['troom']."</td>
+                                <td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>".$row['tbed']."</td>
+                                <td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>".$row['cin']."</td>
+                                <td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>".$row['cout']."</td>
+                                <td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>".$row['nroom']."</td>
+                                <td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>".$row['meal']."</td>
+                                <td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>₵".number_format($row['ttot'], 2)."</td>
+                                <td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>₵".number_format($row['mepr'], 2)."</td>
+                                <td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>₵".number_format($row['btot'], 2)."</td>
+                                <td class='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900'>₵".number_format($row['fintot'], 2)."</td>
+                                <td class='px-6 py-4 whitespace-nowrap text-sm font-medium'>
+                                    <a href='print.php?pid=".$id."' class='inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'>
+                                        <i class='fa fa-print mr-1'></i> Print
+                                    </a>
+                                </td>
+                            </tr>";
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-             <!-- /. PAGE INNER  -->
-            </div>
-         <!-- /. PAGE WRAPPER  -->
-     <!-- /. WRAPPER  -->
-    <!-- JS Scripts-->
-    <!-- jQuery Js -->
-    <script src="assets/js/jquery-1.10.2.js"></script>
-      <!-- Bootstrap Js -->
-    <script src="assets/js/bootstrap.min.js"></script>
-    <!-- Metis Menu Js -->
-    <script src="assets/js/jquery.metisMenu.js"></script>
-     <!-- DATA TABLE SCRIPTS -->
-    <script src="assets/js/dataTables/jquery.dataTables.js"></script>
-    <script src="assets/js/dataTables/dataTables.bootstrap.js"></script>
-        <script>
-            $(document).ready(function () {
-                $('#dataTables-example').dataTable();
-            });
-    </script>
-         <!-- Custom Js -->
-    <script src="assets/js/custom-scripts.js"></script>
-    
-   
-</body>
-</html>
+
+<?php
+// End admin page with components
+endUnifiedAdminPage();
+?>

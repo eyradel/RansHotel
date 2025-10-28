@@ -1,6 +1,7 @@
 <?php
 include('db.php');
 include('includes/access_control.php');
+include('includes/unified_layout.php');
 
 // Check if user is logged in
 if (!isLoggedIn()) {
@@ -9,561 +10,582 @@ if (!isLoggedIn()) {
 }
 
 // Get user info
-$user = getCurrentUser();
+$user = $_SESSION['user'] ?? 'Admin';
+$userRole = getCurrentUserRole();
+
+// Start admin page with unified layout
+startUnifiedAdminPage('Dashboard', 'RansHotel Admin Dashboard - Manage your hotel operations');
+
+// Include database connection
+include('db.php');
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - RansHotel Admin</title>
-    <meta name="description" content="RansHotel Admin Dashboard - Manage your hotel operations">
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Georgia:wght@400;600&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- Classic Design System -->
-    <link href="../css/classic-design-system.css" rel="stylesheet">
-    
-    <style>
-        /* Admin-specific styles */
-        .admin-layout {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            min-height: 100vh;
-            background: var(--classic-cream);
-        }
-        
-        .sidebar {
-            background: var(--classic-navy);
-            color: var(--classic-white);
-            padding: var(--space-6) 0;
-            box-shadow: var(--shadow-lg);
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            overflow-y: auto;
-        }
-        
-        .sidebar-header {
-            padding: 0 var(--space-6) var(--space-8);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: var(--space-6);
-        }
-        
-        .sidebar-brand {
-            font-family: 'Playfair Display', serif;
-            font-size: var(--font-size-2xl);
-            font-weight: 700;
-            color: var(--classic-gold);
-            text-decoration: none;
-            display: block;
-            text-align: center;
-        }
-        
-        .sidebar-nav {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-        
-        .sidebar-nav li {
-            margin: 0;
-        }
-        
-        .sidebar-nav a {
-            display: flex;
-            align-items: center;
-            padding: var(--space-4) var(--space-6);
-            color: var(--classic-white);
-            text-decoration: none;
-            transition: all var(--transition-fast);
-            border-left: 3px solid transparent;
-        }
-        
-        .sidebar-nav a:hover,
-        .sidebar-nav a.active {
-            background: rgba(212, 175, 55, 0.1);
-            color: var(--classic-gold);
-            border-left-color: var(--classic-gold);
-        }
-        
-        .sidebar-nav i {
-            width: 20px;
-            margin-right: var(--space-3);
-            text-align: center;
-        }
-        
-        .main-content {
-            padding: var(--space-8);
-            overflow-y: auto;
-        }
-        
-        .top-bar {
-            background: var(--classic-white);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
-            padding: var(--space-6);
-            margin-bottom: var(--space-8);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .page-title {
-            font-family: 'Playfair Display', serif;
-            font-size: var(--font-size-3xl);
-            color: var(--classic-navy);
-            margin: 0;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: var(--space-4);
-        }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            background: var(--classic-gold);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--classic-navy);
-            font-weight: 600;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: var(--space-6);
-            margin-bottom: var(--space-8);
-        }
-        
-        .stat-card {
-            background: var(--classic-white);
-            border-radius: var(--radius-xl);
-            padding: var(--space-8);
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--classic-gray-light);
-            transition: all var(--transition-normal);
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: var(--radius-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: var(--font-size-2xl);
-            margin-bottom: var(--space-4);
-        }
-        
-        .stat-icon.primary {
-            background: rgba(26, 54, 93, 0.1);
-            color: var(--classic-navy);
-        }
-        
-        .stat-icon.success {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-        }
-        
-        .stat-icon.warning {
-            background: rgba(245, 158, 11, 0.1);
-            color: #f59e0b;
-        }
-        
-        .stat-icon.info {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
-        }
-        
-        .stat-value {
-            font-size: var(--font-size-3xl);
-            font-weight: 700;
-            color: var(--classic-navy);
-            margin-bottom: var(--space-2);
-        }
-        
-        .stat-label {
-            color: var(--classic-gray);
-            font-weight: 500;
-            text-transform: uppercase;
-            font-size: var(--font-size-sm);
-            letter-spacing: 0.05em;
-        }
-        
-        .content-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: var(--space-8);
-        }
-        
-        .recent-bookings {
-            background: var(--classic-white);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-md);
-            overflow: hidden;
-        }
-        
-        .card-header {
-            background: var(--classic-navy);
-            color: var(--classic-white);
-            padding: var(--space-6);
-            border-bottom: 3px solid var(--classic-gold);
-        }
-        
-        .card-title {
-            font-family: 'Playfair Display', serif;
-            font-size: var(--font-size-xl);
-            margin: 0;
-            color: var(--classic-gold);
-        }
-        
-        .booking-item {
-            padding: var(--space-5);
-            border-bottom: 1px solid var(--classic-gray-light);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all var(--transition-fast);
-        }
-        
-        .booking-item:hover {
-            background: var(--classic-gray-light);
-        }
-        
-        .booking-item:last-child {
-            border-bottom: none;
-        }
-        
-        .booking-info h4 {
-            margin: 0 0 var(--space-1) 0;
-            color: var(--classic-navy);
-            font-size: var(--font-size-base);
-        }
-        
-        .booking-info p {
-            margin: 0;
-            color: var(--classic-gray);
-            font-size: var(--font-size-sm);
-        }
-        
-        .booking-status {
-            padding: var(--space-1) var(--space-3);
-            border-radius: var(--radius-full);
-            font-size: var(--font-size-xs);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        
-        .status-confirmed {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-        }
-        
-        .status-pending {
-            background: rgba(245, 158, 11, 0.1);
-            color: #f59e0b;
-        }
-        
-        .quick-actions {
-            background: var(--classic-white);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-md);
-            padding: var(--space-6);
-        }
-        
-        .action-button {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            padding: var(--space-4);
-            margin-bottom: var(--space-3);
-            background: var(--classic-white);
-            border: 2px solid var(--classic-gray-light);
-            border-radius: var(--radius-lg);
-            color: var(--classic-navy);
-            text-decoration: none;
-            font-weight: 500;
-            transition: all var(--transition-fast);
-        }
-        
-        .action-button:hover {
-            border-color: var(--classic-gold);
-            color: var(--classic-gold);
-            transform: translateX(4px);
-        }
-        
-        .action-button i {
-            margin-right: var(--space-3);
-            width: 20px;
-            text-align: center;
-        }
-        
-        .action-button:last-child {
-            margin-bottom: 0;
-        }
-        
-        /* Mobile Responsive */
-        @media (max-width: 1024px) {
-            .admin-layout {
-                grid-template-columns: 1fr;
-            }
-            
-            .sidebar {
-                position: fixed;
-                top: 0;
-                left: -280px;
-                z-index: var(--z-modal);
-                transition: left var(--transition-normal);
-            }
-            
-            .sidebar.open {
-                left: 0;
-            }
-            
-            .main-content {
-                padding: var(--space-4);
-            }
-            
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .top-bar {
-                flex-direction: column;
-                gap: var(--space-4);
-                text-align: center;
-            }
-            
-            .page-title {
-                font-size: var(--font-size-2xl);
-            }
-        }
-        
-        /* Mobile Menu Toggle */
-        .mobile-menu-toggle {
-            display: none;
-            background: var(--classic-navy);
-            color: var(--classic-white);
-            border: none;
-            padding: var(--space-3);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            position: fixed;
-            top: var(--space-4);
-            left: var(--space-4);
-            z-index: var(--z-fixed);
-        }
-        
-        @media (max-width: 1024px) {
-            .mobile-menu-toggle {
-                display: block;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Mobile Menu Toggle -->
-    <button class="mobile-menu-toggle" id="mobileMenuToggle">
-        <i class="fa fa-bars"></i>
-    </button>
-    
-    <div class="admin-layout">
-        <!-- Sidebar -->
-        <nav class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <a href="dashboard_classic.php" class="sidebar-brand">RansHotel</a>
-            </div>
-            
-            <ul class="sidebar-nav">
-                <li><a href="dashboard_classic.php" class="active"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-                <li><a href="booking_details.php"><i class="fa fa-calendar"></i> Bookings</a></li>
-                <li><a href="room.php"><i class="fa fa-bed"></i> Rooms</a></li>
-                <li><a href="pricing.php"><i class="fa fa-tags"></i> Pricing</a></li>
-                <li><a href="user_settings.php"><i class="fa fa-users"></i> Users</a></li>
-                <li><a href="messages.php"><i class="fa fa-envelope"></i> Messages</a></li>
-                <li><a href="newsletter.php"><i class="fa fa-newspaper-o"></i> Newsletter</a></li>
-                <li><a href="settings.php"><i class="fa fa-cog"></i> Settings</a></li>
-                <li><a href="logout.php"><i class="fa fa-sign-out"></i> Logout</a></li>
-            </ul>
-        </nav>
-        
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Top Bar -->
-            <div class="top-bar">
-                <h1 class="page-title">Dashboard</h1>
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
-                    </div>
-                    <div>
-                        <div style="font-weight: 600; color: var(--classic-navy);"><?php echo htmlspecialchars($user['username']); ?></div>
-                        <div style="font-size: var(--font-size-sm); color: var(--classic-gray);">Administrator</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Statistics Grid -->
-            <div class="stats-grid">
-                <?php
-                // Get statistics
-                $totalRooms = mysqli_query($con, "SELECT COUNT(*) as count FROM room")->fetch_assoc()['count'];
-                $totalBookings = mysqli_query($con, "SELECT COUNT(*) as count FROM roombook")->fetch_assoc()['count'];
-                $pendingBookings = mysqli_query($con, "SELECT COUNT(*) as count FROM roombook WHERE stat = 'Pending'")->fetch_assoc()['count'];
-                $confirmedBookings = mysqli_query($con, "SELECT COUNT(*) as count FROM roombook WHERE stat = 'Conform'")->fetch_assoc()['count'];
-                ?>
-                
-                <div class="stat-card">
-                    <div class="stat-icon primary">
-                        <i class="fa fa-bed"></i>
-                    </div>
-                    <div class="stat-value"><?php echo $totalRooms; ?></div>
-                    <div class="stat-label">Total Rooms</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon success">
-                        <i class="fa fa-calendar-check-o"></i>
-                    </div>
-                    <div class="stat-value"><?php echo $confirmedBookings; ?></div>
-                    <div class="stat-label">Confirmed Bookings</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon warning">
-                        <i class="fa fa-clock-o"></i>
-                    </div>
-                    <div class="stat-value"><?php echo $pendingBookings; ?></div>
-                    <div class="stat-label">Pending Bookings</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon info">
-                        <i class="fa fa-users"></i>
-                    </div>
-                    <div class="stat-value"><?php echo $totalBookings; ?></div>
-                    <div class="stat-label">Total Bookings</div>
-                </div>
-            </div>
-            
-            <!-- Content Grid -->
-            <div class="content-grid">
-                <!-- Recent Bookings -->
-                <div class="recent-bookings">
-                    <div class="card-header">
-                        <h2 class="card-title">Recent Bookings</h2>
-                    </div>
-                    <div class="card-body" style="padding: 0;">
+
+<!-- Enhanced Dashboard Content with Tailwind CSS -->
+<div class="p-4 sm:p-6 lg:p-8">
+    <!-- Key Metrics Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+        <!-- Revenue Card -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200 hover-lift animate-fade-in-up">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Total Revenue</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">
                         <?php
-                        $recentBookings = mysqli_query($con, "SELECT * FROM roombook ORDER BY id DESC LIMIT 5");
+                        $revenue_query = "SELECT SUM(fintot) as total_revenue FROM payment";
+                        $revenue_result = mysqli_query($con, $revenue_query);
+                        $revenue_data = mysqli_fetch_assoc($revenue_result);
+                        echo "₵" . number_format($revenue_data['total_revenue'] ?? 0, 2);
+                        ?>
+                    </p>
+                    <div class="flex items-center mt-2 text-sm text-green-600">
+                        <i class="fas fa-arrow-up mr-1"></i>
+                        <span>+12.5% from last month</span>
+                    </div>
+                </div>
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-dollar-sign text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookings Card -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200 hover-lift animate-fade-in-up" style="animation-delay: 0.1s;">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Total Bookings</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">
+                        <?php
+                        $bookings_query = "SELECT COUNT(*) as total_bookings FROM roombook";
+                        $bookings_result = mysqli_query($con, $bookings_query);
+                        $bookings_data = mysqli_fetch_assoc($bookings_result);
+                        echo number_format($bookings_data['total_bookings'] ?? 0);
+                        ?>
+                    </p>
+                    <div class="flex items-center mt-2 text-sm text-green-600">
+                        <i class="fas fa-arrow-up mr-1"></i>
+                        <span>+8.2% from last month</span>
+                    </div>
+                </div>
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-bed text-green-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Available Rooms Card -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200 hover-lift animate-fade-in-up" style="animation-delay: 0.2s;">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Available Rooms</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">
+                        <?php
+                        // Calculate available rooms by checking current bookings
+                        $total_rooms_query = "SELECT COUNT(*) as total_rooms FROM room";
+                        $total_rooms_result = mysqli_query($con, $total_rooms_query);
+                        $total_rooms_data = mysqli_fetch_assoc($total_rooms_result);
+                        $total_rooms = $total_rooms_data['total_rooms'] ?? 0;
                         
-                        if (mysqli_num_rows($recentBookings) > 0) {
-                            while ($booking = mysqli_fetch_assoc($recentBookings)) {
-                                $statusClass = $booking['stat'] == 'Conform' ? 'status-confirmed' : 'status-pending';
-                                $statusText = $booking['stat'] == 'Conform' ? 'Confirmed' : 'Pending';
-                                
-                                echo "
-                                <div class='booking-item'>
-                                    <div class='booking-info'>
-                                        <h4>{$booking['Title']} {$booking['FName']} {$booking['LName']}</h4>
-                                        <p>{$booking['TRoom']} • {$booking['cin']} to {$booking['cout']}</p>
-                                    </div>
-                                    <span class='booking-status {$statusClass}'>{$statusText}</span>
-                                </div>
-                                ";
+                        // Count rooms with active bookings (check-in today or before, check-out today or after)
+                        $occupied_rooms_query = "SELECT COUNT(DISTINCT rb.TRoom) as occupied_rooms FROM roombook rb 
+                                               WHERE rb.stat IN ('Confirmed', 'Checked In') 
+                                               AND rb.cin <= CURDATE() 
+                                               AND rb.cout >= CURDATE()";
+                        $occupied_rooms_result = mysqli_query($con, $occupied_rooms_query);
+                        $occupied_rooms_data = mysqli_fetch_assoc($occupied_rooms_result);
+                        $occupied_rooms = $occupied_rooms_data['occupied_rooms'] ?? 0;
+                        
+                        $available_rooms = max(0, $total_rooms - $occupied_rooms);
+                        echo number_format($available_rooms);
+                        ?>
+                    </p>
+                    <div class="flex items-center mt-2 text-sm text-blue-600">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        <span>Out of <?php echo $total_rooms; ?> total rooms</span>
+                    </div>
+                </div>
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-check-circle text-purple-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Occupancy Rate Card -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200 hover-lift animate-fade-in-up" style="animation-delay: 0.3s;">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Occupancy Rate</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">
+                        <?php
+                        $total_rooms_query = "SELECT COUNT(*) as total_rooms FROM room";
+                        $total_rooms_result = mysqli_query($con, $total_rooms_query);
+                        $total_rooms_data = mysqli_fetch_assoc($total_rooms_result);
+                        
+                        // Count rooms with active bookings (check-in today or before, check-out today or after)
+                        $occupied_rooms_query = "SELECT COUNT(DISTINCT rb.TRoom) as occupied_rooms FROM roombook rb 
+                                               WHERE rb.stat IN ('Confirmed', 'Checked In') 
+                                               AND rb.cin <= CURDATE() 
+                                               AND rb.cout >= CURDATE()";
+                        $occupied_rooms_result = mysqli_query($con, $occupied_rooms_query);
+                        $occupied_rooms_data = mysqli_fetch_assoc($occupied_rooms_result);
+                        
+                        $total_rooms = $total_rooms_data['total_rooms'] ?? 1;
+                        $occupied_rooms = $occupied_rooms_data['occupied_rooms'] ?? 0;
+                        $occupancy_rate = ($occupied_rooms / $total_rooms) * 100;
+                        echo number_format($occupancy_rate, 1) . "%";
+                        ?>
+                    </p>
+                    <div class="flex items-center mt-2 text-sm <?php echo $occupancy_rate > 70 ? 'text-green-600' : 'text-red-600'; ?>">
+                        <i class="fas fa-arrow-<?php echo $occupancy_rate > 70 ? 'up' : 'down'; ?> mr-1"></i>
+                        <span><?php echo $occupancy_rate > 70 ? 'High occupancy' : 'Low occupancy'; ?></span>
+                    </div>
+                </div>
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-percentage text-yellow-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts and Analytics Grid -->
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+        <!-- Revenue Chart -->
+        <div class="xl:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-semibold text-gray-900">Revenue Overview (Last 12 Months)</h3>
+                    <div class="flex space-x-2">
+                        <button onclick="exportChart('revenue')" class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200" title="Export as PNG">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button onclick="exportChart('revenue', 'pdf')" class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200" title="Export as PDF">
+                            <i class="fas fa-file-pdf"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6">
+                <canvas id="revenueChart" class="w-full h-80"></canvas>
+            </div>
+        </div>
+
+        <!-- Room Type Distribution -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h3 class="text-lg font-semibold text-gray-900">Room Type Distribution</h3>
+            </div>
+            <div class="p-6">
+                <canvas id="roomTypeChart" class="w-full h-64"></canvas>
+                <div class="mt-4 space-y-2">
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+                        <span class="text-sm text-gray-600">Standard</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                        <span class="text-sm text-gray-600">Mini Executive</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 bg-cyan-500 rounded-full mr-3"></div>
+                        <span class="text-sm text-gray-600">Executive</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Bookings and Quick Actions Grid -->
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <!-- Recent Bookings -->
+        <div class="xl:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h3 class="text-lg font-semibold text-gray-900">Recent Bookings</h3>
+                <p class="text-sm text-gray-600 mt-1">Latest 10 bookings</p>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200" id="recentBookingsTable">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Guest</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-in</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-out</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <?php
+                        $recent_bookings_query = "SELECT 
+                            rb.id,
+                            CONCAT(rb.FName, ' ', rb.LName) as guest_name,
+                            rb.TRoom,
+                            rb.cin,
+                            rb.cout,
+                            rb.stat as status,
+                            rb.final_amount as amount
+                            FROM roombook rb
+                            ORDER BY rb.id DESC
+                            LIMIT 10";
+                        $recent_bookings_result = mysqli_query($con, $recent_bookings_query);
+                        
+                        while ($row = mysqli_fetch_assoc($recent_bookings_result)) {
+                            $status_class = '';
+                            $status_bg = '';
+                            switch ($row['status']) {
+                                case 'Active':
+                                    $status_class = 'text-green-800';
+                                    $status_bg = 'bg-green-100';
+                                    break;
+                                case 'Completed':
+                                    $status_class = 'text-blue-800';
+                                    $status_bg = 'bg-blue-100';
+                                    break;
+                                case 'Cancelled':
+                                    $status_class = 'text-red-800';
+                                    $status_bg = 'bg-red-100';
+                                    break;
+                                default:
+                                    $status_class = 'text-gray-800';
+                                    $status_bg = 'bg-gray-100';
                             }
-                        } else {
-                            echo "<div style='padding: var(--space-8); text-align: center; color: var(--classic-gray);'>No recent bookings found.</div>";
+                            
+                            echo "<tr class='hover:bg-gray-50'>";
+                            echo "<td class='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900'>#" . $row['id'] . "</td>";
+                            echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>" . htmlspecialchars($row['guest_name']) . "</td>";
+                            echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>" . htmlspecialchars($row['TRoom']) . "</td>";
+                            echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>" . date('M j, Y', strtotime($row['cin'])) . "</td>";
+                            echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>" . date('M j, Y', strtotime($row['cout'])) . "</td>";
+                            echo "<td class='px-6 py-4 whitespace-nowrap'><span class='inline-flex px-2 py-1 text-xs font-semibold rounded-full {$status_bg} {$status_class}'>" . $row['status'] . "</span></td>";
+                            echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium'>₵" . number_format($row['amount'] ?? 0, 2) . "</td>";
+                            echo "</tr>";
                         }
                         ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h3 class="text-lg font-semibold text-gray-900">Quick Actions</h3>
+                <p class="text-sm text-gray-600 mt-1">Common tasks</p>
+            </div>
+            <div class="p-6 space-y-3">
+                <a href="reservation_classic.php" class="flex items-center w-full p-4 text-left text-gray-700 bg-gray-50 hover:bg-blue-50 hover:text-blue-700 rounded-lg border border-gray-200 hover:border-blue-300 transition-all duration-200 group">
+                    <div class="flex-shrink-0 w-10 h-10 bg-blue-100 group-hover:bg-blue-200 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-plus text-blue-600"></i>
+                    </div>
+                    <span class="font-medium">New Booking</span>
+                </a>
+                
+                <a href="room_availability.php" class="flex items-center w-full p-4 text-left text-gray-700 bg-gray-50 hover:bg-green-50 hover:text-green-700 rounded-lg border border-gray-200 hover:border-green-300 transition-all duration-200 group">
+                    <div class="flex-shrink-0 w-10 h-10 bg-green-100 group-hover:bg-green-200 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-bed text-green-600"></i>
+                    </div>
+                    <span class="font-medium">Room Availability</span>
+                </a>
+                
+                <a href="pricing.php" class="flex items-center w-full p-4 text-left text-gray-700 bg-gray-50 hover:bg-purple-50 hover:text-purple-700 rounded-lg border border-gray-200 hover:border-purple-300 transition-all duration-200 group">
+                    <div class="flex-shrink-0 w-10 h-10 bg-purple-100 group-hover:bg-purple-200 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-tags text-purple-600"></i>
+                    </div>
+                    <span class="font-medium">Manage Pricing</span>
+                </a>
+                
+                <a href="profit.php" class="flex items-center w-full p-4 text-left text-gray-700 bg-gray-50 hover:bg-yellow-50 hover:text-yellow-700 rounded-lg border border-gray-200 hover:border-yellow-300 transition-all duration-200 group">
+                    <div class="flex-shrink-0 w-10 h-10 bg-yellow-100 group-hover:bg-yellow-200 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-chart-line text-yellow-600"></i>
+                    </div>
+                    <span class="font-medium">View Reports</span>
+                </a>
+                
+                <a href="notifications.php" class="flex items-center w-full p-4 text-left text-gray-700 bg-gray-50 hover:bg-red-50 hover:text-red-700 rounded-lg border border-gray-200 hover:border-red-300 transition-all duration-200 group">
+                    <div class="flex-shrink-0 w-10 h-10 bg-red-100 group-hover:bg-red-200 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-bell text-red-600"></i>
+                    </div>
+                    <span class="font-medium">Notifications</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Status and Alerts Row -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">System Status & Alerts</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="alert alert-success" role="alert">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <strong>System Online</strong><br>
+                                All systems are running normally.
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="alert alert-info" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Database Connected</strong><br>
+                                Database connection is stable.
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="alert alert-warning" role="alert">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Low Room Availability</strong><br>
+                                Only <?php echo $available_rooms_data['available_rooms'] ?? 0; ?> rooms available.
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                <!-- Quick Actions -->
-                <div class="quick-actions">
-                    <h3 style="margin-bottom: var(--space-6); color: var(--classic-navy); font-family: 'Playfair Display', serif;">Quick Actions</h3>
-                    
-                    <a href="reservation_classic.php" class="action-button">
-                        <i class="fa fa-plus"></i>
-                        New Reservation
-                    </a>
-                    
-                    <a href="room.php" class="action-button">
-                        <i class="fa fa-bed"></i>
-                        Manage Rooms
-                    </a>
-                    
-                    <a href="pricing.php" class="action-button">
-                        <i class="fa fa-tags"></i>
-                        Update Pricing
-                    </a>
-                    
-                    <a href="messages.php" class="action-button">
-                        <i class="fa fa-envelope"></i>
-                        View Messages
-                    </a>
-                    
-                    <a href="user_settings.php" class="action-button">
-                        <i class="fa fa-users"></i>
-                        Manage Users
-                    </a>
-                    
-                    <a href="settings.php" class="action-button">
-                        <i class="fa fa-cog"></i>
-                        Settings
-                    </a>
-                </div>
             </div>
-        </main>
+        </div>
     </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Simple Sidebar Toggle Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
     
-    <script>
-        // Mobile menu toggle
-        document.getElementById('mobileMenuToggle').addEventListener('click', function() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('open');
-        });
-        
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(e) {
-            const sidebar = document.getElementById('sidebar');
-            const toggle = document.getElementById('mobileMenuToggle');
+    if (sidebarToggle && sidebar) {
+        sidebarToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('-translate-x-full');
+            sidebar.classList.toggle('translate-x-0');
             
-            if (window.innerWidth <= 1024 && 
-                !sidebar.contains(e.target) && 
-                !toggle.contains(e.target)) {
-                sidebar.classList.remove('open');
+            if (window.innerWidth < 1024) {
+                if (sidebarOverlay) {
+                    sidebarOverlay.classList.toggle('hidden');
+                }
             }
         });
-        
-        // Auto-refresh statistics every 30 seconds
-        setInterval(function() {
-            // You can implement AJAX refresh here if needed
-        }, 30000);
-    </script>
-</body>
-</html>
+    }
+    
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', function() {
+            sidebar.classList.add('-translate-x-full');
+            sidebar.classList.remove('translate-x-0');
+            sidebarOverlay.classList.add('hidden');
+        });
+    }
+});
+</script>
+
+<!-- Custom styles for specific elements not covered by Tailwind -->
+<style>
+/* Custom animations and specific styling */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Chart canvas sizing */
+#revenueChart, #roomTypeChart {
+    max-height: 400px;
+}
+
+/* DataTable specific styling */
+#recentBookingsTable {
+    font-size: 0.875rem;
+}
+
+/* Hover effects for better UX */
+.hover-lift:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s ease-in-out;
+}
+</style>
+
+<script>
+// Revenue Chart
+const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+const revenueChart = new Chart(revenueCtx, {
+    type: 'line',
+    data: {
+        labels: [
+            <?php
+            $chart_labels_query = "
+                SELECT DISTINCT DATE_FORMAT(created_at, '%Y-%m') as month
+                FROM payment 
+                WHERE created_at >= DATE_SUB(CURRENT_DATE(), INTERVAL 12 MONTH)
+                ORDER BY month ASC
+            ";
+            $chart_labels_result = mysqli_query($con, $chart_labels_query);
+            $labels = [];
+            while ($row = mysqli_fetch_assoc($chart_labels_result)) {
+                $labels[] = "'" . date('M Y', strtotime($row['month'] . '-01')) . "'";
+            }
+            echo implode(',', $labels);
+            ?>
+        ],
+        datasets: [{
+            label: 'Revenue (₵)',
+            data: [
+                <?php
+                $chart_data_query = "
+                    SELECT 
+                        DATE_FORMAT(created_at, '%Y-%m') as month,
+                        SUM(fintot) as revenue
+                    FROM payment 
+                    WHERE created_at >= DATE_SUB(CURRENT_DATE(), INTERVAL 12 MONTH)
+                    GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+                    ORDER BY month ASC
+                ";
+                $chart_data_result = mysqli_query($con, $chart_data_query);
+                $data = [];
+                while ($row = mysqli_fetch_assoc($chart_data_result)) {
+                    $data[] = $row['revenue'];
+                }
+                echo implode(',', $data);
+                ?>
+            ],
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            tension: 0.1,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function(value) {
+                        return '₵' + value.toLocaleString();
+                    }
+                }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return 'Revenue: ₵' + context.parsed.y.toLocaleString();
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Room Type Pie Chart
+const roomTypeCtx = document.getElementById('roomTypeChart').getContext('2d');
+const roomTypeChart = new Chart(roomTypeCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Standard', 'Mini Executive', 'Executive'],
+        datasets: [{
+            data: [
+                <?php
+                $room_type_data_query = "
+                    SELECT 
+                        rb.TRoom,
+                        COUNT(*) as count
+                    FROM roombook rb
+                    GROUP BY rb.TRoom
+                    ORDER BY count DESC
+                ";
+                $room_type_data_result = mysqli_query($con, $room_type_data_query);
+                $room_data = [];
+                while ($row = mysqli_fetch_assoc($room_type_data_result)) {
+                    $room_data[] = $row['count'];
+                }
+                
+                // If no data, show default values based on room types
+                if (empty($room_data)) {
+                    $room_data = [0, 0, 0]; // Standard, Mini Executive, Executive
+                }
+                
+                echo implode(',', $room_data);
+                ?>
+            ],
+            backgroundColor: [
+                '#4e73df',
+                '#1cc88a',
+                '#36b9cc'
+            ],
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                        if (total === 0) {
+                            return context.label + ': No bookings';
+                        }
+                        const percentage = ((context.parsed / total) * 100).toFixed(1);
+                        return context.label + ': ' + context.parsed + ' bookings (' + percentage + '%)';
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Export functions
+function exportChart(chartType, format = 'png') {
+    if (chartType === 'revenue') {
+        const url = revenueChart.toBase64Image();
+        const link = document.createElement('a');
+        link.download = 'revenue-chart.' + format;
+        link.href = url;
+        link.click();
+    }
+}
+
+// Initialize DataTable
+$(document).ready(function() {
+    $('#recentBookingsTable').DataTable({
+        "pageLength": 5,
+        "order": [[ 0, "desc" ]]
+    });
+});
+
+// Auto-refresh dashboard every 5 minutes
+setInterval(function() {
+    location.reload();
+}, 300000);
+</script>
+
+<?php
+// End admin page with unified layout
+endUnifiedAdminPage();
+?>

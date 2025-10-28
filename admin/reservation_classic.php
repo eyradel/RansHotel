@@ -3,6 +3,10 @@ include('db.php');
 require_once 'includes/notification_manager.php';
 require_once 'includes/pricing_helper.php';
 require_once 'includes/phpmailer_email_system.php';
+include('includes/unified_layout.php');
+
+// Feature Toggle: Set to true to enable meal plan selection
+$ENABLE_MEAL_PLAN = false;
 
 // Initialize pricing tables if they don't exist
 PricingHelper::initializePricingTables($con);
@@ -22,7 +26,7 @@ if ($_POST) {
     $troom = $_POST['troom'];
     $bed = $_POST['bed'];
     $nroom = $_POST['nroom'];
-    $meal = $_POST['meal'];
+    $meal = isset($_POST['meal']) ? $_POST['meal'] : 'Room only'; // Default to 'Room only' if meal plan is disabled
     $cin = $_POST['cin'];
     $cout = $_POST['cout'];
     
@@ -96,22 +100,9 @@ if ($_POST) {
         $error_message = "Error: " . mysqli_error($con);
     }
 }
+// Start admin page with unified layout
+startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Located in Tsito, Ghana');
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reservation - RansHotel</title>
-    <meta name="description" content="Book your stay at RansHotel - Located in Tsito, Ghana">
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Georgia:wght@400;600&display=swap" rel="stylesheet">
-    
-    <!-- Classic Design System -->
-    <link href="../css/classic-design-system.css" rel="stylesheet">
     
     <style>
         /* Page-specific styles */
@@ -331,30 +322,63 @@ if ($_POST) {
         }
         
         .form-row {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: var(--space-6);
             margin-bottom: var(--space-4);
-            justify-content: center;
-            align-items: flex-start;
+            width: 100%;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .form-row .form-group {
-            flex: 0 0 auto;
-            min-width: 280px;
-            max-width: 320px;
+            width: 100%;
         }
         
         .form-row.full {
-            justify-content: center;
+            grid-template-columns: 1fr;
         }
         
         .form-row.single {
-            justify-content: center;
+            grid-template-columns: 1fr;
+            max-width: 400px;
         }
         
         .form-row.single .form-group {
-            max-width: 400px;
+            width: 100%;
+        }
+        
+        .form-group {
+            margin-bottom: 0;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: var(--space-3) var(--space-4);
+            border: 2px solid var(--classic-gray-light);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-base);
+            transition: all var(--transition-fast);
+            background: var(--classic-white);
+            color: var(--classic-navy);
+            box-sizing: border-box;
+            margin: 0;
+            min-height: 48px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--classic-gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: var(--space-2);
+            font-weight: 600;
+            color: var(--classic-navy);
+            font-size: var(--font-size-sm);
         }
         
         .pricing-card {
@@ -495,23 +519,39 @@ if ($_POST) {
             color: var(--classic-navy);
         }
         
-        /* Responsive Design */
+        /* Desktop Optimization */
+        @media (min-width: 769px) {
+            .form-row {
+                gap: var(--space-8);
+            }
+            
+            .form-control {
+                font-size: var(--font-size-base);
+                padding: var(--space-4) var(--space-5);
+            }
+            
+            .form-section {
+                padding: var(--space-8) var(--space-10);
+            }
+        }
+        
+        /* Tablet & Mobile Responsive Design */
         @media (max-width: 768px) {
             .hero-section {
-                padding: var(--space-16) 0;
+                padding: var(--space-12) 0;
             }
             
             .hero-title {
-                font-size: var(--font-size-3xl);
+                font-size: var(--font-size-2xl);
             }
             
             .hero-subtitle {
-                font-size: var(--font-size-base);
+                font-size: var(--font-size-sm);
                 padding: 0 var(--space-4);
             }
             
             .reservation-form {
-                margin: calc(var(--space-16) * -1) var(--space-4) 0;
+                margin: calc(var(--space-12) * -1) var(--space-4) 0;
                 border-radius: var(--radius-lg);
             }
             
@@ -520,43 +560,69 @@ if ($_POST) {
             }
             
             .step-indicator {
-                margin-bottom: var(--space-6);
+                margin-bottom: var(--space-4);
+                padding: 0;
             }
             
             .step-number {
-                width: 32px;
-                height: 32px;
+                width: 36px;
+                height: 36px;
                 font-size: var(--font-size-sm);
             }
             
             .step-label {
-                font-size: var(--font-size-xs);
+                font-size: 10px;
+            }
+            
+            .step-title {
+                font-size: var(--font-size-xl);
+            }
+            
+            .step-subtitle {
+                font-size: var(--font-size-sm);
             }
             
             .wizard-navigation {
-                padding: var(--space-4) var(--space-6);
-                flex-direction: column;
-                gap: var(--space-4);
+                padding: var(--space-4);
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: var(--space-3);
             }
             
             .btn-nav {
-                width: 100%;
+                flex: 1;
+                min-width: 120px;
                 justify-content: center;
+                padding: var(--space-3) var(--space-4);
+                font-size: var(--font-size-sm);
             }
             
             .step-counter {
+                width: 100%;
+                text-align: center;
                 order: -1;
+                margin-bottom: var(--space-2);
             }
             
+            /* Stack form fields vertically on tablet */
             .form-row {
-                flex-direction: column;
-                align-items: center;
+                grid-template-columns: 1fr;
                 gap: var(--space-4);
+                max-width: 100%;
             }
             
-            .form-row .form-group {
+            .form-row.single {
                 max-width: 100%;
-                min-width: auto;
+            }
+            
+            .form-group {
+                width: 100%;
+            }
+            
+            .form-control {
+                width: 100%;
+                font-size: var(--font-size-base);
+                padding: var(--space-3) var(--space-4);
             }
             
             .pricing-card {
@@ -568,58 +634,114 @@ if ($_POST) {
             }
             
             .btn-lg {
-                padding: var(--space-3) var(--space-6);
+                width: 100%;
+                padding: var(--space-4) var(--space-6);
                 font-size: var(--font-size-base);
-                min-height: 48px;
+                min-height: 52px;
+            }
+            
+            .booking-summary {
+                padding: var(--space-5);
+            }
+            
+            .summary-section h4 {
+                font-size: var(--font-size-base);
+            }
+            
+            .summary-section p {
+                font-size: var(--font-size-sm);
             }
         }
         
+        /* Mobile Phone Optimization */
         @media (max-width: 480px) {
             .hero-section {
-                padding: var(--space-12) 0;
+                padding: var(--space-10) 0;
             }
             
             .hero-title {
-                font-size: var(--font-size-2xl);
+                font-size: var(--font-size-xl);
                 margin-bottom: var(--space-3);
             }
             
             .hero-subtitle {
-                font-size: var(--font-size-sm);
+                font-size: 13px;
                 padding: 0 var(--space-3);
+                line-height: 1.4;
             }
             
             .reservation-form {
-                margin: calc(var(--space-12) * -1) var(--space-3) 0;
+                margin: calc(var(--space-10) * -1) var(--space-3) 0;
                 border-radius: var(--radius-md);
             }
             
             .form-section {
-                padding: var(--space-4);
+                padding: var(--space-5);
             }
             
-            .section-title {
+            .step-title {
                 font-size: var(--font-size-lg);
-                margin-bottom: var(--space-6);
+                margin-bottom: var(--space-3);
+            }
+            
+            .step-subtitle {
+                font-size: 13px;
+                margin-bottom: var(--space-5);
+            }
+            
+            .step-number {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+            
+            .step-label {
+                font-size: 9px;
             }
             
             .form-group {
-                margin-bottom: var(--space-4);
+                margin-bottom: 0;
+            }
+            
+            .form-row {
+                gap: var(--space-4);
             }
             
             .form-control {
-                font-size: var(--font-size-sm);
+                font-size: 16px; /* Prevents iOS zoom on focus */
                 padding: var(--space-3) var(--space-4);
-                max-width: 100%;
+                width: 100%;
+                min-height: 50px;
             }
             
             .form-label {
-                font-size: var(--font-size-xs);
+                font-size: var(--font-size-sm);
+                margin-bottom: var(--space-2);
+            }
+            
+            .wizard-navigation {
+                padding: var(--space-3);
+                gap: var(--space-2);
+            }
+            
+            .btn-nav {
+                font-size: 13px;
+                padding: var(--space-3);
+                min-height: 48px;
+            }
+            
+            .step-counter {
+                font-size: var(--font-size-sm);
             }
             
             .pricing-card {
-                padding: var(--space-4);
+                padding: var(--space-5);
                 margin-top: var(--space-6);
+            }
+            
+            .pricing-card h3 {
+                font-size: var(--font-size-lg);
+                margin-bottom: var(--space-4);
             }
             
             .pricing-item {
@@ -629,13 +751,39 @@ if ($_POST) {
             
             .pricing-total {
                 font-size: var(--font-size-lg);
+                padding-top: var(--space-3);
+                margin-top: var(--space-3);
             }
             
             .btn-lg {
                 width: 100%;
-                padding: var(--space-3) var(--space-4);
-                font-size: var(--font-size-sm);
-                min-height: 44px;
+                padding: var(--space-4) var(--space-5);
+                font-size: var(--font-size-base);
+                min-height: 52px;
+            }
+            
+            .submit-section {
+                margin-top: var(--space-8);
+                padding-top: var(--space-6);
+            }
+            
+            .booking-summary {
+                padding: var(--space-4);
+                margin-bottom: var(--space-5);
+            }
+            
+            .summary-section {
+                margin-bottom: var(--space-4);
+            }
+            
+            .summary-section h4 {
+                font-size: var(--font-size-base);
+                margin-bottom: var(--space-2);
+            }
+            
+            .summary-section p {
+                font-size: 13px;
+                margin-bottom: var(--space-2);
             }
             
             .back-link {
@@ -644,28 +792,33 @@ if ($_POST) {
             }
             
             .toast {
-                min-width: 280px;
-                margin: 0 var(--space-3) var(--space-3) 0;
+                min-width: auto;
+                margin: 0 var(--space-2) var(--space-2) 0;
             }
             
             .toast-header {
                 padding: var(--space-3) var(--space-4);
+                font-size: var(--font-size-sm);
             }
             
             .toast-body {
                 padding: var(--space-3) var(--space-4);
-                font-size: var(--font-size-sm);
+                font-size: 13px;
             }
         }
         
-        /* Extra small devices */
+        /* Extra small devices (iPhone SE, small phones) */
         @media (max-width: 360px) {
             .hero-section {
                 padding: var(--space-8) 0;
             }
             
             .hero-title {
-                font-size: var(--font-size-xl);
+                font-size: var(--font-size-lg);
+            }
+            
+            .hero-subtitle {
+                font-size: 12px;
             }
             
             .reservation-form {
@@ -676,8 +829,57 @@ if ($_POST) {
                 padding: var(--space-4);
             }
             
-            .pricing-card {
+            .step-indicator {
+                padding: 0;
+            }
+            
+            .step-number {
+                width: 28px;
+                height: 28px;
+                font-size: 11px;
+            }
+            
+            .step-label {
+                font-size: 8px;
+            }
+            
+            .step-title {
+                font-size: var(--font-size-base);
+            }
+            
+            .step-subtitle {
+                font-size: 12px;
+            }
+            
+            .form-row {
+                gap: var(--space-3);
+            }
+            
+            .form-control {
                 padding: var(--space-3);
+                min-height: 48px;
+            }
+            
+            .wizard-navigation {
+                padding: var(--space-3);
+            }
+            
+            .btn-nav {
+                font-size: 12px;
+                padding: var(--space-2) var(--space-3);
+            }
+            
+            .pricing-card {
+                padding: var(--space-4);
+            }
+            
+            .pricing-card h3 {
+                font-size: var(--font-size-base);
+            }
+            
+            .btn-lg {
+                min-height: 50px;
+                font-size: var(--font-size-sm);
             }
         }
         
@@ -685,59 +887,24 @@ if ($_POST) {
         @media (max-width: 768px) {
             /* Improve touch targets */
             .form-control, .btn {
-                min-height: 48px;
                 touch-action: manipulation;
+                -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
             }
-            
-            /* Better spacing for mobile */
-        .form-group {
-            margin-bottom: var(--space-3);
-        }
-        
-        .form-control {
-            width: 100%;
-            max-width: 280px;
-            padding: var(--space-3) var(--space-4);
-            border: 2px solid var(--classic-gray-light);
-            border-radius: var(--radius-md);
-            font-size: var(--font-size-base);
-            transition: all var(--transition-fast);
-            background: var(--classic-white);
-            color: var(--classic-navy);
-            box-sizing: border-box;
-            margin: 0;
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: var(--classic-gold);
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: var(--space-2);
-            font-weight: 600;
-            color: var(--classic-navy);
-            font-size: var(--font-size-sm);
-        }
             
             /* Improve select dropdowns on mobile */
             .form-select {
-                background-size: 20px 20px;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-size: 16px 16px;
                 background-position: right 12px center;
-            }
-            
-            /* Better button spacing */
-            .btn {
-                margin-bottom: var(--space-2);
+                padding-right: var(--space-10);
             }
             
             /* Improve toast positioning on mobile */
             .toast-container {
                 top: var(--space-4);
-                right: var(--space-4);
-                left: var(--space-4);
+                right: var(--space-3);
+                left: var(--space-3);
             }
             
             .toast {
@@ -745,42 +912,93 @@ if ($_POST) {
                 width: 100%;
                 margin: 0 0 var(--space-3) 0;
             }
+            
+            /* Prevent horizontal scroll */
+            .reservation-form {
+                overflow-x: hidden;
+            }
         }
         
         /* Landscape mobile orientation */
         @media (max-width: 768px) and (orientation: landscape) {
             .hero-section {
-                padding: var(--space-8) 0;
+                padding: var(--space-6) 0;
             }
             
             .hero-title {
-                font-size: var(--font-size-2xl);
+                font-size: var(--font-size-xl);
+                margin-bottom: var(--space-2);
+            }
+            
+            .hero-subtitle {
+                font-size: var(--font-size-sm);
             }
             
             .reservation-form {
-                margin: calc(var(--space-8) * -1) var(--space-4) 0;
+                margin: calc(var(--space-6) * -1) var(--space-4) 0;
             }
             
             .form-section {
-                padding: var(--space-6);
+                padding: var(--space-5);
+            }
+            
+            .step-indicator {
+                margin-bottom: var(--space-3);
+            }
+            
+            /* Use 2 columns in landscape for better space utilization */
+            .form-row {
+                grid-template-columns: repeat(2, 1fr);
+                gap: var(--space-4);
+            }
+            
+            .form-row.single {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
+        }
+        
+        /* Large Desktop Optimization */
+        @media (min-width: 1200px) {
+            .reservation-form {
+                max-width: 800px;
+            }
+            
+            .form-row {
+                max-width: 700px;
+                gap: var(--space-10);
+            }
+            
+            .form-row.single {
+                max-width: 450px;
+            }
+            
+            .form-control {
+                padding: var(--space-4) var(--space-6);
+                font-size: var(--font-size-lg);
+            }
+            
+            .form-label {
+                font-size: var(--font-size-base);
             }
         }
     </style>
 </head>
 <body>
-    <!-- Skip Link for Accessibility -->
-    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Skip Link for Accessibility -->
+        
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container">
+                <h1 class="hero-title">Make a Reservation</h1>
+                <p class="hero-subtitle">Experience luxury and comfort at RansHotel, located in the beautiful Tsito, Ghana</p>
+            </div>
+        </section>
     
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="container">
-            <h1 class="hero-title">Make a Reservation</h1>
-            <p class="hero-subtitle">Experience luxury and comfort at RansHotel, located in the beautiful Tsito, Ghana</p>
-        </div>
-    </section>
-    
-    <!-- Main Content -->
-    <main id="main-content">
+        <!-- Main Content -->
+        <div id="main-content">
         <div class="container">
             <div class="reservation-form">
                 <div class="wizard-container">
@@ -908,6 +1126,7 @@ if ($_POST) {
                                     </div>
                                 </div>
                                 
+                                <?php if ($ENABLE_MEAL_PLAN): ?>
                                 <div class="form-row single">
                                     <div class="form-group">
                                         <label for="meal" class="form-label">Meal Plan *</label>
@@ -924,6 +1143,10 @@ if ($_POST) {
                                         </select>
                                     </div>
                                 </div>
+                                <?php else: ?>
+                                <!-- Meal Plan is disabled - automatically set to 'Room only' -->
+                                <input type="hidden" name="meal" id="meal" value="Room only" data-price="0">
+                                <?php endif; ?>
                                 
                                 <div class="form-row">
                                     <div class="form-group">
@@ -970,10 +1193,12 @@ if ($_POST) {
                                         <span>Room Cost:</span>
                                         <span id="roomCost">₵0.00</span>
                                     </div>
+                                    <?php if ($ENABLE_MEAL_PLAN): ?>
                                     <div class="pricing-item">
                                         <span>Meal Cost:</span>
                                         <span id="mealCost">₵0.00</span>
                                     </div>
+                                    <?php endif; ?>
                                     <div class="pricing-item">
                                         <span>Subtotal:</span>
                                         <span id="subtotal">₵0.00</span>
@@ -1022,6 +1247,7 @@ if ($_POST) {
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </main>
     
@@ -1201,7 +1427,8 @@ if ($_POST) {
             const pricingSummary = document.getElementById('pricingSummary');
             
             const roomPrice = parseFloat(roomSelect.options[roomSelect.selectedIndex].dataset.price) || 0;
-            const mealPrice = parseFloat(mealSelect.options[mealSelect.selectedIndex].dataset.price) || 0;
+            // Get meal price from data attribute or hidden input
+            const mealPrice = mealSelect ? (parseFloat(mealSelect.options?.[mealSelect.selectedIndex]?.dataset?.price) || parseFloat(mealSelect.dataset?.price) || 0) : 0;
             const nrooms = parseInt(nroomSelect.value) || 1;
             
             let days = 0;
@@ -1220,7 +1447,13 @@ if ($_POST) {
                 const total = subtotal + tax + serviceCharge;
                 
                 document.getElementById('roomCost').textContent = '₵' + roomTotal.toFixed(2);
-                document.getElementById('mealCost').textContent = '₵' + mealTotal.toFixed(2);
+                
+                // Only update meal cost if the element exists (when meal plan is enabled)
+                const mealCostElement = document.getElementById('mealCost');
+                if (mealCostElement) {
+                    mealCostElement.textContent = '₵' + mealTotal.toFixed(2);
+                }
+                
                 document.getElementById('subtotal').textContent = '₵' + subtotal.toFixed(2);
                 document.getElementById('tax').textContent = '₵' + tax.toFixed(2);
                 document.getElementById('serviceCharge').textContent = '₵' + serviceCharge.toFixed(2);
@@ -1358,5 +1591,7 @@ if ($_POST) {
             showToast('<?php echo addslashes($error_message); ?>', 'error');
         <?php endif; ?>
     </script>
-</body>
-</html>
+<?php
+// End admin page with unified layout
+endUnifiedAdminPage();
+?>

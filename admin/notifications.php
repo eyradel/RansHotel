@@ -5,78 +5,26 @@ if(!isset($_SESSION['user'])){
 }
 include('db.php');
 include('includes/access_control.php');
+include('includes/unified_layout.php');
 initAccessControl('notifications');
 require_once 'includes/notification_manager.php';
 require_once 'includes/email_notification.php';
 require_once 'includes/sms_notification.php';
+
+// Start admin page with components
+startUnifiedAdminPage('Notifications', 'Manage notifications and communications for RansHotel');
 ?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Notifications - RansHotel</title>
-    <meta name="description" content="Manage notifications and communications for RansHotel">
-    <meta name="author" content="RansHotel">
-    <!-- Bootstrap Styles-->
-    <link href="assets/css/bootstrap.css" rel="stylesheet" />
-    <!-- FontAwesome Styles-->
-    <link href="assets/css/font-awesome.css" rel="stylesheet" />
-    <!-- Custom Styles-->
-    <link href="assets/css/custom-styles.css" rel="stylesheet" />
-    <!-- Responsive Admin Styles-->
-    <link href="assets/css/responsive-admin.css" rel="stylesheet" />
-    <!-- Google Fonts-->
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
-</head>
-<body>
-    <div id="wrapper">
-        <nav class="navbar-default navbar-side" role="navigation">
-            <div class="sidebar-collapse">
-                <ul class="nav" id="main-menu">
-                    <li>
-                        <a href="home.php"><i class="fa fa-dashboard"></i> Dashboard</a>
-                    </li>
-                    <li>
-                        <a href="reservation.php"><i class="fa fa-calendar"></i> Reservations</a>
-                    </li>
-                    <li>
-                        <a href="roombook.php"><i class="fa fa-bed"></i> Room Bookings</a>
-                    </li>
-                    <li>
-                        <a href="notifications.php" class="active-menu"><i class="fa fa-bell"></i> Notifications</a>
-                    </li>
-                    <li>
-                        <a href="messages.php"><i class="fa fa-envelope"></i> Messages</a>
-                    </li>
-                    <li>
-                        <a href="payment.php"><i class="fa fa-credit-card"></i> Payments</a>
-                    </li>
-                    <li>
-                        <a href="room.php"><i class="fa fa-home"></i> Rooms</a>
-                    </li>
-                    <li>
-                        <a href="usersetting.php"><i class="fa fa-users"></i> Users</a>
-                    </li>
-                    <li>
-                        <a href="settings.php"><i class="fa fa-cog"></i> Settings</a>
-                    </li>
-                    <li>
-                        <a href="logout.php"><i class="fa fa-sign-out"></i> Logout</a>
-                    </li>
-                </ul>
+    <div class="p-4 sm:p-6 lg:p-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <div class="flex items-center space-x-3 mb-2">
+                <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+                    <i class="fa fa-bell text-white text-lg"></i>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Notifications</h1>
             </div>
-        </nav>
-       
-        <div id="page-wrapper">
-            <div id="page-inner">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h1 class="page-header">
-                            Notifications <small>Manage SMS & Email Communications</small>
-                        </h1>
-                    </div>
-                </div> 
+            <p class="text-gray-600">Manage SMS & Email Communications</p>
+        </div> 
                  
                 <?php
                 // Handle form submissions
@@ -163,12 +111,12 @@ require_once 'includes/sms_notification.php';
                             }
                         }
                         
-                        echo "<div class='alert alert-success'>
+                        echo "<div class='bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4'>
                             <strong>Bulk notification sent!</strong> 
                             Successfully sent to $successCount recipients, $failCount failed.
                         </div>";
                     } else {
-                        echo "<div class='alert alert-warning'>
+                        echo "<div class='bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-lg mb-4'>
                             <strong>No customers found!</strong> No valid email addresses or phone numbers in the database.
                         </div>";
                     }
@@ -195,163 +143,125 @@ require_once 'includes/sms_notification.php';
                             $booking['TRoom']
                         );
                         
-                        echo "<div class='alert alert-success'>
+                        echo "<div class='bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4'>
                             <strong>Reminder sent!</strong> Check-in reminder sent to {$booking['FName']} {$booking['LName']}.
                         </div>";
                     }
                 }
                 ?>
                 
-                <div class="row">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                     <!-- Bulk Notification Form -->
-                    <div class="col-md-6">
-                        <div class="panel panel-primary">
-                            <div class="panel-heading">
-                                Send Bulk Notification
-                            </div>
-                            <div class="panel-body">
-                                <form method="post">
-                                    <div class="form-group">
-                                        <label>Notification Type</label>
-                                        <select name="notification_type" class="form-control" required>
-                                            <option value="">Select Type</option>
-                                            <option value="both">SMS & Email</option>
-                                            <option value="sms">SMS Only</option>
-                                            <option value="email">Email Only</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Message</label>
-                                        <textarea name="message" class="form-control" rows="4" required placeholder="Enter your message here..."></textarea>
-                                    </div>
-                                    <button type="submit" name="send_bulk_notification" class="btn btn-primary">
-                                        <i class="fa fa-send"></i> Send to All Customers
-                                    </button>
-                                </form>
-                            </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                            <h3 class="text-lg font-semibold text-gray-900">Send Bulk Notification</h3>
+                        </div>
+                        <div class="p-6">
+                            <form method="post" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Notification Type</label>
+                                    <select name="notification_type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                                        <option value="">Select Type</option>
+                                        <option value="both">SMS & Email</option>
+                                        <option value="sms">SMS Only</option>
+                                        <option value="email">Email Only</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                                    <textarea name="message" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" rows="4" required placeholder="Enter your message here..."></textarea>
+                                </div>
+                                <button type="submit" name="send_bulk_notification" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium flex items-center justify-center space-x-2">
+                                    <i class="fa fa-send"></i>
+                                    <span>Send to All Customers</span>
+                                </button>
+                            </form>
                         </div>
                     </div>
                     
                     <!-- Individual Reminder Form -->
-                    <div class="col-md-6">
-                        <div class="panel panel-info">
-                            <div class="panel-heading">
-                                Send Check-in Reminder
-                            </div>
-                            <div class="panel-body">
-                                <form method="post">
-                                    <div class="form-group">
-                                        <label>Select Booking</label>
-                                        <select name="booking_id" class="form-control" required>
-                                            <option value="">Select Booking</option>
-                                            <?php
-                                            $sql = "SELECT id, FName, LName, cin, TRoom FROM roombook WHERE cin >= CURDATE() ORDER BY cin ASC";
-                                            $query = mysqli_query($con, $sql);
-                                            while($row = mysqli_fetch_assoc($query)) {
-                                                echo "<option value='{$row['id']}'>
-                                                    {$row['FName']} {$row['LName']} - {$row['TRoom']} - {$row['cin']}
-                                                </option>";
-                                            }
-                                            ?>
-                                        </select>
-                                    </div>
-                                    <button type="submit" name="send_reminder" class="btn btn-info">
-                                        <i class="fa fa-bell"></i> Send Reminder
-                                    </button>
-                                </form>
-                            </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                            <h3 class="text-lg font-semibold text-gray-900">Send Check-in Reminder</h3>
+                        </div>
+                        <div class="p-6">
+                            <form method="post" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Select Booking</label>
+                                    <select name="booking_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                                        <option value="">Select Booking</option>
+                                        <?php
+                                        $sql = "SELECT id, FName, LName, cin, TRoom FROM roombook WHERE cin >= CURDATE() ORDER BY cin ASC";
+                                        $query = mysqli_query($con, $sql);
+                                        while($row = mysqli_fetch_assoc($query)) {
+                                            echo "<option value='{$row['id']}'>
+                                                {$row['FName']} {$row['LName']} - {$row['TRoom']} - {$row['cin']}
+                                            </option>";
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                                <button type="submit" name="send_reminder" class="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors duration-200 font-medium flex items-center justify-center space-x-2">
+                                    <i class="fa fa-bell"></i>
+                                    <span>Send Reminder</span>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Recent Bookings -->
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                Recent Bookings
-                            </div>
-                            <div class="panel-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-bordered table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Customer</th>
-                                                <th>Email</th>
-                                                <th>Phone</th>
-                                                <th>Room</th>
-                                                <th>Check-in</th>
-                                                <th>Check-out</th>
-                                                <th>Status</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-                                            $sql = "SELECT * FROM roombook ORDER BY id DESC LIMIT 10";
-                                            $query = mysqli_query($con, $sql);
-                                            while($row = mysqli_fetch_assoc($query)) {
-                                                echo "<tr>";
-                                                echo "<td>{$row['id']}</td>";
-                                                echo "<td>{$row['Title']} {$row['FName']} {$row['LName']}</td>";
-                                                echo "<td>{$row['Email']}</td>";
-                                                echo "<td>{$row['Phone']}</td>";
-                                                echo "<td>{$row['TRoom']}</td>";
-                                                echo "<td>{$row['cin']}</td>";
-                                                echo "<td>{$row['cout']}</td>";
-                                                echo "<td><span class='label label-info'>{$row['stat']}</span></td>";
-                                                echo "<td>
-                                                    <a href='#' class='btn btn-sm btn-success' onclick='sendReminder({$row['id']})'>
-                                                        <i class='fa fa-bell'></i> Reminder
-                                                    </a>
-                                                </td>";
-                                                echo "</tr>";
-                                            }
-                                            ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                        <h3 class="text-lg font-semibold text-gray-900">Recent Bookings</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-in</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-out</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <?php
+                                $sql = "SELECT * FROM roombook ORDER BY id DESC LIMIT 10";
+                                $query = mysqli_query($con, $sql);
+                                while($row = mysqli_fetch_assoc($query)) {
+                                    echo "<tr class='hover:bg-gray-50'>";
+                                    echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>{$row['id']}</td>";
+                                    echo "<td class='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900'>{$row['Title']} {$row['FName']} {$row['LName']}</td>";
+                                    echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>{$row['Email']}</td>";
+                                    echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>{$row['Phone']}</td>";
+                                    echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>{$row['TRoom']}</td>";
+                                    echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>{$row['cin']}</td>";
+                                    echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>{$row['cout']}</td>";
+                                    echo "<td class='px-6 py-4 whitespace-nowrap'>";
+                                    $status = $row['stat'];
+                                    $statusColors = ['Confirmed' => 'bg-green-100 text-green-800', 'Checked In' => 'bg-blue-100 text-blue-800', 'Checked Out' => 'bg-gray-100 text-gray-800', 'Cancelled' => 'bg-red-100 text-red-800'];
+                                    $statusColor = $statusColors[$status] ?? 'bg-gray-100 text-gray-800';
+                                    echo "<span class='px-2 py-1 text-xs font-medium rounded-full {$statusColor}'>{$status}</span>";
+                                    echo "</td>";
+                                    echo "<td class='px-6 py-4 whitespace-nowrap text-sm font-medium'>";
+                                    echo "<button onclick='sendReminder({$row['id']})' class='text-green-600 hover:text-green-900' title='Send Reminder'>";
+                                    echo "<i class='fa fa-bell'></i>";
+                                    echo "</button>";
+                                    echo "</td>";
+                                    echo "</tr>";
+                                }
+                                ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                
-                <!-- Notification Settings -->
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="panel panel-warning">
-                            <div class="panel-heading">
-                                Notification Settings
-                            </div>
-                            <div class="panel-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <h4>SMS Configuration</h4>
-                                        <p><strong>API Key:</strong> qqYaIprq4RZ25q9JENdRqQbKZ</p>
-                                        <p><strong>Sender ID:</strong> RansHotel</p>
-                                        <p><strong>Provider:</strong> mNotify</p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <h4>Email Configuration</h4>
-                                        <p><strong>From Email:</strong> eyramdela14@gmail.com</p>
-                                        <p><strong>Manager Email:</strong> eyramdela14@gmail.com</p>
-                                        <p><strong>Manager Phone:</strong> 0540202096</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
-    
-    <!-- JS Scripts-->
-    <script src="assets/js/jquery-1.10.2.js"></script>
-    <script src="assets/js/bootstrap.min.js"></script>
-    <script src="assets/js/jquery.metisMenu.js"></script>
-    <script src="assets/js/custom-scripts.js"></script>
     
     <script>
     function sendReminder(bookingId) {
@@ -366,7 +276,9 @@ require_once 'includes/sms_notification.php';
         }
     }
     </script>
-</body>
-</html>
+<?php
+// End admin page with unified layout
+endUnifiedAdminPage();
+?>
 
 

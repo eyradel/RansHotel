@@ -1,7 +1,7 @@
 <?php
 session_start();
 if(isset($_SESSION["user"])) {
-    header("location:dashboard_simple.php");
+    header("location:dashboard_classic.php");
 }
 
 include('db.php');
@@ -115,7 +115,7 @@ include('db.php');
                 $_SESSION['role'] = $row['role'];
                 $_SESSION['email'] = $row['email'];
                 
-                header("location: dashboard_simple.php");
+                header("location: dashboard_classic.php");
                 exit();
             } else {
                 echo '<div class="error-message">Invalid username or password. Please try again.</div>';
@@ -131,7 +131,7 @@ include('db.php');
                 $_SESSION['user'] = $myusername;
                 $_SESSION['user_id'] = $row['id'];
                 $_SESSION['role'] = 'admin'; // Default role for old system
-                header("location: dashboard_simple.php");
+                header("location: dashboard_classic.php");
                 exit();
             } else {
                 echo '<div class="error-message">Invalid username or password. Please try again.</div>';

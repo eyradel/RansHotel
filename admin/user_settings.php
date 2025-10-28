@@ -1,294 +1,326 @@
-<?php  
-session_start();  
-if(!isset($_SESSION["user"]))
-{
- header("location:index.php");
+<?php
+include('db.php');
+include('includes/access_control.php');
+include('includes/unified_layout.php');
+
+// Check if user is logged in
+if (!isLoggedIn()) {
+    header('Location: login_improved.php');
+    exit();
 }
 
-ob_start();
-?> 
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-      <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RansHotel - User Settings</title>
-	<!-- Bootstrap Styles-->
-    <link href="assets/css/bootstrap.css" rel="stylesheet" />
-     <!-- FontAwesome Styles-->
-    <link href="assets/css/font-awesome.css" rel="stylesheet" />
-        <!-- Custom Styles-->
-    <link href="assets/css/custom-styles.css" rel="stylesheet" />
-     <!-- Google Fonts-->
-   <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
-    <link href="assets/js/dataTables/dataTables.bootstrap.css" rel="stylesheet" />
-</head>
-<body>
-    <div id="wrapper">
-        <nav class="navbar navbar-default top-navbar" role="navigation">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="home.php">MAIN MENU </a>
+// Start admin page with unified layout
+startUnifiedAdminPage('User Settings', 'Manage your user profile and settings');
+?>
+
+<!-- User Settings Content -->
+<div class="user-settings-container">
+    <div class="settings-grid">
+        <!-- User Management Card -->
+        <div class="settings-card">
+            <div class="card-header">
+                <h2 class="card-title">Administrator Accounts</h2>
+                <p class="card-subtitle">Manage user accounts and permissions</p>
             </div>
-
-            <ul class="nav navbar-top-links navbar-right">
-			
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
-                        <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-user">
-                        <li><a href="user_settings.php"><i class="fa fa-user fa-fw"></i> User Profile</a>
-                        </li>
-                        <li><a href="settings.php"><i class="fa fa-gear fa-fw"></i> Settings</a>
-                        </li>
-                        <li class="divider"></li>
-                        <li><a href="logout.php"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
-                        </li>
-                    </ul>
-					
-                    <!-- /.dropdown-user -->
-                </li>
-                <!-- /.dropdown -->
-            </ul>
-        </nav>
-        <!--/. NAV TOP  -->
-        <nav class="navbar-default navbar-side" role="navigation">
-            <div class="sidebar-collapse">
-                <ul class="nav" id="main-menu">
-
-                    <li>
-                        <a class="active-menu" href="settings.php"><i class="fa fa-dashboard"></i>User Dashboard</a>
-                    </li>
-					
-					
-
-                    
-            </div>
-
-        </nav>
-        <!-- /. NAV SIDE  -->
-       
-        <div id="page-wrapper" >
-            <div id="page-inner">
-			 <div class="row">
-                    <div class="col-md-12">
-                        <h1 class="page-header">
-                           ADMINISTRATOR<small> accounts </small>
-                        </h1>
+                    <div class="table-responsive">
+                        <table class="simple-table" id="userTable">
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Username</th>
+                                    <th>Password</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $sql = "SELECT * FROM `login`";
+                                $re = mysqli_query($con, $sql);
+                                
+                                while($row = mysqli_fetch_array($re)) {
+                                    $id = $row['id'];
+                                    $us = $row['usname'];
+                                    $ps = $row['pass'];
+                                    
+                                    echo "<tr>
+                                        <td>" . htmlspecialchars($id) . "</td>
+                                        <td>" . htmlspecialchars($us) . "</td>
+                                        <td>" . htmlspecialchars($ps) . "</td>
+                                        <td>
+                                            <div class='action-buttons'>
+                                                <button class='btn btn-primary btn-sm' data-toggle='modal' data-target='#updateModal' data-id='" . $id . "' data-username='" . htmlspecialchars($us) . "' data-password='" . htmlspecialchars($ps) . "'>
+                                                    <i class='fa fa-edit'></i> Update
+                                                </button>
+                                                <a href='user_settings_delete.php?eid=" . $id . "' class='btn btn-danger btn-sm' onclick='return confirm(\"Are you sure you want to delete this user?\")'>
+                                                    <i class='fa fa-trash'></i> Delete
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>";
+                                }
+                                ?>
+                            </tbody>
+                        </table>
                     </div>
-                </div> 
-                 
-                                 
-            <?php
-						include ('db.php');
-						$sql = "SELECT * FROM `login`";
-						$re = mysqli_query($con,$sql)
-				?>
-                
-            <div class="row">
-                <div class="col-md-12">
-                    <!-- Advanced Tables -->
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-bordered table-hover" id="dataTables-example">
-                                    <thead>
-                                        <tr>
-                                            <th>User ID</th>
-											<th>User name</th>
-                                            <th>Password</th>
-                                            
-											<th>Update</th>
-											<th>Remove</th>
-                                            
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        
-									<?php
-										while($row = mysqli_fetch_array($re))
-										{
-										
-											$id = $row['id'];
-											$us = $row['usname'];
-											$ps = $row['pass'];
-											if($id % 2 ==0 )
-											{
-												echo"<tr class='gradeC'>
-													<td>".$id."</td>
-													<td>".$us."</td>
-													<td>".$ps."</td>
-													
-													<td><button class='btn btn-primary btn' data-toggle='modal' data-target='#myModal'>
-															 Update 
-													</button></td>
-													<td><a href=user_settings_delete.php?eid=".$id ." <button class='btn btn-danger'> <i class='fa fa-edit' ></i> Delete</button></td>
-												</tr>";
-											}
-											else
-											{
-												echo"<tr class='gradeU'>
-													<td>".$id."</td>
-													<td>".$us."</td>
-													<td>".$ps."</td>
-													
-													<td><button class='btn btn-primary btn' data-toggle='modal' data-target='#myModal'>
-                              Update 
-                            </button></td>
-													<td><a href=user_settings_delete.php?eid=".$id ." <button class='btn btn-danger'> <i class='fa fa-edit' ></i> Delete</button></td>
-												</tr>";
-											
-											}
-										
-										}
-										
-									?>
-                                        
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                        </div>
-                    </div>
-                    <!--End Advanced Tables -->
-					<div class="panel-body">
-                            <button class="btn btn-primary btn" data-toggle="modal" data-target="#myModal1">
-															Add New Admin
-													</button>
-                            <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                            <h4 class="modal-title" id="myModalLabel">Add the User name and Password</h4>
-                                        </div>
-										<form method="post">
-                                        <div class="modal-body">
-                                            <div class="form-group">
-                                            <label>Add new User name</label>
-                                            <input name="newus"  class="form-control" placeholder="Enter User name">
-											</div>
-										</div>
-										<div class="modal-body">
-                                            <div class="form-group">
-                                            <label>New Password</label>
-                                            <input name="newps"  class="form-control" placeholder="Enter Password">
-											</div>
-                                        </div>
-										
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-											
-                                           <input type="submit" name="in" value="Add" class="btn btn-primary">
-										  </form>
-										   
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-						<?php
-						if(isset($_POST['in']))
-						{
-							$newus = $_POST['newus'];
-							$newps = $_POST['newps'];
-							
-							$newsql ="Insert into login (usname,pass) values ('$newus','$newps')";
-							if(mysqli_query($con,$newsql))
-							{
-							echo' <script language="javascript" type="text/javascript"> alert("User name and password Added") </script>';
-							
-						
-							}
-						header("Location: user_settings.php");
-						}
-						?>
-						
-					<div class="panel-body">
-                            
-                            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                            <h4 class="modal-title" id="myModalLabel">Change the User name and Password</h4>
-                                        </div>
-										<form method="post">
-                                        <div class="modal-body">
-                                            <div class="form-group">
-                                            <label>Change User name</label>
-                                            <input name="usname" value="<?php echo $us; ?>" class="form-control" placeholder="Enter User name">
-											</div>
-										</div>
-										<div class="modal-body">
-                                            <div class="form-group">
-                                            <label>Change Password</label>
-                                            <input name="pasd" value="<?php echo $ps; ?>" class="form-control" placeholder="Enter Password">
-											</div>
-                                        </div>
-										
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-											
-                                           <input type="submit" name="up" value="Update" class="btn btn-primary">
-										  </form>
-										   
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                 </div>
             </div>
-               
-                <!-- /. ROW  -->
-                <?php 
-				if(isset($_POST['up']))
-				{
-					$usname = $_POST['usname'];
-					$passwr = $_POST['pasd'];
-					
-					$upsql = "UPDATE `login` SET `usname`='$usname',`pass`='$passwr' WHERE id = '$id'";
-					if(mysqli_query($con,$upsql))
-					{
-					echo' <script language="javascript" type="text/javascript"> alert("User name and password update") </script>';
-					
-				
-					}
-				
-				header("Location: user_settings.php");
-				
-				}
-				ob_end_flush();
-				
-				
-				
-				
-				?>
-                                
-                  
-            
-			 <!-- /. PAGE INNER  -->
-            </div>
-         <!-- /. PAGE WRAPPER  -->
         </div>
-     <!-- /. WRAPPER  -->
-    <!-- JS Scripts-->
-    <!-- jQuery Js -->
-    <script src="assets/js/jquery-1.10.2.js"></script>
-      <!-- Bootstrap Js -->
-    <script src="assets/js/bootstrap.min.js"></script>
-    <!-- Metis Menu Js -->
-    <script src="assets/js/jquery.metisMenu.js"></script>
-      <!-- Custom Js -->
-    <script src="assets/js/custom-scripts.js"></script>
+    </div>
+</div>
+
+        <!-- Add New User Form -->
+        <div class="settings-card">
+            <div class="card-header">
+                <h2 class="card-title">Add New Administrator</h2>
+                <p class="card-subtitle">Create a new admin account</p>
+            </div>
+                    <form method="post" class="form-horizontal">
+                        <div class="form-group">
+                            <label class="form-label">Username</label>
+                            <input type="text" name="newus" class="form-control" placeholder="Enter username" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <input type="password" name="newps" class="form-control" placeholder="Enter password" required>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" name="adduser" class="btn btn-primary">
+                                <i class="fa fa-plus"></i> Add Administrator
+                            </button>
+                        </div>
+                    </form>
+        </div>
+    </div>
+</div>
+<?php
+// Handle form submissions
+if(isset($_POST['adduser'])) {
+    $newus = $_POST['newus'];
+    $newps = $_POST['newps'];
     
-   
-</body>
-</html>
+    $newsql = "INSERT INTO login (usname, pass) VALUES ('$newus', '$newps')";
+    if(mysqli_query($con, $newsql)) {
+        echo '<div class="alert alert-success">User added successfully!</div>';
+    } else {
+        echo '<div class="alert alert-danger">Error adding user: ' . mysqli_error($con) . '</div>';
+    }
+}
+?>
+
+<style>
+/* User Settings Dashboard-Style Styling */
+.user-settings-container {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    margin-bottom: var(--space-8);
+}
+
+.settings-card {
+    background: var(--classic-white);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--classic-gray-light);
+    transition: all var(--transition-normal);
+}
+
+.settings-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.card-header {
+    background: var(--classic-navy);
+    color: var(--classic-white);
+    padding: var(--space-6);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    margin: calc(-1 * var(--space-6)) calc(-1 * var(--space-6)) var(--space-6) calc(-1 * var(--space-6));
+    border-bottom: 3px solid var(--classic-gold);
+}
+
+.card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: var(--font-size-xl);
+    margin: 0;
+    color: var(--classic-gold);
+}
+
+.card-subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: var(--font-size-sm);
+    margin: var(--space-2) 0 0 0;
+}
+
+.simple-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--space-4);
+}
+
+.simple-table th {
+    background: var(--classic-navy);
+    color: var(--classic-white);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: var(--font-size-sm);
+    letter-spacing: 0.5px;
+    padding: var(--space-4);
+    text-align: left;
+}
+
+.simple-table td {
+    vertical-align: middle;
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--classic-gray-light);
+}
+
+.simple-table tr:hover {
+    background: var(--classic-gray-light);
+}
+
+.action-buttons {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+}
+
+.action-buttons .btn {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--font-size-sm);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
+    border: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.action-buttons .btn-primary {
+    background: var(--classic-navy);
+    color: var(--classic-white);
+}
+
+.action-buttons .btn-primary:hover {
+    background: var(--classic-gold);
+    color: var(--classic-navy);
+    transform: translateY(-1px);
+}
+
+.action-buttons .btn-danger {
+    background: #dc3545;
+    color: var(--classic-white);
+}
+
+.action-buttons .btn-danger:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+}
+
+.form-group {
+    margin-bottom: var(--space-6);
+}
+
+.form-label {
+    display: block;
+    margin-bottom: var(--space-2);
+    font-weight: 600;
+    color: var(--classic-navy);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-control {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    border: 2px solid var(--classic-gray-light);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-base);
+    transition: all var(--transition-fast);
+    background: var(--classic-white);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--classic-gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+}
+
+.btn-primary {
+    background: var(--classic-navy);
+    color: var(--classic-white);
+    border: none;
+    padding: var(--space-3) var(--space-6);
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    transition: all var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.btn-primary:hover {
+    background: var(--classic-gold);
+    color: var(--classic-navy);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.alert {
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-4);
+    font-weight: 500;
+}
+
+.alert-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.alert-danger {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .settings-grid {
+        gap: var(--space-4);
+    }
+    
+    .settings-card {
+        padding: var(--space-4);
+    }
+    
+    .card-header {
+        padding: var(--space-4);
+        margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-4)) var(--space-4) calc(-1 * var(--space-4));
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+    
+    .action-buttons .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+<?php
+// End admin page with unified layout
+endUnifiedAdminPage();
+?>

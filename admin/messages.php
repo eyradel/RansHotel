@@ -9,7 +9,7 @@ if(!isset($_SESSION["user"]))
 include('includes/access_control.php');
 initAccessControl('messages');
 
-// Redirect to enhanced newsletter system
-header("location:newsletter_enhanced.php");
+// Redirect to newsletter system
+header("location:newsletter.php");
 exit();
 ?>
