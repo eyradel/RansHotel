@@ -284,9 +284,6 @@ startUnifiedAdminPage('Room Management', 'Manage hotel rooms and inventory for R
                                         <option value="Standard">Standard Room</option>
                                         <option value="Mini Executive">Mini Executive Room</option>
                                         <option value="Executive">Executive Room</option>
-                            <option value="Superior Room">Superior Room</option>
-                            <option value="Deluxe Room">Deluxe Room</option>
-                            <option value="Suite">Suite</option>
                                             </select>
                               </div>
 							  

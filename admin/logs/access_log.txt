@@ -439,3 +439,13 @@
 [2025-10-28 10:22:20] User: admin (admin) | Page: payment | Status: ALLOWED | IP: ::1
 [2025-10-28 10:22:23] User: admin (admin) | Page: profit | Status: ALLOWED | IP: ::1
 [2025-10-28 10:22:53] User: admin (admin) | Page: notifications | Status: ALLOWED | IP: ::1
+[2025-10-28 17:38:40] User: admin (admin) | Page: room_booking | Status: ALLOWED | IP: ::1
+[2025-10-28 17:38:46] User: admin (admin) | Page: add_room | Status: ALLOWED | IP: ::1
+[2025-10-28 17:39:40] User: admin (admin) | Page: add_room | Status: ALLOWED | IP: ::1
+[2025-10-28 17:39:55] User: admin (admin) | Page: add_room | Status: ALLOWED | IP: ::1
+[2025-10-28 17:40:27] User: admin (admin) | Page: add_room | Status: ALLOWED | IP: ::1
+[2025-10-28 18:40:44] User: admin (admin) | Page: add_room | Status: ALLOWED | IP: ::1
+[2025-10-28 18:40:46] User: admin (admin) | Page: add_room | Status: ALLOWED | IP: ::1
+[2025-10-28 18:40:54] User: admin (admin) | Page: add_room | Status: ALLOWED | IP: ::1
+[2025-10-28 18:42:12] User: admin (admin) | Page: add_room | Status: ALLOWED | IP: ::1
+[2025-10-28 18:42:23] User: admin (admin) | Page: room_booking | Status: ALLOWED | IP: ::1

@@ -341,10 +341,6 @@ startUnifiedAdminPage('Pricing Management', 'Manage room and meal pricing for Ra
                                         <option value="Standard">Standard Room</option>
                                         <option value="Mini Executive">Mini Executive Room</option>
                                         <option value="Executive">Executive Room</option>
-                                        <option value="Superior Room">Superior Room</option>
-                                        <option value="Deluxe Room">Deluxe Room</option>
-                                        <option value="Guest House">Guest House</option>
-                                        <option value="Single Room">Single Room</option>
                                     </select>
                                 </div>
                                 

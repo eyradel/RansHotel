@@ -115,7 +115,53 @@
       max-width: 400px;
       margin: 0 auto;
       padding: 20px;
- 
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .login-container {
+        max-width: 100%;
+        padding: 15px;
+        margin: 10px;
+      }
+      
+      .hotel-logo {
+        font-size: 2em !important;
+      }
+      
+      .hotel-name {
+        font-size: 1.5em !important;
+      }
+      
+      .form-group input {
+        font-size: 16px !important; /* Prevents zoom on iOS */
+      }
+      
+      .login-btn {
+        font-size: 16px !important;
+        padding: 15px !important;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 10px;
+        margin: 5px;
+      }
+      
+      .hotel-logo {
+        font-size: 1.8em !important;
+      }
+      
+      .hotel-name {
+        font-size: 1.3em !important;
+      }
+      
+      .form-group input {
+        padding: 15px 12px !important;
+      }
     }
     .hotel-branding {
       text-align: center;
@@ -213,6 +259,28 @@
       color: #ccc;
       font-size: 0.9em;
       margin: 5px 0;
+    }
+    
+    /* Ensure full responsiveness */
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 0 15px;
+      box-sizing: border-box;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 10px;
+      }
     }
   </style>
 </head>

@@ -1199,11 +1199,11 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
                                     <h4>RANS HOTEL ROOM ALLOCATION</h4>
                                     <div class="allocation-grid">
                                         <div class="allocation-section">
-                                            <h5>Standard Rooms - Ground Floor</h5>
+                                            <h5>Standard Rooms Ground floor</h5>
                                             <ul class="allocation-list">
                                                 <li>Chad 30, Senegal 23, Liberia 32, Namibia 19</li>
-                                                <li>Libya 25, Morocco 14, Algeria 27, Gabon 16, Equatorial Guinea 29</li>
-                                                <li>Mali 22, Nigeria 31, Togo 24, Côte d’Ivoire 21, Lesotho 18</li>
+                                                <li>25 Libya, 14 Morocco, 27 Algeria, 16 Gabon, 29 Equatorial Guinea</li>
+                                                <li>Mali 22, Nigeria 31, Togo 24, Côte d'Ivoire 21, Lesotho 18</li>
                                                 <li>Egypt 13, Tunisia 26, Sudan 15, Niger 28, Botswana 17</li>
                                             </ul>
                                         </div>
@@ -1211,14 +1211,14 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
                                             <h5>Top Floor</h5>
                                             <ul class="allocation-list">
                                                 <li>Ethiopia 4 (Mini Executive), Rwanda 3 (Mini Executive), South Africa 2 (Executive)</li>
-                                                <li>Ghana 1 (Executive), Burundi 5 (Mini Executive), Kenya 6 (Mini Executive)</li>
-                                                <li>Gambia 12 (Mini Executive), Zimbabwe 11 (Mini Executive), Swaziland 10 (Mini Executive)</li>
-                                                <li>Malawi 9 (Mini Executive), Angola 8 (Mini Executive), DR Congo 7 (Mini Executive)</li>
+                                                <li>1 Ghana (Executive), 5 Burundi (Mini Executive), 6 Kenya (Mini Executive)</li>
+                                                <li>12 Gambia (Mini Executive), 11 Zimbabwe (Mini Executive), 10 Swaziland (Mini Executive)</li>
+                                                <li>9 Malawi (Mini Executive), 8 Angola (Mini Executive), 7 DR Congo (Mini Executive)</li>
                                             </ul>
                                         </div>
                                     </div>
                                     <div class="allocation-section" style="margin-top: var(--space-4);">
-                                        <h5>Other Facilities (for Booking Purposes)</h5>
+                                        <h5>Other Facilities for Booking Purposes</h5>
                                         <ul class="allocation-list">
                                             <li>Garden</li>
                                             <li>Open-grounds</li>
