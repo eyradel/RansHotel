@@ -521,3 +521,14 @@
 [2025-10-29 16:30:38] User: manager (manager) | Page: room_booking | Status: ALLOWED | IP: ::1
 [2025-10-29 16:30:42] User: manager (manager) | Page: notifications | Status: ALLOWED | IP: ::1
 [2025-10-29 16:30:45] User: manager (manager) | Page: payment | Status: ALLOWED | IP: ::1
+[2025-10-29 17:34:36] User: manager (manager) | Page: payment | Status: ALLOWED | IP: ::1
+[2025-10-29 17:34:46] User: manager (manager) | Page: room_management | Status: ALLOWED | IP: ::1
+[2025-10-29 17:35:19] User: manager (manager) | Page: room_booking | Status: ALLOWED | IP: ::1
+[2025-10-29 17:35:23] User: manager (manager) | Page: notifications | Status: ALLOWED | IP: ::1
+[2025-10-29 17:35:29] User: manager (manager) | Page: payment | Status: ALLOWED | IP: ::1
+[2025-10-29 17:35:38] User: manager (manager) | Page: profit | Status: ALLOWED | IP: ::1
+[2025-10-29 17:35:45] User: manager (manager) | Page: pricing | Status: ALLOWED | IP: ::1
+[2025-10-29 17:36:02] User: manager (manager) | Page: messages | Status: ALLOWED | IP: ::1
+[2025-10-29 17:36:02] User: manager (manager) | Page: newsletter | Status: ALLOWED | IP: ::1
+[2025-10-29 17:36:04] User: manager (manager) | Page: add_room | Status: ALLOWED | IP: ::1
+[2025-10-29 17:36:09] User: manager (manager) | Page: room_management | Status: ALLOWED | IP: ::1
