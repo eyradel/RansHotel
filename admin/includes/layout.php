@@ -16,3 +16,4 @@ include 'sidebar.php';
 <div class="main-wrapper" id="mainWrapper">
     <!-- Main Content -->
     <!-- The actual page content will be rendered here by the including PHP file -->
+

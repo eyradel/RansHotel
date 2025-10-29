@@ -35,7 +35,8 @@ class NotificationManager {
             $bookingData['checkOut'],
             $bookingData['bookingId'],
             $bookingData['phone'],
-            $bookingData['mealPlan']
+            $bookingData['mealPlan'],
+            $bookingData['totalAmount'] ?? null
         );
         $results['customer_email'] = $emailResult;
         

@@ -273,3 +273,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Export for global use
 window.NavbarComponent = NavbarComponent;
+

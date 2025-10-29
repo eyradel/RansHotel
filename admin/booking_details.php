@@ -41,8 +41,10 @@ initAccessControl('room_booking');
 					$meal = $row['Meal'];
 					$cin = $row['cin'];
 					$cout = $row['cout'];
-					$sta = $row['stat'];
-					$days = $row['nodays'];
+				$sta = $row['stat'];
+				$days = $row['nodays'];
+				$final_amount = $row['final_amount'];
+				$assigned_room_number = $row['assigned_room_number'] ?? null;
 					
 				
 				
@@ -61,123 +63,109 @@ initAccessControl('room_booking');
 // Start admin page with components
 startUnifiedAdminPage('Booking Details', 'View booking details at RansHotel - Located in Tsito, Ghana');
 ?>
-    <div class="container">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Top Bar -->
-            <div class="top-bar">
-                <h1 class="page-title">
-                    <i class="fa fa-bar-chart-o"></i> Booking Details
-                </h1>
-                <p class="page-subtitle"><?php echo $curdate; ?></p>
+            <div class="flex items-center justify-between py-6">
+                <div class="flex items-center gap-3">
+                    <i class="fa fa-bar-chart-o text-blue-600"></i>
+                    <h1 class="text-2xl font-semibold text-gray-900">Booking Details</h1>
+                </div>
+                <p class="text-sm text-gray-500"><?php echo $curdate; ?></p>
             </div>
-					
-					
-					<div class="col-md-8 col-sm-8">
-                    <div class="panel panel-info">
-                        <div class="panel-heading">
-                           Booking Confirmation
-                        </div>
-                        <div class="panel-body">
-							
-							<div class="table-responsive">
-                                <table class="table">
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                        <h2 class="text-lg font-medium text-gray-900">Booking Confirmation</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
                                     <tr>
-                                            <th>DESCRIPTION</th>
-                                            <th>INFORMATION</th>
-                                            
-                                        </tr>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th><?php echo  $title.$fname.$lname; ?> </th>
-                                            
-                                        </tr>
-										<tr>
-                                            <th>Email</th>
-                                            <th><?php echo  $email; ?> </th>
-                                            
-                                        </tr>
-										<tr>
-                                            <th>Nationality </th>
-                                            <th><?php echo  $nat; ?></th>
-                                            
-                                        </tr>
-										<tr>
-                                            <th>Country </th>
-                                            <th><?php echo  $country;  ?></th>
-                                            
-                                        </tr>
-										<tr>
-                                            <th>Phone No </th>
-                                            <th><?php echo $Phone; ?></th>
-                                            
-                                        </tr>
-										<tr>
-                                            <th>Type Of the Room </th>
-                                            <th><?php echo $troom; ?></th>
-                                            
-                                        </tr>
-										<tr>
-                                            <th>No Of the Room </th>
-                                            <th><?php echo $nroom; ?></th>
-                                            
-                                        </tr>
-										<tr>
-                                            <th>Meal Plan </th>
-                                            <th><?php echo $meal; ?></th>
-                                            
-                                        </tr>
-										<tr>
-                                            <th>Bedding </th>
-                                            <th><?php echo $bed; ?></th>
-                                            
-                                        </tr>
-										<tr>
-                                            <th>Check-in Date </th>
-                                            <th><?php echo $cin; ?></th>
-                                            
-                                        </tr>
-										<tr>
-                                            <th>Check-out Date</th>
-                                            <th><?php echo $cout; ?></th>
-                                            
-                                        </tr>
-										<tr>
-                                            <th>No of days</th>
-                                            <th><?php echo $days; ?></th>
-                                            
-                                        </tr>
-										<tr>
-                                            <th>Status Level</th>
-                                            <th><?php echo $sta; ?></th>
-                                            
-                                        </tr>
-                                   
-                                  
-                                        
-                                        
-                                    
-                                </table>
-                            </div>
-                        
-					
-							
-                        </div>
-                        <div class="panel-footer">
-                            <form method="post">
-										<div class="form-group">
-														<label>Select the Confirmation</label>
-														<select name="conf"class="form-control">
-															<option value selected>	</option>
-															<option value="Confirm">Confirm</option>
-															
-															
-														</select>
-										 </div>
-							<input type="submit" name="co" value="Confirm" class="btn btn-success">
-							
-							</form>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Information</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-600">Name</td>
+                                        <td class="px-6 py-4 text-sm font-medium text-gray-900"><?php echo  $title.$fname.$lname; ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-600">Email</td>
+                                        <td class="px-6 py-4 text-sm text-gray-900"><?php echo  $email; ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-600">Nationality</td>
+                                        <td class="px-6 py-4 text-sm text-gray-900"><?php echo  $nat; ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-600">Country</td>
+                                        <td class="px-6 py-4 text-sm text-gray-900"><?php echo  $country; ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-600">Phone No</td>
+                                        <td class="px-6 py-4 text-sm text-gray-900"><?php echo $Phone; ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-600">Type Of Room</td>
+                                        <td class="px-6 py-4 text-sm text-gray-900"><?php echo $troom; ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-600">No Of Rooms</td>
+                                        <td class="px-6 py-4 text-sm text-gray-900"><?php echo $nroom; ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-600">Meal Plan</td>
+                                        <td class="px-6 py-4 text-sm text-gray-900"><?php echo $meal; ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-600">Bedding</td>
+                                        <td class="px-6 py-4 text-sm text-gray-900"><?php echo $bed; ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-600">Check-in Date</td>
+                                        <td class="px-6 py-4 text-sm text-gray-900"><?php echo $cin; ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-600">Check-out Date</td>
+                                        <td class="px-6 py-4 text-sm text-gray-900"><?php echo $cout; ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-600">No of days</td>
+                                        <td class="px-6 py-4 text-sm text-gray-900"><?php echo $days; ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-600">Status</td>
+                                        <td class="px-6 py-4 text-sm"><span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800"><?php echo $sta; ?></span></td>
+                                    </tr>
+                                    <?php if(isset($assigned_room_number)): ?>
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-600">Assigned Room</td>
+                                        <td class="px-6 py-4 text-sm text-gray-900 font-medium"><?php echo $assigned_room_number; ?></td>
+                                    </tr>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-					</div>
+                    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                        <form method="post" class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Select the Confirmation</label>
+                                <select name="conf" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                    <option value selected></option>
+                                    <option value="Confirm">Confirm</option>
+                                </select>
+                            </div>
+                            <div>
+                                <input type="submit" name="co" value="Confirm" class="inline-flex items-center justify-center px-4 py-2 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 shadow-sm transition-colors" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
 					
 					<?php
 					$rsql ="select * from room";
@@ -249,117 +237,15 @@ startUnifiedAdminPage('Booking Details', 'View booking details at RansHotel - Lo
 						}
 				
 					?>
-					<div class="col-md-4 col-sm-4">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                           Available Room Details
-                        </div>
-                        <div class="panel-body">
-						<table width="200px">
-							
-							<tr>
-								<td><b>Superior Room	 </b></td>
-								<td><button type="button" class="btn btn-primary btn-circle"><?php  
-								$f1 = $sc - $csc;
-									if($f1 <=0 )
-									{	$f1 = "NO";
-										echo $f1;
-									}
-									else{
-											echo $f1;
-									}
-								
-								
-								?> </button></td> 
-							</tr>
-							<tr>
-								<td><b>Guest House</b>	 </td>
-								<td><button type="button" class="btn btn-primary btn-circle"><?php 
-									$f2 =  $gh - $cgh;
-								if($f2 <=0 )
-									{	$f2 = "NO";
-										echo $f2;
-									}
-									else{
-											echo $f2;
-									}
-
-								?> </button></td> 
-							</tr>
-							<tr>
-								<td><b>Single Room	 </b></td>
-								<td><button type="button" class="btn btn-primary btn-circle"><?php
-								$f3 = $sr - $csr;
-								if($f3 <=0 )
-									{	$f3 = "NO";
-										echo $f3;
-									}
-									else{
-											echo $f3;
-									}
-
-								?> </button></td> 
-							</tr>
-							<tr>
-								<td><b>Deluxe Room</b>	 </td>
-								<td><button type="button" class="btn btn-primary btn-circle"><?php 
-								
-								$f4 = $dr - $cdr; 
-								if($f4 <=0 )
-									{	$f4 = "NO";
-										echo $f4;
-									}
-									else{
-											echo $f4;
-									}
-								?> </button></td> 
-							</tr>
-							<tr>
-								<td><b>Total Rooms	</b> </td>
-								<td> <button type="button" class="btn btn-danger btn-circle"><?php 
-								
-								$f5 = $r- $cr; 
-								if($f5 <=0 )
-									{	$f5 = "NO";
-										echo $f5;
-									}
-									else{
-											echo $f5;
-									}
-								 ?> </button></td> 
-							</tr>
-						</table>
-						
-						
-						
-                        
-						
-						</div>
-                        <div class="panel-footer">
-                            
-                        </div>
-                    </div>
-					</div>
-        
+<?php
+// Compute availability figures for validation only (no UI rendering)
+$f1 = $sc - $csc; // Superior available
+$f2 = $gh - $cgh; // Guest House available
+$f3 = $sr - $csr; // Single available
+$f4 = $dr - $cdr; // Deluxe available
+$f5 = $r - $cr;   // Total available
+?>
     </div>
-    <!-- /. WRAPPER  -->
-    <!-- JS Scripts-->
-    <!-- jQuery Js -->
-    <script src="assets/js/jquery-1.10.2.js"></script>
-    <!-- Bootstrap Js -->
-    <script src="assets/js/bootstrap.min.js"></script>
-    <!-- Metis Menu Js -->
-    <script src="assets/js/jquery.metisMenu.js"></script>
-    <!-- Morris Chart Js -->
-    <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
-    <script src="assets/js/morris/morris.js"></script>
-    <!-- Custom Js -->
-    <script src="assets/js/custom-scripts.js"></script>
-
-
-</body>
-
-</html>
 
 <?php
 						if(isset($_POST['co']))
@@ -392,6 +278,24 @@ startUnifiedAdminPage('Booking Details', 'View booking details at RansHotel - Lo
 										
 										else if( mysqli_query($con,$urb))
 											{	
+												// Auto-assign room based on room type
+												$room_assignment_query = "SELECT id, room_number FROM room WHERE type = '$troom' AND place = 'Free' AND status = 'Available' ORDER BY room_number LIMIT 1";
+												$room_assignment_result = mysqli_query($con, $room_assignment_query);
+												
+												if(mysqli_num_rows($room_assignment_result) > 0) {
+													$assigned_room = mysqli_fetch_assoc($room_assignment_result);
+													$assigned_room_id = $assigned_room['id'];
+													$assigned_room_number = $assigned_room['room_number'];
+													
+													// Mark room as occupied
+													$room_update_query = "UPDATE room SET place = 'NotFree', status = 'Occupied', cusid = '$id' WHERE id = '$assigned_room_id'";
+													mysqli_query($con, $room_update_query);
+													
+													// Update booking with assigned room
+													$booking_room_update = "UPDATE roombook SET assigned_room_id = '$assigned_room_id', assigned_room_number = '$assigned_room_number' WHERE id = '$id'";
+													mysqli_query($con, $booking_room_update);
+												}
+												
 												//echo "<script type='text/javascript'> alert('Guest Room booking is conform')</script>";
 												//echo "<script type='text/javascript'> window.location='home.php'</script>";
 												 $type_of_room = 0;       
@@ -455,11 +359,11 @@ startUnifiedAdminPage('Booking Details', 'View booking details at RansHotel - Lo
 														}
 														
 														
-															$ttot = $type_of_room * $days * $nroom;
-															$mepr = $type_of_meal * $days;
-															$btot = $type_of_bed * $days;
-														
-															$fintot = $ttot + $mepr + $btot ;
+                                                            // Use the precomputed final amount from reservation for payment totals
+                                                            $ttot = (float)$final_amount;
+                                                            $mepr = 0;
+                                                            $btot = 0;
+                                                            $fintot = (float)$final_amount;
 															
 															//echo "<script type='text/javascript'> alert('$count_date')</script>";
 															$psql = "INSERT INTO `payment`(`id`, `title`, `fname`, `lname`, `troom`, `tbed`, `nroom`, `cin`, `cout`, `ttot`,`meal`, `mepr`, `btot`,`fintot`,`noofdays`) VALUES ('$id','$title','$fname','$lname','$troom','$bed','$nroom','$cin','$cout','$ttot','$meal','$mepr','$btot','$fintot','$days')";
@@ -473,8 +377,14 @@ startUnifiedAdminPage('Booking Details', 'View booking details at RansHotel - Lo
 															require_once 'includes/notification_manager.php';
 															$notificationManager = new NotificationManager();
 															
-															// Calculate total amount for notification
-															$totalAmount = $type_of_room + $type_of_bed + $type_of_meal;
+                                                            // Use reservation final amount for notification totals
+															$totalAmount = (float)$final_amount;
+															
+															// Get assigned room info for notification
+															$assigned_room_info = '';
+															if(isset($assigned_room_number)) {
+																$assigned_room_info = "\\n\\nAssigned Room: " . $assigned_room_number;
+															}
 															
 															// Send admin confirmation notifications to customer
 															$notificationResult = $notificationManager->sendAdminConfirmationNotifications(
@@ -503,7 +413,7 @@ startUnifiedAdminPage('Booking Details', 'View booking details at RansHotel - Lo
 																$statusMessage .= "- " . ucfirst(str_replace('_', ' ', $type)) . ": " . $status . "\\n";
 															}
 															
-															echo "<script type='text/javascript'> alert('Booking Confirmed!\\n\\nCustomer Notifications:\\n" . $statusMessage . "')</script>";
+															echo "<script type='text/javascript'> alert('Booking Confirmed!" . $assigned_room_info . "\\n\\nCustomer Notifications:\\n" . $statusMessage . "')</script>";
 															echo "<script type='text/javascript'> window.location='booking_details.php'</script>";
 															}
 															

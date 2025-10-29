@@ -7,153 +7,344 @@
 		<link rel="license" href="https://www.opensource.org/licenses/mit-license/">
 		<script src="script.js"></script>
 		<style>
-		/* reset */
+		/* RansHotel Professional Invoice Styles */
+		
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
 
-*
-{
-	border: 0;
-	box-sizing: content-box;
-	color: inherit;
-	font-family: inherit;
-	font-size: inherit;
-	font-style: inherit;
-	font-weight: inherit;
-	line-height: inherit;
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	text-decoration: none;
-	vertical-align: top;
-}
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+			padding: 20px;
+			min-height: 100vh;
+		}
 
-/* content editable */
+		.invoice-container {
+			max-width: 800px;
+			margin: 0 auto;
+			background: white;
+			border-radius: 12px;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+			overflow: hidden;
+		}
 
-*[contenteditable] { border-radius: 0.25em; min-width: 1em; outline: 0; }
+		/* Header */
+		.invoice-header {
+			background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+			color: white;
+			padding: 40px;
+			position: relative;
+		}
 
-*[contenteditable] { cursor: pointer; }
+		.invoice-header::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+			opacity: 0.3;
+		}
 
-*[contenteditable]:hover, *[contenteditable]:focus, td:hover *[contenteditable], td:focus *[contenteditable], img.hover { background: #DEF; box-shadow: 0 0 1em 0.5em #DEF; }
+		.hotel-info {
+			position: relative;
+			z-index: 1;
+		}
 
-span[contenteditable] { display: inline-block; }
+		.hotel-name {
+			font-size: 2.5rem;
+			font-weight: 700;
+			margin-bottom: 10px;
+			text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+		}
 
-/* heading */
+		.hotel-tagline {
+			font-size: 1.1rem;
+			opacity: 0.9;
+			margin-bottom: 20px;
+		}
 
-h1 { font: bold 100% sans-serif; letter-spacing: 0.5em; text-align: center; text-transform: uppercase; }
+		.hotel-details {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 20px;
+			margin-top: 20px;
+		}
 
-/* table */
+		.detail-item {
+			display: flex;
+			align-items: center;
+			font-size: 0.95rem;
+		}
 
-table { font-size: 75%; table-layout: fixed; width: 100%; }
-table { border-collapse: separate; border-spacing: 2px; }
-th, td { border-width: 1px; padding: 0.5em; position: relative; text-align: left; }
-th, td { border-radius: 0.25em; border-style: solid; }
-th { background: #EEE; border-color: #BBB; }
-td { border-color: #DDD; }
+		.detail-item i {
+			margin-right: 10px;
+			width: 20px;
+			text-align: center;
+		}
 
-/* page */
+		/* Invoice Title */
+		.invoice-title {
+			text-align: center;
+			font-size: 3rem;
+			font-weight: 300;
+			letter-spacing: 3px;
+			margin: 40px 0;
+			color: #1e3a8a;
+			position: relative;
+		}
 
-html { font: 16px/1 'Open Sans', sans-serif; overflow: auto; padding: 0.5in; }
-html { background: #999; cursor: default; }
+		.invoice-title::after {
+			content: '';
+			position: absolute;
+			bottom: -10px;
+			left: 50%;
+			transform: translateX(-50%);
+			width: 100px;
+			height: 3px;
+			background: linear-gradient(90deg, #d4af37, #f4d03f);
+			border-radius: 2px;
+		}
 
-body { box-sizing: border-box; height: 11in; margin: 0 auto; overflow: hidden; padding: 0.5in; width: 8.5in; }
-body { background: #FFF; border-radius: 1px; box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5); }
+		/* Content */
+		.invoice-content {
+			padding: 40px;
+		}
 
-/* header */
+		.recipient-section {
+			background: #f8fafc;
+			padding: 30px;
+			border-radius: 8px;
+			margin-bottom: 30px;
+			border-left: 4px solid #3b82f6;
+		}
 
-header { margin: 0 0 3em; }
-header:after { clear: both; content: ""; display: table; }
+		.recipient-title {
+			font-size: 1.2rem;
+			font-weight: 600;
+			color: #1e3a8a;
+			margin-bottom: 15px;
+		}
 
-header h1 { background: #000; border-radius: 0.25em; color: #FFF; margin: 0 0 1em; padding: 0.5em 0; }
-header address { float: left; font-size: 75%; font-style: normal; line-height: 1.25; margin: 0 1em 1em 0; }
-header address p { margin: 0 0 0.25em; }
-header span, header img { display: block; float: right; }
-header span { margin: 0 0 1em 1em; max-height: 25%; max-width: 60%; position: relative; }
-header img { max-height: 100%; max-width: 100%; }
-header input { cursor: pointer; -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)"; height: 100%; left: 0; opacity: 0; position: absolute; top: 0; width: 100%; }
+		.recipient-name {
+			font-size: 1.4rem;
+			font-weight: 700;
+			color: #2d3748;
+		}
 
-/* article */
+		/* Meta Information */
+		.meta-section {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 30px;
+			margin-bottom: 40px;
+		}
 
-article, article address, table.meta, table.inventory { margin: 0 0 3em; }
-article:after { clear: both; content: ""; display: table; }
-article h1 { clip: rect(0 0 0 0); position: absolute; }
+		.meta-table {
+			width: 100%;
+			border-collapse: collapse;
+		}
 
-article address { float: left; font-size: 125%; font-weight: bold; }
+		.meta-table th {
+			background: #1e3a8a;
+			color: white;
+			padding: 15px;
+			text-align: left;
+			font-weight: 600;
+			font-size: 0.9rem;
+		}
 
-/* table meta & balance */
+		.meta-table td {
+			padding: 15px;
+			border: 1px solid #e2e8f0;
+			background: white;
+			font-weight: 500;
+		}
 
-table.meta, table.balance { float: right; width: 36%; }
-table.meta:after, table.balance:after { clear: both; content: ""; display: table; }
+		/* Items Table */
+		.items-table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-bottom: 30px;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+		}
 
-/* table meta */
+		.items-table thead {
+			background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+			color: white;
+		}
 
-table.meta th { width: 40%; }
-table.meta td { width: 60%; }
+		.items-table th {
+			padding: 20px 15px;
+			text-align: left;
+			font-weight: 600;
+			font-size: 0.9rem;
+			letter-spacing: 0.5px;
+		}
 
-/* table items */
+		.items-table td {
+			padding: 20px 15px;
+			border-bottom: 1px solid #e2e8f0;
+			background: white;
+		}
 
-table.inventory { clear: both; width: 100%; }
-table.inventory th { font-weight: bold; text-align: center; }
+		.items-table tbody tr:hover {
+			background: #f8fafc;
+		}
 
-table.inventory td:nth-child(1) { width: 26%; }
-table.inventory td:nth-child(2) { width: 38%; }
-table.inventory td:nth-child(3) { text-align: right; width: 12%; }
-table.inventory td:nth-child(4) { text-align: right; width: 12%; }
-table.inventory td:nth-child(5) { text-align: right; width: 12%; }
+		.items-table tbody tr:last-child td {
+			border-bottom: none;
+		}
 
-/* table balance */
+		.rate, .quantity, .price {
+			text-align: right;
+			font-weight: 600;
+		}
 
-table.balance th, table.balance td { width: 50%; }
-table.balance td { text-align: right; }
+		.currency {
+			color: #1e3a8a;
+			font-weight: 700;
+		}
 
-/* aside */
+		/* Balance Section */
+		.balance-section {
+			background: #f8fafc;
+			padding: 30px;
+			border-radius: 8px;
+			margin-top: 30px;
+		}
 
-aside h1 { border: none; border-width: 0 0 1px; margin: 0 0 1em; }
-aside h1 { border-color: #999; border-bottom-style: solid; }
+		.balance-table {
+			width: 100%;
+			border-collapse: collapse;
+		}
 
-/* javascript */
+		.balance-table th,
+		.balance-table td {
+			padding: 15px 20px;
+			border-bottom: 1px solid #e2e8f0;
+		}
 
-.add, .cut
-{
-	border-width: 1px;
-	display: block;
-	font-size: .8rem;
-	padding: 0.25em 0.5em;	
-	float: left;
-	text-align: center;
-	width: 0.6em;
-}
+		.balance-table th {
+			background: #1e3a8a;
+			color: white;
+			font-weight: 600;
+			text-align: left;
+		}
 
-.add, .cut
-{
-	background: #9AF;
-	box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-	background-image: -moz-linear-gradient(#00ADEE 5%, #0078A5 100%);
-	background-image: -webkit-linear-gradient(#00ADEE 5%, #0078A5 100%);
-	border-radius: 0.5em;
-	border-color: #0076A3;
-	color: #FFF;
-	cursor: pointer;
-	font-weight: bold;
-	text-shadow: 0 -1px 2px rgba(0,0,0,0.333);
-}
+		.balance-table td {
+			background: white;
+			text-align: right;
+			font-weight: 600;
+			font-size: 1.1rem;
+		}
 
-.add { margin: -2.5em 0 0; }
+		.balance-table tr:last-child th,
+		.balance-table tr:last-child td {
+			border-bottom: none;
+			background: #1e3a8a;
+			color: white;
+			font-size: 1.2rem;
+			font-weight: 700;
+		}
 
-.add:hover { background: #00ADEE; }
+		/* Footer */
+		.invoice-footer {
+			background: #1e3a8a;
+			color: white;
+			padding: 30px 40px;
+			text-align: center;
+		}
 
-.cut { opacity: 0; position: absolute; top: 0; left: -1.5em; }
-.cut { -webkit-transition: opacity 100ms ease-in; }
+		.footer-title {
+			font-size: 1.3rem;
+			font-weight: 600;
+			margin-bottom: 20px;
+		}
 
-tr:hover .cut { opacity: 1; }
+		.contact-info {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+			gap: 20px;
+		}
 
-@media print {
-	* { -webkit-print-color-adjust: exact; }
-	html { background: none; padding: 0; }
-	body { box-shadow: none; margin: 0; }
-	span:empty { display: none; }
-	.add, .cut { display: none; }
-}
+		.contact-item {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 0.95rem;
+		}
 
-@page { margin: 0; }
+		.contact-item i {
+			margin-right: 8px;
+			width: 20px;
+			text-align: center;
+		}
+
+		/* Print Styles */
+		@media print {
+			body {
+				background: white;
+				padding: 0;
+			}
+			
+			.invoice-container {
+				box-shadow: none;
+				border-radius: 0;
+			}
+			
+			.invoice-header {
+				background: #1e3a8a !important;
+				-webkit-print-color-adjust: exact;
+				color-adjust: exact;
+			}
+			
+			.items-table thead {
+				background: #1e3a8a !important;
+				-webkit-print-color-adjust: exact;
+				color-adjust: exact;
+			}
+			
+			.balance-table th {
+				background: #1e3a8a !important;
+				-webkit-print-color-adjust: exact;
+				color-adjust: exact;
+			}
+			
+			.balance-table tr:last-child th,
+			.balance-table tr:last-child td {
+				background: #1e3a8a !important;
+				-webkit-print-color-adjust: exact;
+				color-adjust: exact;
+			}
+		}
+
+		/* Responsive */
+		@media (max-width: 768px) {
+			.hotel-details {
+				grid-template-columns: 1fr;
+			}
+			
+			.meta-section {
+				grid-template-columns: 1fr;
+			}
+			
+			.contact-info {
+				grid-template-columns: 1fr;
+			}
+			
+			.invoice-content {
+				padding: 20px;
+			}
+			
+			.invoice-header {
+				padding: 30px 20px;
+			}
+		}
 		</style>
 		
 	</head>
@@ -255,9 +446,10 @@ tr:hover .cut { opacity: 1; }
 		<header>
 			<h1>Invoice</h1>
 			<address >
-				<p>Rans,</p>
-				<p>New Kalmunani Road,<br>Battialoa,<br>Sri Lanka.</p>
-				<p>(+94) 65 222 44 55</p>
+				<p>RansHotel,</p>
+				<p>Tsito,<br>Volta Region,<br>Ghana.</p>
+				<p>+233 (0)302 936 062</p>
+				<p>info@ranshotel.com</p>
 			</address>
 			<span><img alt="" src="assets/img/sun.png"></span>
 		</header>

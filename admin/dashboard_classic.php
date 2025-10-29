@@ -264,7 +264,17 @@ include('db.php');
                             echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>" . htmlspecialchars($row['TRoom']) . "</td>";
                             echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>" . date('M j, Y', strtotime($row['cin'])) . "</td>";
                             echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>" . date('M j, Y', strtotime($row['cout'])) . "</td>";
-                            echo "<td class='px-6 py-4 whitespace-nowrap'><span class='inline-flex px-2 py-1 text-xs font-semibold rounded-full {$status_bg} {$status_class}'>" . $row['status'] . "</span></td>";
+                            // If booking is not yet confirmed, show an actionable Confirm button linking to booking details
+                            $statusText = $row['status'];
+                            $isPending = in_array(strtolower($statusText), ['conform', 'confirm', 'pending']);
+                            if ($isPending) {
+                                $confirmUrl = 'booking_details.php?rid=' . urlencode($row['id']);
+                                echo "<td class='px-6 py-4 whitespace-nowrap'>";
+                                echo "<a href='" . $confirmUrl . "' class='inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors'>Confirm</a>";
+                                echo "</td>";
+                            } else {
+                                echo "<td class='px-6 py-4 whitespace-nowrap'><span class='inline-flex px-2 py-1 text-xs font-semibold rounded-full {$status_bg} {$status_class}'>" . $statusText . "</span></td>";
+                            }
                             echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium'>₵" . number_format($row['amount'] ?? 0, 2) . "</td>";
                             echo "</tr>";
                         }

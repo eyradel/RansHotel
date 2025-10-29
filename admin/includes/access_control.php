@@ -221,6 +221,11 @@ function getNavigationMenu() {
         $menu[] = ['url' => 'room.php', 'icon' => 'fa-bed', 'text' => 'Room Management'];
     }
     
+    // Room Allocation - admin and manager only
+    if (canAccess('room_management')) {
+        $menu[] = ['url' => 'room_allocation.php', 'icon' => 'fa-map-marker', 'text' => 'Room Allocation'];
+    }
+    
     return $menu;
 }
 

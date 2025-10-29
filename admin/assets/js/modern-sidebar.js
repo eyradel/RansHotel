@@ -491,3 +491,4 @@ window.SidebarManager = {
     updateNotificationCount,
     addNotification
 };
+
