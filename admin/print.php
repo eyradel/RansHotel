@@ -10,8 +10,8 @@
 		/* RansHotel Professional Invoice Styles */
 		
 		* {
-			margin: 0;
-			padding: 0;
+	margin: 0;
+	padding: 0;
 			box-sizing: border-box;
 		}
 
@@ -81,10 +81,12 @@
 			font-size: 0.95rem;
 		}
 
-		.detail-item i {
+		.detail-item .label {
 			margin-right: 10px;
-			width: 20px;
-			text-align: center;
+			width: 80px;
+			font-weight: 600;
+			opacity: 0.9;
+			text-align: left;
 		}
 
 		/* Invoice Title */
@@ -279,10 +281,12 @@
 			font-size: 0.95rem;
 		}
 
-		.contact-item i {
+		.contact-item .label {
 			margin-right: 8px;
-			width: 20px;
-			text-align: center;
+			width: 80px;
+			font-weight: 600;
+			opacity: 0.9;
+			text-align: left;
 		}
 
 		/* Print Styles */
@@ -349,17 +353,11 @@
 		
 	</head>
 	<body>
-	
-	
-	
-	
 	<?php
 	ob_start();	
 	include ('db.php');
 
 	$pid = $_GET['pid'];
-	
-	
 	
 	$sql ="select * from payment where id = '$pid' ";
 	$re = mysqli_query($con,$sql);
@@ -380,17 +378,12 @@
 		$btot = $row['btot'];
 		$fintot = $row['fintot'];
 		$days = $row['noofdays'];
-		
-		
-		
-	
 	}
 	
 									$type_of_room = 0;       
 									if($troom=="Superior Room")
 									{
 										$type_of_room = 3840;
-									
 									}
 									else if($troom=="Deluxe Room")
 									{
@@ -436,95 +429,156 @@
 									}else if($meal=="Half Board")
 									{
 										$type_of_meal=$type_of_bed * 3;
-									
 									}else if($meal=="Full Board")
 									{
 										$type_of_meal=$type_of_bed * 4;
 									}
-	
-	?>
-		<header>
-			<h1>Invoice</h1>
-			<address >
-				<p>RansHotel,</p>
-				<p>Tsito,<br>Volta Region,<br>Ghana.</p>
-				<p>+233 (0)302 936 062</p>
-				<p>info@ranshotel.com</p>
-			</address>
-			<span><img alt="" src="assets/img/sun.png"></span>
-		</header>
-		<article>
-			<h1>Recipient</h1>
-			<address >
-				<p><?php echo $title.$fname." ".$lname ?> <br></p>
-			</address>
-			<table class="meta">
-				<tr>
-					<th><span >Invoice #</span></th>
-					<td><span ><?php echo $id; ?></span></td>
+		?>
+
+		<div class="invoice-container">
+			<!-- Header -->
+			<div class="invoice-header">
+				<div class="hotel-info">
+					<h1 class="hotel-name">RansHotel</h1>
+					<p class="hotel-tagline">Luxury Hospitality Excellence</p>
+					<div class="hotel-details">
+						<div class="detail-item">
+							<span class="label">Address:</span>
+							<span>Tsito, Volta Region, Ghana</span>
+						</div>
+						<div class="detail-item">
+							<span class="label">Phone:</span>
+							<span>+233 (0)302 936 062</span>
+						</div>
+						<div class="detail-item">
+							<span class="label">Email:</span>
+							<span>info@ranshotel.com</span>
+						</div>
+						<div class="detail-item">
+							<span class="label">Website:</span>
+							<span>www.ranshotel.com</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Invoice Title -->
+			<div class="invoice-title">INVOICE</div>
+
+			<!-- Content -->
+			<div class="invoice-content">
+				<!-- Recipient Section -->
+				<div class="recipient-section">
+					<div class="recipient-title">Bill To:</div>
+					<div class="recipient-name"><?php echo $title . ' ' . $fname . ' ' . $lname; ?></div>
+				</div>
+
+				<!-- Meta Information -->
+				<div class="meta-section">
+					<table class="meta-table">
+						<tr>
+							<th>Invoice Number</th>
+							<td><?php echo $id; ?></td>
+						</tr>
+						<tr>
+							<th>Check-in Date</th>
+							<td><?php echo $cin; ?></td>
+						</tr>
+						<tr>
+							<th>Check-out Date</th>
+							<td><?php echo $cout; ?></td>
+						</tr>
+					</table>
+					<table class="meta-table">
+						<tr>
+							<th>Room Type</th>
+							<td><?php echo $troom; ?></td>
+						</tr>
+						<tr>
+							<th>Number of Rooms</th>
+							<td><?php echo $nroom; ?></td>
 				</tr>
 				<tr>
-					<th><span >Date</span></th>
-					<td><span ><?php echo $cout; ?> </span></td>
+							<th>Duration</th>
+							<td><?php echo $days; ?> days</td>
 				</tr>
+					</table>
+				</div>
 				
-			</table>
-			<table class="inventory">
+				<!-- Items Table -->
+				<table class="items-table">
 				<thead>
 					<tr>
-						<th><span >Item</span></th>
-						<th><span >No of Days</span></th>
-						<th><span >Rate</span></th>
-						<th><span >Quantity</span></th>
-						<th><span >Price</span></th>
+							<th>Description</th>
+							<th>Days</th>
+							<th>Rate</th>
+							<th>Qty</th>
+							<th>Amount</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
-						<td><span ><?php echo $troom; ?></span></td>
-						<td><span ><?php echo $days; ?> </span></td>
-						<td><span data-prefix>₵</span><span ><?php  echo $type_of_room;?></span></td>
-						<td><span ><?php echo $nroom;?> </span></td>
-						<td><span data-prefix>₵</span><span><?php echo $ttot; ?></span></td>
+							<td><?php echo $troom; ?></td>
+							<td><?php echo $days; ?></td>
+							<td class="rate"><span class="currency">₵</span><?php echo number_format($type_of_room, 2); ?></td>
+							<td class="quantity"><?php echo $nroom; ?></td>
+							<td class="price"><span class="currency">₵</span><?php echo number_format($ttot, 2); ?></td>
 					</tr>
 					<tr>
-						<td><span ><?php echo $bed; ?>  Bed </span></td>
-						<td><span ><?php echo $days; ?></span></td>
-						<td><span data-prefix>₵</span><span ><?php  echo $type_of_bed;?></span></td>
-						<td><span ><?php echo $nroom;?> </span></td>
-						<td><span data-prefix>₵</span><span><?php echo $btot; ?></span></td>
+							<td><?php echo $bed; ?> Bed</td>
+							<td><?php echo $days; ?></td>
+							<td class="rate"><span class="currency">₵</span><?php echo number_format($type_of_bed, 2); ?></td>
+							<td class="quantity"><?php echo $nroom; ?></td>
+							<td class="price"><span class="currency">₵</span><?php echo number_format($btot, 2); ?></td>
 					</tr>
 					<tr>
-						<td><span ><?php echo $meal; ?>  </span></td>
-						<td><span ><?php echo $days; ?></span></td>
-						<td><span data-prefix>₵</span><span ><?php  echo $type_of_meal?></span></td>
-						<td><span ><?php echo $nroom;?> </span></td>
-						<td><span data-prefix>₵</span><span><?php echo $mepr; ?></span></td>
+							<td><?php echo $meal; ?></td>
+							<td><?php echo $days; ?></td>
+							<td class="rate"><span class="currency">₵</span><?php echo number_format($type_of_meal, 2); ?></td>
+							<td class="quantity"><?php echo $nroom; ?></td>
+							<td class="price"><span class="currency">₵</span><?php echo number_format($mepr, 2); ?></td>
 					</tr>
 				</tbody>
 			</table>
 			
-			<table class="balance">
+				<!-- Balance Section -->
+				<div class="balance-section">
+					<table class="balance-table">
 				<tr>
-					<th><span >Total</span></th>
-					<td><span data-prefix>₵</span><span><?php echo $fintot; ?></span></td>
+							<th>Subtotal</th>
+							<td><span class="currency">₵</span><?php echo number_format($fintot, 2); ?></td>
 				</tr>
 				<tr>
-					<th><span >Amount Paid</span></th>
-					<td><span data-prefix>₵</span><span >0.00</span></td>
+							<th>Amount Paid</th>
+							<td><span class="currency">₵</span>0.00</td>
 				</tr>
 				<tr>
-					<th><span >Balance Due</span></th>
-					<td><span data-prefix>₵</span><span><?php echo $fintot; ?></span></td>
+							<th>Balance Due</th>
+							<td><span class="currency">₵</span><?php echo number_format($fintot, 2); ?></td>
 				</tr>
 			</table>
-		</article>
-		<aside>
-			<h1><span >Contact us</span></h1>
-			<div >
-				<p align="center">Email :- info@Rans.com || Web :- www.Rans.com || Phone :- +94 65 222 44 55 </p>
+				</div>
 			</div>
-		</aside>
+
+			<!-- Footer -->
+			<div class="invoice-footer">
+				<div class="footer-title">Thank You for Choosing RansHotel</div>
+				<div class="contact-info">
+					<div class="contact-item">
+						<span class="label">Email:</span>
+						<span>info@ranshotel.com</span>
+					</div>
+					<div class="contact-item">
+						<span class="label">Website:</span>
+						<span>www.ranshotel.com</span>
+					</div>
+					<div class="contact-item">
+						<span class="label">Phone:</span>
+						<span>+233 (0)302 936 062</span>
+					</div>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>
 <?php
