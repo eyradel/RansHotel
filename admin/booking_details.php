@@ -369,9 +369,17 @@ $f5 = $r - $cr;   // Total available
 															$psql = "INSERT INTO `payment`(`id`, `title`, `fname`, `lname`, `troom`, `tbed`, `nroom`, `cin`, `cout`, `ttot`,`meal`, `mepr`, `btot`,`fintot`,`noofdays`) VALUES ('$id','$title','$fname','$lname','$troom','$bed','$nroom','$cin','$cout','$ttot','$meal','$mepr','$btot','$fintot','$days')";
 														
 														if(mysqli_query($con,$psql))
-														{	$notfree="NotFree";
-																$rpsql = "UPDATE `room` SET `place`='$notfree',`cusid`='$id' where bedding ='$bed' and type='$troom' ";
-															if(mysqli_query($con,$rpsql))
+														{	
+															// Only update room if one was already assigned, otherwise skip
+															// This prevents assigning all rooms of a type
+															if(isset($assigned_room_id) && !empty($assigned_room_id)) {
+																$notfree = "NotFree";
+																$rpsql = "UPDATE `room` SET `place`='$notfree', `status`='Occupied', `cusid`='$id' WHERE id = '$assigned_room_id'";
+																mysqli_query($con, $rpsql);
+															}
+															
+															// Continue with notification logic
+															if(true) // Changed condition since room update is now optional
 															{
 															// Send confirmation notifications to customer
 															require_once 'includes/notification_manager.php';

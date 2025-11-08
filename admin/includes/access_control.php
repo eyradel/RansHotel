@@ -75,6 +75,7 @@ function canAccess($feature) {
             'dashboard' => true,
             'room_booking' => true,
             'reservations' => true,
+            'calendar' => true,
             'notifications' => true,
             'payment' => true,
             'profit' => true,
@@ -92,6 +93,7 @@ function canAccess($feature) {
             'dashboard' => true,
             'room_booking' => true,
             'reservations' => true,
+            'calendar' => true,
             'notifications' => true,
             'payment' => true,
             'profit' => true,
@@ -109,6 +111,7 @@ function canAccess($feature) {
             'dashboard' => true,
             'room_booking' => true,
             'reservations' => true,
+            'calendar' => true,
             'notifications' => true,
             'payment' => false, // Staff cannot access payment details
             'profit' => false, // Staff cannot view profit information
@@ -184,6 +187,11 @@ function getNavigationMenu() {
     // Reservations - available to all
     if (canAccess('reservations')) {
         $menu[] = ['url' => 'reservation_classic.php', 'icon' => 'fa-calendar', 'text' => 'Reservations'];
+    }
+    
+    // Calendar View - available to all logged-in users
+    if (canAccess('calendar')) {
+        $menu[] = ['url' => 'calendar.php', 'icon' => 'fa-calendar-check-o', 'text' => 'Booking Calendar'];
     }
     
     // Notifications - available to all

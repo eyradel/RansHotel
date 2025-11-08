@@ -39,11 +39,28 @@ startUnifiedAdminPage('Room Allocation', 'Manage room assignments and availabili
             $total_result = mysqli_query($con, $total_query);
             $total = mysqli_fetch_assoc($total_result)['total'];
             
-            $available_query = "SELECT COUNT(*) as available FROM room WHERE type = '$type' AND place = 'Free' AND status = 'Available'";
+            $available_query = "SELECT COUNT(*) as available 
+                               FROM room r
+                               WHERE r.type = '$type' 
+                               AND r.place = 'Free' 
+                               AND r.status = 'Available'
+                               AND (r.cusid IS NULL OR r.cusid NOT IN (
+                                   SELECT id FROM roombook WHERE stat NOT IN ('Cancelled', 'Checked Out') AND cout >= CURDATE()
+                               ))";
             $available_result = mysqli_query($con, $available_query);
             $available = mysqli_fetch_assoc($available_result)['available'];
             
-            $occupied = $total - $available;
+            // Count occupied rooms with active bookings
+            $occupied_query = "SELECT COUNT(*) as occupied 
+                              FROM room r
+                              INNER JOIN roombook rb ON rb.id = r.cusid
+                              WHERE r.type = '$type'
+                              AND r.status = 'Occupied'
+                              AND r.place = 'NotFree'
+                              AND rb.stat NOT IN ('Cancelled', 'Checked Out')
+                              AND rb.cout >= CURDATE()";
+            $occupied_result = mysqli_query($con, $occupied_query);
+            $occupied = mysqli_fetch_assoc($occupied_result)['occupied'];
             $occupancy_rate = $total > 0 ? round(($occupied / $total) * 100, 1) : 0;
             
             $color_class = $type === 'Executive' ? 'purple' : ($type === 'Mini Executive' ? 'blue' : 'green');
@@ -88,8 +105,16 @@ startUnifiedAdminPage('Room Allocation', 'Manage room assignments and availabili
                 <div class="p-6">
                     <div class="grid grid-cols-2 gap-3">
                         <?php while($room = mysqli_fetch_assoc($rooms_result)) {
-                            $is_available = $room['place'] === 'Free' && $room['status'] === 'Available';
-                            $is_occupied = $room['place'] === 'NotFree' || $room['status'] === 'Occupied';
+                            // Check if room has a valid active booking
+                            $has_active_booking = false;
+                            if($room['cusid']) {
+                                $booking_check = "SELECT id, stat, cout FROM roombook WHERE id = '{$room['cusid']}' AND stat NOT IN ('Cancelled', 'Checked Out') AND cout >= CURDATE()";
+                                $booking_check_result = mysqli_query($con, $booking_check);
+                                $has_active_booking = mysqli_num_rows($booking_check_result) > 0;
+                            }
+                            
+                            $is_available = $room['place'] === 'Free' && $room['status'] === 'Available' && !$has_active_booking;
+                            $is_occupied = (($room['place'] === 'NotFree' || $room['status'] === 'Occupied') && $has_active_booking);
                             $is_maintenance = $room['status'] === 'Maintenance';
                             
                             $status_class = '';
@@ -152,15 +177,26 @@ startUnifiedAdminPage('Room Allocation', 'Manage room assignments and availabili
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-in</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-out</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     <?php
-                    $assigned_bookings_query = "SELECT * FROM roombook WHERE stat = 'Confirm' AND assigned_room_id IS NOT NULL AND assigned_room_id != '' ORDER BY id DESC LIMIT 10";
+                    $assigned_bookings_query = "SELECT * FROM roombook WHERE stat IN ('Pending', 'Confirmed', 'Checked In', 'Confirm') AND assigned_room_id IS NOT NULL AND assigned_room_id != '' AND cout >= CURDATE() ORDER BY id DESC LIMIT 10";
                     $assigned_bookings_result = mysqli_query($con, $assigned_bookings_query);
                     
                     while($booking = mysqli_fetch_assoc($assigned_bookings_result)) {
-                        $status_class = $booking['stat'] === 'Confirm' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
+                        // Status badge styling
+                        $status = $booking['stat'];
+                        if($status === 'Confirm' || $status === 'Confirmed') {
+                            $status_class = 'bg-green-100 text-green-800';
+                        } elseif($status === 'Checked In') {
+                            $status_class = 'bg-blue-100 text-blue-800';
+                        } elseif($status === 'Pending') {
+                            $status_class = 'bg-yellow-100 text-yellow-800';
+                        } else {
+                            $status_class = 'bg-gray-100 text-gray-800';
+                        }
                         ?>
                         <tr class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#<?php echo $booking['id']; ?></td>
@@ -173,6 +209,24 @@ startUnifiedAdminPage('Room Allocation', 'Manage room assignments and availabili
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full <?php echo $status_class; ?>">
                                     <?php echo $booking['stat']; ?>
                                 </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex gap-2 flex-wrap">
+                                    <?php if($status !== 'Confirmed' && $status !== 'Cancelled' && $status !== 'Checked Out'): ?>
+                                        <button class="text-green-600 hover:text-green-900 confirm-booking-btn" 
+                                                data-booking-id="<?php echo $booking['id']; ?>"
+                                                title="Confirm Booking">
+                                            <i class="fa fa-check-circle"></i> Confirm
+                                        </button>
+                                    <?php endif; ?>
+                                    <?php if($status !== 'Cancelled' && $status !== 'Checked Out'): ?>
+                                        <button class="text-red-600 hover:text-red-900 cancel-booking-btn" 
+                                                data-booking-id="<?php echo $booking['id']; ?>"
+                                                title="Cancel Booking">
+                                            <i class="fa fa-times-circle"></i> Cancel
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
                             </td>
                         </tr>
                     <?php } ?>
@@ -202,11 +256,21 @@ startUnifiedAdminPage('Room Allocation', 'Manage room assignments and availabili
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     <?php
-                    $bookings_query = "SELECT * FROM roombook WHERE stat = 'Confirm' AND (assigned_room_id IS NULL OR assigned_room_id = '') ORDER BY id DESC LIMIT 10";
+                    $bookings_query = "SELECT * FROM roombook WHERE stat IN ('Pending', 'Confirmed', 'Checked In', 'Confirm') AND (assigned_room_id IS NULL OR assigned_room_id = '') AND cout >= CURDATE() ORDER BY id DESC LIMIT 10";
                     $bookings_result = mysqli_query($con, $bookings_query);
                     
                     while($booking = mysqli_fetch_assoc($bookings_result)) {
-                        $status_class = $booking['stat'] === 'Confirm' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
+                        // Status badge styling
+                        $status = $booking['stat'];
+                        if($status === 'Confirm' || $status === 'Confirmed') {
+                            $status_class = 'bg-green-100 text-green-800';
+                        } elseif($status === 'Checked In') {
+                            $status_class = 'bg-blue-100 text-blue-800';
+                        } elseif($status === 'Pending') {
+                            $status_class = 'bg-yellow-100 text-yellow-800';
+                        } else {
+                            $status_class = 'bg-gray-100 text-gray-800';
+                        }
                         ?>
                         <tr class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#<?php echo $booking['id']; ?></td>
@@ -220,11 +284,27 @@ startUnifiedAdminPage('Room Allocation', 'Manage room assignments and availabili
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button class="text-blue-600 hover:text-blue-900 assign-room-btn" 
-                                        data-booking-id="<?php echo $booking['id']; ?>"
-                                        data-room-type="<?php echo $booking['TRoom']; ?>">
-                                    Assign Room
-                                </button>
+                                <div class="flex gap-2 flex-wrap">
+                                    <button class="text-blue-600 hover:text-blue-900 assign-room-btn" 
+                                            data-booking-id="<?php echo $booking['id']; ?>"
+                                            data-room-type="<?php echo $booking['TRoom']; ?>">
+                                        <i class="fa fa-bed"></i> Assign Room
+                                    </button>
+                                    <?php if($status === 'Pending'): ?>
+                                        <button class="text-green-600 hover:text-green-900 confirm-booking-btn" 
+                                                data-booking-id="<?php echo $booking['id']; ?>"
+                                                title="Confirm Booking">
+                                            <i class="fa fa-check-circle"></i> Confirm
+                                        </button>
+                                    <?php endif; ?>
+                                    <?php if($status !== 'Cancelled' && $status !== 'Checked Out'): ?>
+                                        <button class="text-red-600 hover:text-red-900 cancel-booking-btn" 
+                                                data-booking-id="<?php echo $booking['id']; ?>"
+                                                title="Cancel Booking">
+                                            <i class="fa fa-times-circle"></i> Cancel
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
                             </td>
                         </tr>
                     <?php } ?>
@@ -361,6 +441,70 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('roomAssignmentModal').classList.add('hidden');
         selectedRoomId = null;
         currentBookingId = null;
+    });
+    
+    // Handle confirm booking
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.confirm-booking-btn')) {
+            const btn = e.target.closest('.confirm-booking-btn');
+            const bookingId = btn.getAttribute('data-booking-id');
+            
+            if (confirm('Are you sure you want to confirm this booking?')) {
+                fetch('ajax/update_booking_status.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        bookingId: bookingId,
+                        action: 'confirm'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Booking confirmed successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error confirming booking: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert('Error: ' + error.message);
+                });
+            }
+        }
+        
+        // Handle cancel booking
+        if (e.target.closest('.cancel-booking-btn')) {
+            const btn = e.target.closest('.cancel-booking-btn');
+            const bookingId = btn.getAttribute('data-booking-id');
+            
+            if (confirm('Are you sure you want to cancel this booking? This will free the assigned room if any.')) {
+                fetch('ajax/update_booking_status.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        bookingId: bookingId,
+                        action: 'cancel'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Booking cancelled successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error cancelling booking: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert('Error: ' + error.message);
+                });
+            }
+        }
     });
 });
 </script>

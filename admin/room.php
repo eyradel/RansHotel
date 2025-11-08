@@ -41,9 +41,92 @@ if(!in_array('amenities', $existing_columns)) {
 // Populate room_number for existing records that don't have it
 mysqli_query($con, "UPDATE room SET room_number = CONCAT('R', LPAD(id, 3, '0')) WHERE room_number IS NULL OR room_number = ''");
 
+// Automatically clean up orphaned occupied rooms and update statuses
+// This runs every time the page loads
+try {
+    $today = date('Y-m-d');
+    $cleaned_count = 0;
+    
+    // 1. Free rooms that are marked as occupied but have no valid booking (orphaned rooms)
+    // This handles rooms with NULL cusid
+    $cleanup_orphaned1 = "UPDATE room 
+                         SET place = 'Free',
+                             status = 'Available',
+                             cusid = NULL
+                         WHERE (status = 'Occupied' OR place = 'NotFree')
+                         AND cusid IS NULL";
+    mysqli_query($con, $cleanup_orphaned1);
+    $cleaned_count += mysqli_affected_rows($con);
+    
+    // Free rooms with invalid cusid (cusid doesn't exist in roombook)
+    $cleanup_orphaned2 = "UPDATE room r
+                         SET r.place = 'Free',
+                             r.status = 'Available',
+                             r.cusid = NULL
+                         WHERE (r.status = 'Occupied' OR r.place = 'NotFree')
+                         AND r.cusid IS NOT NULL
+                         AND r.cusid NOT IN (SELECT id FROM roombook)";
+    mysqli_query($con, $cleanup_orphaned2);
+    $cleaned_count += mysqli_affected_rows($con);
+    
+    // Free rooms linked to cancelled or checked out bookings
+    $cleanup_orphaned3 = "UPDATE room r
+                         INNER JOIN roombook rb ON rb.id = r.cusid
+                         SET r.place = 'Free',
+                             r.status = 'Available',
+                             r.cusid = NULL
+                         WHERE (r.status = 'Occupied' OR r.place = 'NotFree')
+                         AND rb.stat IN ('Cancelled', 'Checked Out')";
+    mysqli_query($con, $cleanup_orphaned3);
+    $cleaned_count += mysqli_affected_rows($con);
+    
+    // 2. Free rooms where checkout date has passed
+    $cleanup_expired = "UPDATE room r
+                       INNER JOIN roombook rb ON rb.id = r.cusid
+                       SET r.place = 'Free',
+                           r.status = 'Available',
+                           r.cusid = NULL
+                       WHERE r.status = 'Occupied'
+                       AND r.place = 'NotFree'
+                       AND rb.cout < '$today'
+                       AND rb.stat NOT IN ('Checked Out', 'Cancelled')";
+    mysqli_query($con, $cleanup_expired);
+    $cleaned_count += mysqli_affected_rows($con);
+    
+    // 3. Update booking status to Checked Out for expired bookings
+    $update_expired_bookings = "UPDATE roombook 
+                               SET stat = 'Checked Out' 
+                               WHERE stat IN ('Confirmed', 'Checked In', 'Pending')
+                               AND cout < '$today'
+                               AND stat NOT IN ('Checked Out', 'Cancelled')";
+    mysqli_query($con, $update_expired_bookings);
+    
+    // 4. Auto-check-in bookings where check-in date is today or past
+    $auto_checkin = "UPDATE roombook 
+                    SET stat = 'Checked In' 
+                    WHERE stat = 'Confirmed' 
+                    AND cin <= '$today' 
+                    AND cout >= '$today'";
+    mysqli_query($con, $auto_checkin);
+    
+    // Track if rooms were cleaned up
+    $rooms_cleaned = $cleaned_count > 0;
+    
+} catch (Exception $e) {
+    // Log error but don't interrupt page display
+    error_log('Room cleanup error: ' . $e->getMessage());
+    $rooms_cleaned = false;
+}
+
 // Handle form submissions
 $message = '';
 $message_type = '';
+
+// Show notification if rooms were automatically cleaned up
+if (isset($rooms_cleaned) && $rooms_cleaned && !isset($_GET['cleaned']) && empty($message)) {
+    $message = "Room statuses automatically updated (orphaned rooms freed, expired checkouts processed)";
+    $message_type = "success";
+}
 
 // Add Room
 if(isset($_POST['add'])) {
@@ -119,7 +202,14 @@ $available_query = "SELECT COUNT(*) as available FROM room WHERE place = 'Free' 
 $available_result = mysqli_query($con, $available_query);
 $available_rooms = mysqli_fetch_assoc($available_result)['available'];
 
-$occupied_query = "SELECT COUNT(*) as occupied FROM room WHERE place != 'Free'";
+// Count only rooms that are actually occupied with active bookings
+$occupied_query = "SELECT COUNT(*) as occupied 
+                   FROM room r
+                   INNER JOIN roombook rb ON rb.id = r.cusid
+                   WHERE r.status = 'Occupied'
+                   AND r.place = 'NotFree'
+                   AND rb.stat NOT IN ('Cancelled', 'Checked Out')
+                   AND rb.cout >= CURDATE()";
 $occupied_result = mysqli_query($con, $occupied_query);
 $occupied_rooms = mysqli_fetch_assoc($occupied_result)['occupied'];
 

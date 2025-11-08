@@ -594,6 +594,113 @@ include('db.php');
 .stat-card:nth-child(2) { animation-delay: 0.2s; }
 .stat-card:nth-child(3) { animation-delay: 0.3s; }
 .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* Print Styles - Show all important information when printing */
+@media print {
+    /* Hide navigation and non-essential elements */
+    .sidebar,
+    .navbar,
+    .top-bar,
+    .btn-icon,
+    .chart-actions,
+    .btn {
+        display: none !important;
+    }
+    
+    /* Ensure main content is full width */
+    .main-content,
+    .container-fluid {
+        margin: 0 !important;
+        padding: 20px !important;
+        width: 100% !important;
+    }
+    
+    /* Show all data tables */
+    .data-table,
+    .report-content,
+    .table-container {
+        display: block !important;
+        page-break-inside: avoid;
+    }
+    
+    /* Ensure charts are visible (they'll render as images) */
+    .chart-container,
+    .chart-card {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+    
+    /* Show all stat cards */
+    .stat-card {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+    }
+    
+    /* Show all report containers */
+    .report-container,
+    .report-card {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+    }
+    
+    /* Ensure tables print properly */
+    .data-table {
+        border-collapse: collapse !important;
+    }
+    
+    .data-table th,
+    .data-table td {
+        border: 1px solid #ddd !important;
+        padding: 8px !important;
+    }
+    
+    /* Remove backgrounds for better printing */
+    body {
+        background: white !important;
+    }
+    
+    .stat-card,
+    .chart-container,
+    .report-container {
+        background: white !important;
+    }
+    
+    /* Show all text */
+    .stat-value,
+    .stat-label,
+    .report-title,
+    .chart-title {
+        color: #000 !important;
+    }
+    
+    /* Print page breaks */
+    .stats-grid {
+        page-break-after: always;
+    }
+    
+    .charts-grid {
+        page-break-after: always;
+    }
+    
+    /* Ensure all data is visible */
+    .report-content,
+    .table-container {
+        overflow: visible !important;
+    }
+    
+    /* Show hidden elements that might contain important data */
+    [style*="display: none"] {
+        display: block !important;
+    }
+    
+    .hidden {
+        display: block !important;
+    }
+}
 </style>
 
 <script>

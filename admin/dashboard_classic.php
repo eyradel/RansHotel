@@ -13,11 +13,71 @@ if (!isLoggedIn()) {
 $user = $_SESSION['user'] ?? 'Admin';
 $userRole = getCurrentUserRole();
 
-// Start admin page with unified layout
-startUnifiedAdminPage('Dashboard', 'RansHotel Admin Dashboard - Manage your hotel operations');
-
 // Include database connection
 include('db.php');
+
+// Automatically clean up orphaned occupied rooms and update statuses
+// This runs every time the dashboard loads
+try {
+    $today = date('Y-m-d');
+    
+    // 1. Free rooms that are marked as occupied but have no valid booking (orphaned rooms)
+    // This handles rooms with NULL cusid
+    $cleanup_orphaned1 = "UPDATE room 
+                         SET place = 'Free',
+                             status = 'Available',
+                             cusid = NULL
+                         WHERE (status = 'Occupied' OR place = 'NotFree')
+                         AND cusid IS NULL";
+    mysqli_query($con, $cleanup_orphaned1);
+    
+    // Free rooms with invalid cusid (cusid doesn't exist in roombook)
+    $cleanup_orphaned2 = "UPDATE room r
+                         SET r.place = 'Free',
+                             r.status = 'Available',
+                             r.cusid = NULL
+                         WHERE (r.status = 'Occupied' OR r.place = 'NotFree')
+                         AND r.cusid IS NOT NULL
+                         AND r.cusid NOT IN (SELECT id FROM roombook)";
+    mysqli_query($con, $cleanup_orphaned2);
+    
+    // Free rooms linked to cancelled or checked out bookings
+    $cleanup_orphaned3 = "UPDATE room r
+                         INNER JOIN roombook rb ON rb.id = r.cusid
+                         SET r.place = 'Free',
+                             r.status = 'Available',
+                             r.cusid = NULL
+                         WHERE (r.status = 'Occupied' OR r.place = 'NotFree')
+                         AND rb.stat IN ('Cancelled', 'Checked Out')";
+    mysqli_query($con, $cleanup_orphaned3);
+    
+    // 2. Free rooms where checkout date has passed
+    $cleanup_expired = "UPDATE room r
+                       INNER JOIN roombook rb ON rb.id = r.cusid
+                       SET r.place = 'Free',
+                           r.status = 'Available',
+                           r.cusid = NULL
+                       WHERE r.status = 'Occupied'
+                       AND r.place = 'NotFree'
+                       AND rb.cout < '$today'
+                       AND rb.stat NOT IN ('Checked Out', 'Cancelled')";
+    mysqli_query($con, $cleanup_expired);
+    
+    // 3. Update booking status to Checked Out for expired bookings
+    $update_expired_bookings = "UPDATE roombook 
+                               SET stat = 'Checked Out' 
+                               WHERE stat IN ('Confirmed', 'Checked In', 'Pending')
+                               AND cout < '$today'
+                               AND stat NOT IN ('Checked Out', 'Cancelled')";
+    mysqli_query($con, $update_expired_bookings);
+    
+} catch (Exception $e) {
+    // Log error but don't interrupt dashboard display
+    error_log('Dashboard cleanup error: ' . $e->getMessage());
+}
+
+// Start admin page with unified layout
+startUnifiedAdminPage('Dashboard', 'RansHotel Admin Dashboard - Manage your hotel operations');
 ?>
 
 <!-- Enhanced Dashboard Content with Tailwind CSS -->
@@ -31,10 +91,42 @@ include('db.php');
                     <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Total Revenue</p>
                     <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">
                         <?php
-                        $revenue_query = "SELECT SUM(fintot) as total_revenue FROM payment";
-                        $revenue_result = mysqli_query($con, $revenue_query);
-                        $revenue_data = mysqli_fetch_assoc($revenue_result);
-                        echo "₵" . number_format($revenue_data['total_revenue'] ?? 0, 2);
+                        // First check if there are any bookings at all
+                        $booking_check = "SELECT COUNT(*) as count FROM roombook";
+                        $booking_check_result = mysqli_query($con, $booking_check);
+                        $booking_check_data = mysqli_fetch_assoc($booking_check_result);
+                        $has_bookings = ($booking_check_data['count'] ?? 0) > 0;
+                        
+                        $total_revenue = 0;
+                        
+                        if ($has_bookings) {
+                            // Calculate revenue from roombook where payment is confirmed/paid
+                            // Use final_amount from roombook for paid bookings
+                            $revenue_query = "SELECT SUM(rb.final_amount) as total_revenue
+                                            FROM roombook rb
+                                            WHERE rb.payment_status = 'paid'
+                                            AND rb.final_amount IS NOT NULL
+                                            AND rb.final_amount > 0
+                                            AND rb.stat NOT IN ('Cancelled')";
+                            $revenue_result = mysqli_query($con, $revenue_query);
+                            $revenue_data = mysqli_fetch_assoc($revenue_result);
+                            $total_revenue = $revenue_data['total_revenue'] ?? 0;
+                            
+                            // If no paid bookings in roombook, check payment table but only for confirmed bookings
+                            if ($total_revenue == 0) {
+                                $revenue_query2 = "SELECT SUM(p.fintot) as total_revenue 
+                                                 FROM payment p
+                                                 INNER JOIN roombook rb ON rb.id = p.id
+                                                 WHERE rb.stat NOT IN ('Cancelled')
+                                                 AND p.fintot IS NOT NULL
+                                                 AND p.fintot > 0";
+                                $revenue_result2 = mysqli_query($con, $revenue_query2);
+                                $revenue_data2 = mysqli_fetch_assoc($revenue_result2);
+                                $total_revenue = $revenue_data2['total_revenue'] ?? 0;
+                            }
+                        }
+                        
+                        echo "₵" . number_format($total_revenue, 2);
                         ?>
                     </p>
                     <div class="flex items-center mt-2 text-sm text-green-600">
@@ -203,18 +295,27 @@ include('db.php');
 
     <!-- Recent Bookings and Quick Actions Grid -->
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <!-- Recent Bookings -->
+        <!-- All Reservations -->
         <div class="xl:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <h3 class="text-lg font-semibold text-gray-900">Recent Bookings</h3>
-                <p class="text-sm text-gray-600 mt-1">Latest 10 bookings</p>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">All Reservations</h3>
+                        <p class="text-sm text-gray-600 mt-1">Complete list of all bookings</p>
+                    </div>
+                    <a href="booking_details.php" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                        View Details <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200" id="recentBookingsTable">
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Guest</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Guest Name</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-in</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-out</th>
@@ -224,18 +325,30 @@ include('db.php');
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         <?php
+                        // Get ALL reservations, not just 10
                         $recent_bookings_query = "SELECT 
                             rb.id,
-                            CONCAT(rb.FName, ' ', rb.LName) as guest_name,
+                            rb.Title,
+                            rb.FName,
+                            rb.LName,
+                            CONCAT(COALESCE(rb.Title, ''), ' ', COALESCE(rb.FName, ''), ' ', COALESCE(rb.LName, '')) as guest_name,
+                            rb.Email,
+                            rb.Phone,
                             rb.TRoom,
                             rb.cin,
                             rb.cout,
                             rb.stat as status,
                             rb.final_amount as amount
                             FROM roombook rb
-                            ORDER BY rb.id DESC
-                            LIMIT 10";
+                            ORDER BY rb.id DESC";
                         $recent_bookings_result = mysqli_query($con, $recent_bookings_query);
+                        
+                        // Check if there are any bookings
+                        $booking_count = mysqli_num_rows($recent_bookings_result);
+                        
+                        if ($booking_count == 0) {
+                            echo "<tr><td colspan='9' class='px-6 py-8 text-center text-gray-500'>No reservations found. <a href='reservation_classic.php' class='text-blue-600 hover:underline'>Create a new reservation</a></td></tr>";
+                        }
                         
                         while ($row = mysqli_fetch_assoc($recent_bookings_result)) {
                             $status_class = '';
@@ -258,22 +371,54 @@ include('db.php');
                                     $status_bg = 'bg-gray-100';
                             }
                             
+                            // Format guest name properly
+                            $guestName = trim(($row['Title'] ?? '') . ' ' . ($row['FName'] ?? '') . ' ' . ($row['LName'] ?? ''));
+                            if (empty($guestName)) {
+                                $guestName = 'Guest';
+                            }
+                            
                             echo "<tr class='hover:bg-gray-50'>";
                             echo "<td class='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900'>#" . $row['id'] . "</td>";
-                            echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>" . htmlspecialchars($row['guest_name']) . "</td>";
-                            echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>" . htmlspecialchars($row['TRoom']) . "</td>";
-                            echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>" . date('M j, Y', strtotime($row['cin'])) . "</td>";
-                            echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>" . date('M j, Y', strtotime($row['cout'])) . "</td>";
-                            // If booking is not yet confirmed, show an actionable Confirm button linking to booking details
-                            $statusText = $row['status'];
-                            $isPending = in_array(strtolower($statusText), ['conform', 'confirm', 'pending']);
+                            echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>" . htmlspecialchars($guestName) . "</td>";
+                            echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-600'>" . htmlspecialchars($row['Email'] ?? 'N/A') . "</td>";
+                            echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-600'>" . htmlspecialchars($row['Phone'] ?? 'N/A') . "</td>";
+                            echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>" . htmlspecialchars($row['TRoom'] ?? 'N/A') . "</td>";
+                            echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>" . (!empty($row['cin']) ? date('M j, Y', strtotime($row['cin'])) : 'N/A') . "</td>";
+                            echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>" . (!empty($row['cout']) ? date('M j, Y', strtotime($row['cout'])) : 'N/A') . "</td>";
+                            
+                            // Status display with better styling
+                            $statusText = $row['status'] ?? 'Pending';
+                            $statusTextLower = strtolower($statusText);
+                            
+                            // Update status classes based on actual status values
+                            if (in_array($statusTextLower, ['pending'])) {
+                                $status_class = 'text-yellow-800';
+                                $status_bg = 'bg-yellow-100';
+                            } elseif (in_array($statusTextLower, ['confirmed', 'confirm', 'conform'])) {
+                                $status_class = 'text-green-800';
+                                $status_bg = 'bg-green-100';
+                            } elseif (in_array($statusTextLower, ['checked in', 'checked-in'])) {
+                                $status_class = 'text-blue-800';
+                                $status_bg = 'bg-blue-100';
+                            } elseif (in_array($statusTextLower, ['checked out', 'checked-out'])) {
+                                $status_class = 'text-gray-800';
+                                $status_bg = 'bg-gray-100';
+                            } elseif (in_array($statusTextLower, ['cancelled', 'canceled'])) {
+                                $status_class = 'text-red-800';
+                                $status_bg = 'bg-red-100';
+                            } else {
+                                $status_class = 'text-gray-800';
+                                $status_bg = 'bg-gray-100';
+                            }
+                            
+                            $isPending = in_array($statusTextLower, ['pending']);
                             if ($isPending) {
                                 $confirmUrl = 'booking_details.php?rid=' . urlencode($row['id']);
                                 echo "<td class='px-6 py-4 whitespace-nowrap'>";
                                 echo "<a href='" . $confirmUrl . "' class='inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors'>Confirm</a>";
                                 echo "</td>";
                             } else {
-                                echo "<td class='px-6 py-4 whitespace-nowrap'><span class='inline-flex px-2 py-1 text-xs font-semibold rounded-full {$status_bg} {$status_class}'>" . $statusText . "</span></td>";
+                                echo "<td class='px-6 py-4 whitespace-nowrap'><span class='inline-flex px-2 py-1 text-xs font-semibold rounded-full {$status_bg} {$status_class}'>" . htmlspecialchars($statusText) . "</span></td>";
                             }
                             echo "<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium'>₵" . number_format($row['amount'] ?? 0, 2) . "</td>";
                             echo "</tr>";
@@ -581,11 +726,21 @@ function exportChart(chartType, format = 'png') {
     }
 }
 
-// Initialize DataTable
+// Initialize DataTable with pagination
 $(document).ready(function() {
     $('#recentBookingsTable').DataTable({
-        "pageLength": 5,
-        "order": [[ 0, "desc" ]]
+        "pageLength": 25,
+        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+        "order": [[ 0, "desc" ]],
+        "language": {
+            "search": "Search reservations:",
+            "lengthMenu": "Show _MENU_ reservations per page",
+            "info": "Showing _START_ to _END_ of _TOTAL_ reservations",
+            "infoEmpty": "No reservations found",
+            "infoFiltered": "(filtered from _MAX_ total reservations)",
+            "zeroRecords": "No matching reservations found"
+        },
+        "responsive": true
     });
 });
 

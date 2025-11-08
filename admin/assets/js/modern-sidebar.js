@@ -492,3 +492,4 @@ window.SidebarManager = {
     addNotification
 };
 
+

@@ -112,6 +112,7 @@ if (!function_exists('getNavigationMenu')) {
                         $pageTitles = [
                             'dashboard_classic' => 'Dashboard',
                             'reservation_classic' => 'Reservations',
+                            'calendar' => 'Booking Calendar',
                             'booking_details' => 'Booking Details',
                             'room' => 'Room Management',
                             'pricing' => 'Pricing Management',

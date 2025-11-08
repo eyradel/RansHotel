@@ -418,3 +418,4 @@ window.RansHotelComponents = {
     SidebarComponent
 };
 
+

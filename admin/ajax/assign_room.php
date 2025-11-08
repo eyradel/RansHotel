@@ -42,16 +42,19 @@ try {
         throw new Exception('Room is not available');
     }
     
+    // Get room number for assignment
+    $room_number = $room['room_number'] ?? '';
+    
     // Assign room to booking
     $assign_query = "UPDATE room SET place = 'NotFree', status = 'Occupied', cusid = '$bookingId' WHERE id = '$roomId'";
     if(!mysqli_query($con, $assign_query)) {
-        throw new Exception('Failed to assign room');
+        throw new Exception('Failed to assign room: ' . mysqli_error($con));
     }
     
-    // Update booking with room assignment
-    $update_booking = "UPDATE roombook SET assigned_room_id = '$roomId' WHERE id = '$bookingId'";
+    // Update booking with room assignment (both ID and number)
+    $update_booking = "UPDATE roombook SET assigned_room_id = '$roomId', assigned_room_number = '$room_number' WHERE id = '$bookingId'";
     if(!mysqli_query($con, $update_booking)) {
-        throw new Exception('Failed to update booking');
+        throw new Exception('Failed to update booking: ' . mysqli_error($con));
     }
     
     // Commit transaction
