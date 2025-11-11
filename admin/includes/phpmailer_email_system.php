@@ -394,7 +394,7 @@ class PHPMailerEmailSystem {
     public function sendEmail($to, $subject, $htmlBody, $textBody) {
         // Load Composer autoloader lazily and safely
         $autoloadPath = __DIR__ . '/../../vendor/autoload.php';
-        if (!class_exists('\\PHPMailer\\PHPMailer\\PHPMailer')) {
+        if (!class_exists('\\PHPMailer\\PHPMailer\\PHPMailer', false)) {
             if (!file_exists($autoloadPath)) {
                 return [
                     'success' => false,
