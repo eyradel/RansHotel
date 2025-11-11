@@ -394,23 +394,34 @@ class PHPMailerEmailSystem {
     public function sendEmail($to, $subject, $htmlBody, $textBody) {
         // Load Composer autoloader lazily and safely
         $autoloadPath = __DIR__ . '/../../vendor/autoload.php';
-        if (!file_exists($autoloadPath)) {
-            return [
-                'success' => false,
-                'error' => 'Composer autoload not found',
-                'to' => $to,
-                'subject' => $subject
-            ];
-        }
-        try {
-            require_once $autoloadPath;
-        } catch (\Throwable $e) {
-            return [
-                'success' => false,
-                'error' => 'Autoload error: ' . $e->getMessage(),
-                'to' => $to,
-                'subject' => $subject
-            ];
+        if (!class_exists('\\PHPMailer\\PHPMailer\\PHPMailer')) {
+            if (!file_exists($autoloadPath)) {
+                return [
+                    'success' => false,
+                    'error' => 'Email library not installed (missing vendor/). Booking proceeds without sending email.',
+                    'to' => $to,
+                    'subject' => $subject
+                ];
+            }
+            try {
+                require_once $autoloadPath;
+            } catch (\Throwable $e) {
+                return [
+                    'success' => false,
+                    'error' => 'Autoload error: ' . $e->getMessage(),
+                    'to' => $to,
+                    'subject' => $subject
+                ];
+            }
+            // If after requiring autoload the class still isn't available, bail out gracefully
+            if (!class_exists('\\PHPMailer\\PHPMailer\\PHPMailer')) {
+                return [
+                    'success' => false,
+                    'error' => 'PHPMailer library not available after autoload.',
+                    'to' => $to,
+                    'subject' => $subject
+                ];
+            }
         }
 
         // Import classes after autoload
