@@ -25,14 +25,14 @@ class NotificationManager {
     }
     
     /**
-     * Send booking confirmation to customer and notification to manager
+     * Send reservation notifications to customer (when booking is created with Pending status)
      */
-    public function sendBookingNotifications($bookingData) {
+    public function sendReservationNotifications($bookingData) {
         $results = [];
         
-        // Send confirmation email to customer (only if enabled)
+        // Send reservation email to customer (only if enabled)
         if ($this->emailNotification && defined('SEND_EMAIL_NOTIFICATIONS') && SEND_EMAIL_NOTIFICATIONS) {
-            $emailResult = $this->emailNotification->sendBookingConfirmation(
+            $emailResult = $this->emailNotification->sendReservationNotification(
                 $bookingData['email'],
                 $bookingData['customerName'],
                 $bookingData['roomType'],
@@ -48,16 +48,21 @@ class NotificationManager {
             $results['customer_email'] = ['success' => false, 'error' => 'Email disabled'];
         }
         
-        // Send confirmation SMS to customer
-        $smsResult = $this->smsNotification->sendBookingConfirmation(
-            $bookingData['phone'],
-            $bookingData['customerName'],
-            $bookingData['roomType'],
-            $bookingData['checkIn'],
-            $bookingData['checkOut'],
-            $bookingData['bookingId']
-        );
-        $results['customer_sms'] = $smsResult;
+        // Send reservation SMS to customer
+        if (defined('SEND_SMS_NOTIFICATIONS') && SEND_SMS_NOTIFICATIONS) {
+            $smsResult = $this->smsNotification->sendReservationNotification(
+                $bookingData['phone'],
+                $bookingData['customerName'],
+                $bookingData['roomType'],
+                $bookingData['checkIn'],
+                $bookingData['checkOut'],
+                $bookingData['bookingId'],
+                $bookingData['totalAmount'] ?? null
+            );
+            $results['customer_sms'] = $smsResult;
+        } else {
+            $results['customer_sms'] = ['success' => false, 'error' => 'SMS disabled'];
+        }
         
         // Send notification to manager (only if enabled)
         if ($this->emailNotification && defined('SEND_MANAGER_NOTIFICATIONS') && SEND_MANAGER_NOTIFICATIONS) {
@@ -94,23 +99,23 @@ class NotificationManager {
     }
     
     /**
-     * Send admin confirmation notifications to customer
+     * Send confirmation notifications to customer (when booking is confirmed)
      */
-    public function sendAdminConfirmationNotifications($email, $customerName, $phone, $roomType, $checkIn, $checkOut, $bookingId, $mealPlan, $nationality, $country, $totalAmount = null) {
+    public function sendConfirmationNotifications($bookingData) {
         $results = [];
         
         // Send confirmation email to customer (only if enabled)
         if ($this->emailNotification && defined('SEND_EMAIL_NOTIFICATIONS') && SEND_EMAIL_NOTIFICATIONS) {
             $emailResult = $this->emailNotification->sendBookingConfirmation(
-                $email,
-                $customerName,
-                $roomType,
-                $checkIn,
-                $checkOut,
-                $bookingId,
-                $phone,
-                $mealPlan,
-                $totalAmount
+                $bookingData['email'],
+                $bookingData['customerName'],
+                $bookingData['roomType'],
+                $bookingData['checkIn'],
+                $bookingData['checkOut'],
+                $bookingData['bookingId'],
+                $bookingData['phone'],
+                $bookingData['mealPlan'] ?? 'Room only',
+                $bookingData['totalAmount'] ?? null
             );
             $results['customer_email'] = $emailResult;
         } else {
@@ -118,18 +123,39 @@ class NotificationManager {
         }
         
         // Send confirmation SMS to customer
-        $smsResult = $this->smsNotification->sendBookingConfirmation(
-            $phone,
-            $customerName,
-            $roomType,
-            $checkIn,
-            $checkOut,
-            $bookingId,
-            $totalAmount
-        );
-        $results['customer_sms'] = $smsResult;
+        if (defined('SEND_SMS_NOTIFICATIONS') && SEND_SMS_NOTIFICATIONS) {
+            $smsResult = $this->smsNotification->sendBookingConfirmation(
+                $bookingData['phone'],
+                $bookingData['customerName'],
+                $bookingData['roomType'],
+                $bookingData['checkIn'],
+                $bookingData['checkOut'],
+                $bookingData['bookingId'],
+                $bookingData['totalAmount'] ?? null
+            );
+            $results['customer_sms'] = $smsResult;
+        } else {
+            $results['customer_sms'] = ['success' => false, 'error' => 'SMS disabled'];
+        }
         
         return $results;
+    }
+    
+    /**
+     * Send admin confirmation notifications to customer (legacy method - kept for compatibility)
+     */
+    public function sendAdminConfirmationNotifications($email, $customerName, $phone, $roomType, $checkIn, $checkOut, $bookingId, $mealPlan, $nationality, $country, $totalAmount = null) {
+        return $this->sendConfirmationNotifications([
+            'email' => $email,
+            'customerName' => $customerName,
+            'phone' => $phone,
+            'roomType' => $roomType,
+            'checkIn' => $checkIn,
+            'checkOut' => $checkOut,
+            'bookingId' => $bookingId,
+            'mealPlan' => $mealPlan,
+            'totalAmount' => $totalAmount
+        ]);
     }
     
     /**

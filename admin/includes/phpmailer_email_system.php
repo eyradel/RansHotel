@@ -32,7 +32,18 @@ class PHPMailerEmailSystem {
     }
     
     /**
-     * Send booking confirmation email to customer
+     * Send reservation notification email to customer (when booking is created with Pending status)
+     */
+    public function sendReservationNotification($customerEmail, $customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount = null) {
+        $subject = "Reservation Received - RANS HOTEL";
+        $htmlBody = $this->buildReservationNotificationHTML($customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount);
+        $textBody = $this->buildReservationNotificationText($customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount);
+        
+        return $this->sendEmail($customerEmail, $subject, $htmlBody, $textBody);
+    }
+    
+    /**
+     * Send booking confirmation email to customer (when booking is confirmed)
      */
     public function sendBookingConfirmation($customerEmail, $customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount = null) {
         $subject = "Booking Confirmation - RANS HOTEL";
@@ -108,6 +119,12 @@ class PHPMailerEmailSystem {
         "          </tr>\n" .
         "          <tr>\n" .
         "            <td style=\"padding:0;\">\n" .
+        "              <!-- Confirmation Header Section -->\n" .
+        "              <div style=\"background:#d1fae5; padding:24px 28px; border-left:4px solid #10b981;\">\n" .
+        "                <h2 style=\"margin:0 0 12px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:20px; color:#065f46; text-align:center;\">✅ Booking Confirmed</h2>\n" .
+        "                <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:16px; color:#065f46; text-align:center; font-weight:500;\">Great news! Your reservation has been confirmed. We look forward to welcoming you!</p>\n" .
+        "              </div>\n" .
+        "              \n" .
         "              <!-- Personal Information & Stay Details Section (Light Gray Background) -->\n" .
         "              <div style=\"background:#f8fafc; padding:24px 28px;\">\n" .
         "                <div style=\"margin-bottom:24px;\">\n" .
@@ -198,6 +215,198 @@ class PHPMailerEmailSystem {
     }
     
     /**
+     * Build HTML reservation notification email (for Pending status)
+     */
+    private function buildReservationNotificationHTML($customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount = null) {
+        $checkInFormatted = date('F j, Y', strtotime($checkIn));
+        $checkOutFormatted = date('F j, Y', strtotime($checkOut));
+        $days = (strtotime($checkOut) - strtotime($checkIn)) / (60 * 60 * 24);
+        $year = date('Y');
+        
+        $safeCustomerName = htmlspecialchars($customerName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $safeRoomType = htmlspecialchars($roomType, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $safeBookingId = htmlspecialchars($bookingId, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $safePhone = htmlspecialchars($phone, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $safeMealPlan = htmlspecialchars($mealPlan, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        
+        // Calculate pricing breakdown
+        $roomPrice = 0;
+        $mealPrice = 0;
+        $subtotal = 0;
+        $tax = 0;
+        $serviceCharge = 0;
+        $finalTotal = 0;
+        
+        if ($totalAmount) {
+            $finalTotal = $totalAmount;
+            $subtotal = $finalTotal / 1.25; // Reverse calculate subtotal (15% tax + 10% service = 25%)
+            $tax = $subtotal * 0.15;
+            $serviceCharge = $subtotal * 0.10;
+            $roomPrice = $subtotal * 0.8; // Estimate room cost as 80% of subtotal
+            $mealPrice = $subtotal * 0.2; // Estimate meal cost as 20% of subtotal
+        }
+        
+        return "<!doctype html>\n" .
+        "<html lang=\"en\">\n" .
+        "<head>\n" .
+        "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n" .
+        "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" .
+        "  <title>Reservation Received - RANS HOTEL</title>\n" .
+        "  <meta name=\"x-apple-disable-message-reformatting\">\n" .
+        "</head>\n" .
+        "<body style=\"margin:0; padding:0; background:#f5f7fb; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;\">\n" .
+        "  <div style=\"display:none; font-size:1px; color:#f5f7fb; line-height:1px; max-height:0; max-width:0; opacity:0; overflow:hidden;\">Your reservation confirmation is inside.\n" .
+        "  </div>\n" .
+        "  <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"background:#f5f7fb;\">\n" .
+        "    <tr>\n" .
+        "      <td align=\"center\" style=\"padding:24px;\">\n" .
+        "        <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width:640px; background:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 2px 8px rgba(16,24,40,0.06);\">\n" .
+        "          <tr>\n" .
+        "            <td style=\"background:#1e3a8a; padding:24px 28px;\">\n" .
+        "              <h1 style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:24px; line-height:32px; color:#ffffff; text-align:center;\">RANS HOTEL</h1>\n" .
+        "              <p style=\"margin:8px 0 0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:16px; color:#ffffff; opacity:0.9; text-align:center;\">Tsito, Volta Region, Ghana</p>\n" .
+        "            </td>\n" .
+        "          </tr>\n" .
+        "          <tr>\n" .
+        "            <td style=\"padding:0;\">\n" .
+        "              <!-- Reservation Header Section -->\n" .
+        "              <div style=\"background:#fef3c7; padding:24px 28px; border-left:4px solid #f59e0b;\">\n" .
+        "                <h2 style=\"margin:0 0 12px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:20px; color:#92400e; text-align:center;\">📋 Reservation Received</h2>\n" .
+        "                <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:16px; color:#92400e; text-align:center; font-weight:500;\">Thank you for your reservation! We will confirm it shortly.</p>\n" .
+        "              </div>\n" .
+        "              \n" .
+        "              <!-- Personal Information & Stay Details Section (Light Gray Background) -->\n" .
+        "              <div style=\"background:#f8fafc; padding:24px 28px;\">\n" .
+        "                <div style=\"margin-bottom:24px;\">\n" .
+        "                  <h3 style=\"margin:0 0 12px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:18px; color:#1e3a8a; border-bottom:2px solid #d4af37; padding-bottom:8px;\">Personal Information</h3>\n" .
+        "                  <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:8px;\">\n" .
+        "                    <span style=\"font-weight:600; color:#374151;\">Name:</span>\n" .
+        "                    <span style=\"color:#374151; margin-left:8px;\">" . $safeCustomerName . "</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:8px;\">\n" .
+        "                    <span style=\"font-weight:600; color:#374151;\">Phone:</span>\n" .
+        "                    <span style=\"color:#374151; margin-left:8px;\">" . $safePhone . "</span>\n" .
+        "                  </div>\n" .
+        "                </div>\n" .
+        "                <div>\n" .
+        "                  <h3 style=\"margin:0 0 12px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:18px; color:#1e3a8a; border-bottom:2px solid #d4af37; padding-bottom:8px;\">Reservation Details</h3>\n" .
+        "                  <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:8px;\">\n" .
+        "                    <span style=\"font-weight:600; color:#374151;\">Reservation ID:</span>\n" .
+        "                    <span style=\"color:#1e3a8a; margin-left:8px; font-weight:600;\">" . $safeBookingId . "</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:8px;\">\n" .
+        "                    <span style=\"font-weight:600; color:#374151;\">Room Type:</span>\n" .
+        "                    <span style=\"color:#374151; margin-left:8px;\">" . $safeRoomType . "</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:8px;\">\n" .
+        "                    <span style=\"font-weight:600; color:#374151;\">Check-in:</span>\n" .
+        "                    <span style=\"color:#374151; margin-left:8px;\">" . $checkInFormatted . "</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:8px;\">\n" .
+        "                    <span style=\"font-weight:600; color:#374151;\">Check-out:</span>\n" .
+        "                    <span style=\"color:#374151; margin-left:8px;\">" . $checkOutFormatted . "</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:8px;\">\n" .
+        "                    <span style=\"font-weight:600; color:#374151;\">Duration:</span>\n" .
+        "                    <span style=\"color:#374151; margin-left:8px;\">" . $days . " night(s)</span>\n" .
+        "                  </div>\n" .
+        "                </div>\n" .
+        "              </div>\n" .
+        "              \n" .
+        "              <!-- Pricing Summary Section (Dark Blue Background) -->\n" .
+        "              <div style=\"background:#1e3a8a; padding:24px 28px;\">\n" .
+        "                <h3 style=\"margin:0 0 20px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:20px; color:#d4af37; text-align:center; font-weight:600;\">Pricing Summary</h3>\n" .
+        "                <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\">\n" .
+        "                  <div style=\"display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #374151;\">\n" .
+        "                    <span style=\"color:#e5e7eb;\">Room Cost:</span>\n" .
+        "                    <span style=\"color:#e5e7eb; font-weight:600;\">C" . number_format($roomPrice, 2) . "</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #374151;\">\n" .
+        "                    <span style=\"color:#e5e7eb;\">Meal Cost:</span>\n" .
+        "                    <span style=\"color:#e5e7eb; font-weight:600;\">C" . number_format($mealPrice, 2) . "</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #374151;\">\n" .
+        "                    <span style=\"color:#e5e7eb;\">Subtotal:</span>\n" .
+        "                    <span style=\"color:#e5e7eb; font-weight:600;\">C" . number_format($subtotal, 2) . "</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #374151;\">\n" .
+        "                    <span style=\"color:#e5e7eb;\">Tax (15%):</span>\n" .
+        "                    <span style=\"color:#e5e7eb; font-weight:600;\">C" . number_format($tax, 2) . "</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:2px solid #d4af37;\">\n" .
+        "                    <span style=\"color:#e5e7eb;\">Service Charge (10%):</span>\n" .
+        "                    <span style=\"color:#e5e7eb; font-weight:600;\">C" . number_format($serviceCharge, 2) . "</span>\n" .
+        "                  </div>\n" .
+        "                  <div style=\"display:flex; justify-content:space-between; align-items:center; padding:12px 0 0; margin-top:8px;\">\n" .
+        "                    <span style=\"color:#e5e7eb; font-weight:600; font-size:16px;\">Total Amount:</span>\n" .
+        "                    <span style=\"color:#d4af37; font-weight:700; font-size:18px;\">C" . number_format($finalTotal, 2) . "</span>\n" .
+        "                  </div>\n" .
+        "                </div>\n" .
+        "              </div>\n" .
+        "            </td>\n" .
+        "          </tr>\n" .
+        "          <tr>\n" .
+        "            <td style=\"padding:24px 28px; background:#ffffff;\">\n" .
+        "              <div style=\"margin:16px 0; padding:16px; background:#f0f9ff; border-radius:8px; border-left:4px solid #0ea5e9;\">\n" .
+        "                <h4 style=\"margin:0 0 8px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; color:#0c4a6e;\">⏳ Next Steps</h4>\n" .
+        "                <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:13px; color:#075985;\">Your reservation is currently <strong>pending confirmation</strong>. We will review your reservation and send you a confirmation email shortly. You will receive another email once your booking is confirmed.</p>\n" .
+        "              </div>\n" .
+        "              <p style=\"margin:16px 0 0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; color:#6b7280;\">If you have any questions or need to make changes to your reservation, please contact us at <strong>+233 (0)302 936 062</strong> or email us at <strong>info@ranshotel.com</strong></p>\n" .
+        "              <p style=\"margin:16px 0 0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; color:#6b7280;\">Thank you for choosing RANS HOTEL!</p>\n" .
+        "              <p style=\"margin:16px 0 0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; color:#6b7280;\">Best regards,<br><strong>The RANS HOTEL Team</strong></p>\n" .
+        "            </td>\n" .
+        "          </tr>\n" .
+        "          <tr>\n" .
+        "            <td style=\"background:#f8fafc; padding:20px 28px; text-align:center;\">\n" .
+        "              <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:12px; color:#6b7280;\">© " . $year . " RANS HOTEL. All rights reserved. | Tsito, Volta Region, Ghana</p>\n" .
+        "            </td>\n" .
+        "          </tr>\n" .
+        "        </table>\n" .
+        "      </td>\n" .
+        "    </tr>\n" .
+        "  </table>\n" .
+        "</body>\n" .
+        "</html>";
+    }
+    
+    /**
+     * Build text reservation notification email (for Pending status)
+     */
+    private function buildReservationNotificationText($customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount = null) {
+        $checkInFormatted = date('F j, Y', strtotime($checkIn));
+        $checkOutFormatted = date('F j, Y', strtotime($checkOut));
+        $days = (strtotime($checkOut) - strtotime($checkIn)) / (60 * 60 * 24);
+        
+        $text = "RANS HOTEL - Reservation Received\n\n";
+        $text .= "Dear {$customerName},\n\n";
+        $text .= "Thank you for your reservation at RANS HOTEL! Your reservation has been received and is pending confirmation.\n\n";
+        $text .= "RESERVATION DETAILS:\n";
+        $text .= "Reservation ID: {$bookingId}\n";
+        $text .= "Room Type: {$roomType}\n";
+        $text .= "Check-in: {$checkInFormatted}\n";
+        $text .= "Check-out: {$checkOutFormatted}\n";
+        $text .= "Duration: {$days} night(s)\n";
+        $text .= "Meal Plan: {$mealPlan}\n";
+        $text .= "Phone: {$phone}\n";
+        
+        if ($totalAmount) {
+            $text .= "Total Amount: C{$totalAmount}\n";
+        }
+        
+        $text .= "\nNEXT STEPS:\n";
+        $text .= "Your reservation is currently pending confirmation. We will review your reservation and send you a confirmation email shortly. You will receive another email once your booking is confirmed.\n\n";
+        $text .= "CONTACT US:\n";
+        $text .= "Phone: +233 (0)302 936 062\n";
+        $text .= "Email: info@ranshotel.com\n";
+        $text .= "Address: Tsito, Volta Region, Ghana\n\n";
+        $text .= "Thank you for choosing RANS HOTEL!\n\n";
+        $text .= "Best regards,\n";
+        $text .= "The RANS HOTEL Team";
+        
+        return $text;
+    }
+    
+    /**
      * Build text booking confirmation email
      */
     private function buildBookingConfirmationText($customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount = null) {
@@ -207,7 +416,7 @@ class PHPMailerEmailSystem {
         
         $text = "RANS HOTEL - Booking Confirmation\n\n";
         $text .= "Dear {$customerName},\n\n";
-        $text .= "Thank you for choosing RANS HOTEL! Your booking has been confirmed.\n\n";
+        $text .= "Great news! Your reservation has been confirmed. Your booking is now confirmed and we look forward to welcoming you!\n\n";
         $text .= "BOOKING DETAILS:\n";
         $text .= "Booking ID: {$bookingId}\n";
         $text .= "Room Type: {$roomType}\n";

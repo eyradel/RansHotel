@@ -63,11 +63,11 @@ if ($_POST) {
     if (mysqli_query($con, $sql)) {
         $bookingId = mysqli_insert_id($con);
         
-        // Send notifications
+        // Send reservation notifications (for Pending status)
         $notificationResults = null;
         try {
             $notificationManager = new NotificationManager();
-            $notificationResults = $notificationManager->sendBookingNotifications([
+            $notificationResults = $notificationManager->sendReservationNotifications([
                 'booking_id' => $bookingId,
                 'customerName' => "$title $fname $lname",
                 'email' => $email,

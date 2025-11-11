@@ -74,7 +74,27 @@ try {
 	}
 	
 	// Send notifications if needed
-	if($action === 'cancel' && !empty($booking['Email'])) {
+	if($action === 'confirm' && !empty($booking['Email'])) {
+		// Send confirmation notifications when booking is confirmed
+		require_once('../includes/notification_manager.php');
+		try {
+			$notificationManager = new NotificationManager();
+			$notificationManager->sendConfirmationNotifications([
+				'email' => $booking['Email'],
+				'customerName' => ($booking['Title'] ?? '') . ' ' . ($booking['FName'] ?? '') . ' ' . ($booking['LName'] ?? ''),
+				'phone' => $booking['Phone'] ?? '',
+				'roomType' => $booking['TRoom'] ?? '',
+				'checkIn' => $booking['cin'] ?? '',
+				'checkOut' => $booking['cout'] ?? '',
+				'bookingId' => $bookingId,
+				'mealPlan' => $booking['Meal'] ?? 'Room only',
+				'totalAmount' => $booking['final_amount'] ?? null
+			]);
+		} catch (Throwable $e) {
+			// Notification failure should not break confirmation
+			error_log('Confirmation notification failed: ' . $e->getMessage());
+		}
+	} elseif($action === 'cancel' && !empty($booking['Email'])) {
 		require_once('../includes/notification_manager.php');
 		$notificationManager = new NotificationManager();
 		$notificationManager->sendCancellationNotifications(

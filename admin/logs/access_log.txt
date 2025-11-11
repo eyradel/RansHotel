@@ -624,3 +624,6 @@
 [2025-11-08 08:56:35] User: manager (manager) | Page: newsletter | Status: ALLOWED | IP: ::1
 [2025-11-08 08:56:36] User: manager (manager) | Page: add_room | Status: ALLOWED | IP: ::1
 [2025-11-08 08:56:39] User: manager (manager) | Page: room_management | Status: ALLOWED | IP: ::1
+[2025-11-11 23:22:59] User: manager (manager) | Page: add_room | Status: ALLOWED | IP: ::1
+[2025-11-11 23:23:01] User: manager (manager) | Page: room_management | Status: ALLOWED | IP: ::1
+[2025-11-11 23:23:03] User: manager (manager) | Page: add_room | Status: ALLOWED | IP: ::1

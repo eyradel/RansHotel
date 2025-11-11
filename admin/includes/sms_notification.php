@@ -17,13 +17,25 @@ class SMSNotification {
     }
     
     /**
-     * Send SMS to customer about booking confirmation
+     * Send SMS to customer about reservation received (Pending status)
+     */
+    public function sendReservationNotification($phone, $customerName, $roomType, $checkIn, $checkOut, $bookingId, $totalAmount = null) {
+        $priceInfo = $totalAmount ? " Total: ₵" . number_format($totalAmount, 0) : "";
+        $message = "Hi {$customerName}, your reservation at RansHotel has been received! " .
+                  "Room: {$roomType}, Check-in: {$checkIn}, Check-out: {$checkOut}. " .
+                  "Reservation ID: {$bookingId}.{$priceInfo} We will confirm it shortly. Thank you for choosing RansHotel!";
+        
+        return $this->sendSMS($phone, $message);
+    }
+    
+    /**
+     * Send SMS to customer about booking confirmation (Confirmed status)
      */
     public function sendBookingConfirmation($phone, $customerName, $roomType, $checkIn, $checkOut, $bookingId, $totalAmount = null) {
         $priceInfo = $totalAmount ? " Total: ₵" . number_format($totalAmount, 0) : "";
-        $message = "Hi {$customerName}, your booking at RansHotel has been confirmed! " .
+        $message = "Hi {$customerName}, great news! Your booking at RansHotel has been confirmed! " .
                   "Room: {$roomType}, Check-in: {$checkIn}, Check-out: {$checkOut}. " .
-                  "Booking ID: {$bookingId}.{$priceInfo} Thank you for choosing RansHotel!";
+                  "Booking ID: {$bookingId}.{$priceInfo} We look forward to welcoming you! Thank you for choosing RansHotel!";
         
         return $this->sendSMS($phone, $message);
     }
