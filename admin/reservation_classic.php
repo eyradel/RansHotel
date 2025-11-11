@@ -1,4 +1,8 @@
 <?php
+// Temporarily surface errors to prevent blank 500s during booking
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 include('db.php');
 require_once 'includes/notification_manager.php';
 require_once 'includes/pricing_helper.php';
@@ -9,7 +13,12 @@ include('includes/unified_layout.php');
 $ENABLE_MEAL_PLAN = false;
 
 // Initialize pricing tables if they don't exist
-PricingHelper::initializePricingTables($con);
+try {
+	PricingHelper::initializePricingTables($con);
+} catch (Throwable $e) {
+	// Do not fail the page; show friendly error and continue
+	$error_message = 'Pricing initialization error: ' . $e->getMessage();
+}
 
 // Handle form submission
 $success_message = '';
@@ -55,24 +64,32 @@ if ($_POST) {
         $bookingId = mysqli_insert_id($con);
         
         // Send notifications
-        $notificationManager = new NotificationManager();
-        $notificationResults = $notificationManager->sendBookingNotifications([
-            'booking_id' => $bookingId,
-            'customerName' => "$title $fname $lname",
-            'email' => $email,
-            'phone' => $phone,
-            'roomType' => $troom,
-            'checkIn' => $cin,
-            'checkOut' => $cout,
-            'bookingId' => $bookingId,
-            'mealPlan' => $meal,
-            'nationality' => $national,
-            'country' => $country,
-            'totalAmount' => $totalAmount
-        ]);
+        $notificationResults = null;
+        try {
+            $notificationManager = new NotificationManager();
+            $notificationResults = $notificationManager->sendBookingNotifications([
+                'booking_id' => $bookingId,
+                'customerName' => "$title $fname $lname",
+                'email' => $email,
+                'phone' => $phone,
+                'roomType' => $troom,
+                'checkIn' => $cin,
+                'checkOut' => $cout,
+                'bookingId' => $bookingId,
+                'mealPlan' => $meal,
+                'nationality' => $national,
+                'country' => $country,
+                'totalAmount' => $totalAmount
+            ]);
+        } catch (Throwable $e) {
+            // Notifications failing should not break booking
+            $notificationResults = ['details' => [], 'error' => $e->getMessage()];
+        }
         
         // Get notification status
-        $notificationStatus = $notificationManager->getNotificationStatus($notificationResults);
+        $notificationStatus = isset($notificationManager) && $notificationResults
+            ? $notificationManager->getNotificationStatus($notificationResults)
+            : ['total_sent' => 0, 'total_failed' => 1, 'details' => ['notifications' => ['success' => false, 'error' => $notificationResults['error'] ?? 'Notification error']]];
         
         $success_message = "Reservation submitted successfully! Booking ID: $bookingId";
         

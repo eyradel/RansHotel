@@ -4,12 +4,8 @@
  * Professional email system using PHPMailer
  */
 
-// Load Composer autoloader
-require_once __DIR__ . '/../../vendor/autoload.php';
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-use PHPMailer\PHPMailer\Exception;
+// Defer Composer autoloader to runtime to avoid platform check fatals on page load
+// Names are referenced conditionally after autoload is included
 
 class PHPMailerEmailSystem {
     private $managerEmail;
@@ -396,7 +392,29 @@ class PHPMailerEmailSystem {
      * Send email using PHPMailer
      */
     public function sendEmail($to, $subject, $htmlBody, $textBody) {
-        $mail = new PHPMailer(true);
+        // Load Composer autoloader lazily and safely
+        $autoloadPath = __DIR__ . '/../../vendor/autoload.php';
+        if (!file_exists($autoloadPath)) {
+            return [
+                'success' => false,
+                'error' => 'Composer autoload not found',
+                'to' => $to,
+                'subject' => $subject
+            ];
+        }
+        try {
+            require_once $autoloadPath;
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error' => 'Autoload error: ' . $e->getMessage(),
+                'to' => $to,
+                'subject' => $subject
+            ];
+        }
+
+        // Import classes after autoload
+        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
         
         try {
             // Server settings
@@ -405,7 +423,7 @@ class PHPMailerEmailSystem {
             $mail->SMTPAuth = true;
             $mail->Username = $this->smtpUsername;
             $mail->Password = $this->smtpPassword;
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // SSL encryption for port 465
+            $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS; // SSL encryption for port 465
             $mail->Port = $this->smtpPort;
             
             // Recipients
