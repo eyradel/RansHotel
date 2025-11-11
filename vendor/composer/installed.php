@@ -1,13 +1,13 @@
 <?php return array(
     'root' => array(
         'name' => 'ranshotel/booking-system',
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
-        'reference' => null,
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => '36c8c30d03edfa7d8fa7662eeccc30b868e928ad',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'dev' => true,
+        'dev' => false,
     ),
     'versions' => array(
         'phpmailer/phpmailer' => array(
@@ -20,9 +20,9 @@
             'dev_requirement' => false,
         ),
         'ranshotel/booking-system' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
-            'reference' => null,
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => '36c8c30d03edfa7d8fa7662eeccc30b868e928ad',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

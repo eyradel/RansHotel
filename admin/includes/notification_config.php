@@ -29,8 +29,8 @@ define('HOTEL_EMAIL', 'info@ranshotel.com');
 
 // Notification Settings
 define('SEND_SMS_NOTIFICATIONS', true);
-define('SEND_EMAIL_NOTIFICATIONS', true);
-define('SEND_MANAGER_NOTIFICATIONS', true);
+define('SEND_EMAIL_NOTIFICATIONS', false);
+define('SEND_MANAGER_NOTIFICATIONS', false);
 define('AUTO_SEND_REMINDERS', false); // Set to true to automatically send reminders
 
 // Time settings for reminders (in hours before check-in)

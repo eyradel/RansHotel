@@ -6,6 +6,7 @@
 
 require_once 'sms_notification.php';
 require_once 'phpmailer_email_system.php';
+require_once 'notification_config.php';
 
 class NotificationManager {
     private $smsNotification;
@@ -15,9 +16,12 @@ class NotificationManager {
     
     public function __construct() {
         $this->smsNotification = new SMSNotification();
-        $this->emailNotification = new PHPMailerEmailSystem();
-        $this->managerEmail = 'eyramdela14@gmail.com';
-        $this->managerPhone = '0540202096';
+        // Instantiate email system only if enabled to avoid autoload side effects
+        $this->emailNotification = (defined('SEND_EMAIL_NOTIFICATIONS') && SEND_EMAIL_NOTIFICATIONS)
+            ? new PHPMailerEmailSystem()
+            : null;
+        $this->managerEmail = defined('MANAGER_EMAIL') ? MANAGER_EMAIL : 'eyramdela14@gmail.com';
+        $this->managerPhone = defined('MANAGER_PHONE') ? MANAGER_PHONE : '0540202096';
     }
     
     /**
@@ -26,19 +30,23 @@ class NotificationManager {
     public function sendBookingNotifications($bookingData) {
         $results = [];
         
-        // Send confirmation email to customer
-        $emailResult = $this->emailNotification->sendBookingConfirmation(
-            $bookingData['email'],
-            $bookingData['customerName'],
-            $bookingData['roomType'],
-            $bookingData['checkIn'],
-            $bookingData['checkOut'],
-            $bookingData['bookingId'],
-            $bookingData['phone'],
-            $bookingData['mealPlan'],
-            $bookingData['totalAmount'] ?? null
-        );
-        $results['customer_email'] = $emailResult;
+        // Send confirmation email to customer (only if enabled)
+        if ($this->emailNotification && defined('SEND_EMAIL_NOTIFICATIONS') && SEND_EMAIL_NOTIFICATIONS) {
+            $emailResult = $this->emailNotification->sendBookingConfirmation(
+                $bookingData['email'],
+                $bookingData['customerName'],
+                $bookingData['roomType'],
+                $bookingData['checkIn'],
+                $bookingData['checkOut'],
+                $bookingData['bookingId'],
+                $bookingData['phone'],
+                $bookingData['mealPlan'],
+                $bookingData['totalAmount'] ?? null
+            );
+            $results['customer_email'] = $emailResult;
+        } else {
+            $results['customer_email'] = ['success' => false, 'error' => 'Email disabled'];
+        }
         
         // Send confirmation SMS to customer
         $smsResult = $this->smsNotification->sendBookingConfirmation(
@@ -51,20 +59,24 @@ class NotificationManager {
         );
         $results['customer_sms'] = $smsResult;
         
-        // Send notification to manager
-        $managerEmailResult = $this->emailNotification->sendManagerNotification(
-            $bookingData['customerName'],
-            $bookingData['email'],
-            $bookingData['phone'],
-            $bookingData['roomType'],
-            $bookingData['checkIn'],
-            $bookingData['checkOut'],
-            $bookingData['bookingId'],
-            $bookingData['mealPlan'],
-            $bookingData['nationality'],
-            $bookingData['country']
-        );
-        $results['manager_email'] = $managerEmailResult;
+        // Send notification to manager (only if enabled)
+        if ($this->emailNotification && defined('SEND_MANAGER_NOTIFICATIONS') && SEND_MANAGER_NOTIFICATIONS) {
+            $managerEmailResult = $this->emailNotification->sendManagerNotification(
+                $bookingData['customerName'],
+                $bookingData['email'],
+                $bookingData['phone'],
+                $bookingData['roomType'],
+                $bookingData['checkIn'],
+                $bookingData['checkOut'],
+                $bookingData['bookingId'],
+                $bookingData['mealPlan'],
+                $bookingData['nationality'],
+                $bookingData['country']
+            );
+            $results['manager_email'] = $managerEmailResult;
+        } else {
+            $results['manager_email'] = ['success' => false, 'error' => 'Manager email disabled'];
+        }
         
         // Send SMS notification to manager
         $managerSmsResult = $this->smsNotification->sendManagerNotification(
@@ -87,19 +99,23 @@ class NotificationManager {
     public function sendAdminConfirmationNotifications($email, $customerName, $phone, $roomType, $checkIn, $checkOut, $bookingId, $mealPlan, $nationality, $country, $totalAmount = null) {
         $results = [];
         
-        // Send confirmation email to customer
-        $emailResult = $this->emailNotification->sendBookingConfirmation(
-            $email,
-            $customerName,
-            $roomType,
-            $checkIn,
-            $checkOut,
-            $bookingId,
-            $phone,
-            $mealPlan,
-            $totalAmount
-        );
-        $results['customer_email'] = $emailResult;
+        // Send confirmation email to customer (only if enabled)
+        if ($this->emailNotification && defined('SEND_EMAIL_NOTIFICATIONS') && SEND_EMAIL_NOTIFICATIONS) {
+            $emailResult = $this->emailNotification->sendBookingConfirmation(
+                $email,
+                $customerName,
+                $roomType,
+                $checkIn,
+                $checkOut,
+                $bookingId,
+                $phone,
+                $mealPlan,
+                $totalAmount
+            );
+            $results['customer_email'] = $emailResult;
+        } else {
+            $results['customer_email'] = ['success' => false, 'error' => 'Email disabled'];
+        }
         
         // Send confirmation SMS to customer
         $smsResult = $this->smsNotification->sendBookingConfirmation(
@@ -122,13 +138,17 @@ class NotificationManager {
     public function sendCancellationNotifications($customerEmail, $customerPhone, $customerName, $bookingId) {
         $results = [];
         
-        // Send cancellation email to customer
-        $emailResult = $this->emailNotification->sendCancellationEmail(
-            $customerEmail,
-            $customerName,
-            $bookingId
-        );
-        $results['customer_email'] = $emailResult;
+        // Send cancellation email to customer (only if enabled)
+        if ($this->emailNotification && defined('SEND_EMAIL_NOTIFICATIONS') && SEND_EMAIL_NOTIFICATIONS) {
+            $emailResult = $this->emailNotification->sendCancellationEmail(
+                $customerEmail,
+                $customerName,
+                $bookingId
+            );
+            $results['customer_email'] = $emailResult;
+        } else {
+            $results['customer_email'] = ['success' => false, 'error' => 'Email disabled'];
+        }
         
         // Send cancellation SMS to customer
         $smsResult = $this->smsNotification->sendCancellationNotification(
