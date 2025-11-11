@@ -352,7 +352,18 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Check if booking already has assigned room
             fetch(`ajax/get_booking_details.php?id=${currentBookingId}`)
-                .then(response => response.json())
+                .then(async response => {
+                    if (!response.ok) {
+                        const txt = await response.text();
+                        throw new Error(txt || `HTTP ${response.status}`);
+                    }
+                    try {
+                        return await response.json();
+                    } catch (e) {
+                        const txt = await response.text();
+                        throw new Error(txt || 'Invalid JSON response');
+                    }
+                })
                 .then(bookingData => {
                     const container = document.getElementById('availableRooms');
                     
@@ -373,7 +384,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else {
                         // Fetch available rooms for this type
                         fetch(`ajax/get_available_rooms.php?type=${roomType}`)
-                            .then(response => response.json())
+                            .then(async response => {
+                                if (!response.ok) {
+                                    const txt = await response.text();
+                                    throw new Error(txt || `HTTP ${response.status}`);
+                                }
+                                try {
+                                    return await response.json();
+                                } catch (e) {
+                                    const txt = await response.text();
+                                    throw new Error(txt || 'Invalid JSON response');
+                                }
+                            })
                             .then(data => {
                                 container.innerHTML = '';
                                 
@@ -425,14 +447,25 @@ document.addEventListener('DOMContentLoaded', function() {
                     roomId: selectedRoomId
                 })
             })
-            .then(response => response.json())
+            .then(async response => {
+                if (!response.ok) {
+                    const txt = await response.text();
+                    throw new Error(txt || `HTTP ${response.status}`);
+                }
+                try {
+                    return await response.json();
+                } catch (e) {
+                    const txt = await response.text();
+                    throw new Error(txt || 'Invalid JSON response');
+                }
+            })
             .then(data => {
                 if (data.success) {
                     location.reload();
                 } else {
                     alert('Error assigning room: ' + data.message);
                 }
-            });
+            }).catch(err => alert('Error: ' + err.message));
         }
     });
     
@@ -460,7 +493,18 @@ document.addEventListener('DOMContentLoaded', function() {
                         action: 'confirm'
                     })
                 })
-                .then(response => response.json())
+                .then(async response => {
+                    if (!response.ok) {
+                        const txt = await response.text();
+                        throw new Error(txt || `HTTP ${response.status}`);
+                    }
+                    try {
+                        return await response.json();
+                    } catch (e) {
+                        const txt = await response.text();
+                        throw new Error(txt || 'Invalid JSON response');
+                    }
+                })
                 .then(data => {
                     if (data.success) {
                         alert('Booking confirmed successfully!');
@@ -491,7 +535,18 @@ document.addEventListener('DOMContentLoaded', function() {
                         action: 'cancel'
                     })
                 })
-                .then(response => response.json())
+                .then(async response => {
+                    if (!response.ok) {
+                        const txt = await response.text();
+                        throw new Error(txt || `HTTP ${response.status}`);
+                    }
+                    try {
+                        return await response.json();
+                    } catch (e) {
+                        const txt = await response.text();
+                        throw new Error(txt || 'Invalid JSON response');
+                    }
+                })
                 .then(data => {
                     if (data.success) {
                         alert('Booking cancelled successfully!');
