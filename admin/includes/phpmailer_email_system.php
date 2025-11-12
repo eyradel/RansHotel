@@ -7,7 +7,11 @@
 // Defer Composer autoloader to runtime to avoid platform check fatals on page load
 // Names are referenced conditionally after autoload is included
 
+// Check if PHPMailer is installed before class definition
+$phpmailerInstalled = file_exists(__DIR__ . '/../../vendor/phpmailer/phpmailer/src/PHPMailer.php');
+
 class PHPMailerEmailSystem {
+    private static $phpmailerAvailable = null;
     private $managerEmail;
     private $managerPhone;
     private $smtpHost;
@@ -29,6 +33,11 @@ class PHPMailerEmailSystem {
         $this->smtpPassword = 'vdxfxvwsyfjgsvav'; // App password
         $this->fromEmail = 'swiftforge25@gmail.com';
         $this->fromName = 'RANS HOTEL';
+        
+        // Check PHPMailer availability once
+        if (self::$phpmailerAvailable === null) {
+            self::$phpmailerAvailable = file_exists(__DIR__ . '/../../vendor/phpmailer/phpmailer/src/PHPMailer.php');
+        }
     }
     
     /**
@@ -601,20 +610,52 @@ class PHPMailerEmailSystem {
      * Send email using PHPMailer
      */
     public function sendEmail($to, $subject, $htmlBody, $textBody) {
-        // Load Composer autoloader lazily and safely
+        // Quick check: if PHPMailer is not available, return early without loading autoloader
+        if (!self::$phpmailerAvailable) {
+            return [
+                'success' => false,
+                'error' => 'Email library not installed (PHPMailer files missing). Booking proceeds without sending email.',
+                'to' => $to,
+                'subject' => $subject
+            ];
+        }
+        
+        // Check if PHPMailer files exist before attempting to load
+        $phpmailerPath = __DIR__ . '/../../vendor/phpmailer/phpmailer/src/PHPMailer.php';
         $autoloadPath = __DIR__ . '/../../vendor/autoload.php';
+        
+        // Double-check if PHPMailer files actually exist
+        if (!file_exists($phpmailerPath)) {
+            self::$phpmailerAvailable = false; // Cache the result
+            return [
+                'success' => false,
+                'error' => 'Email library not installed (PHPMailer files missing). Booking proceeds without sending email.',
+                'to' => $to,
+                'subject' => $subject
+            ];
+        }
+        
+        // Load Composer autoloader lazily and safely with error suppression
         if (!class_exists('\\PHPMailer\\PHPMailer\\PHPMailer', false)) {
             if (!file_exists($autoloadPath)) {
                 return [
                     'success' => false,
-                    'error' => 'Email library not installed (missing vendor/). Booking proceeds without sending email.',
+                    'error' => 'Email library not installed (missing vendor/autoload.php). Booking proceeds without sending email.',
                     'to' => $to,
                     'subject' => $subject
                 ];
             }
+            
+            // Suppress ALL warnings/errors when loading autoloader to prevent PHPMailer missing file warnings
+            $oldErrorReporting = error_reporting(0);
+            $oldDisplayErrors = ini_get('display_errors');
+            ini_set('display_errors', '0');
+            
             try {
-                require_once $autoloadPath;
+                @require_once $autoloadPath;
             } catch (\Throwable $e) {
+                error_reporting($oldErrorReporting);
+                ini_set('display_errors', $oldDisplayErrors);
                 return [
                     'success' => false,
                     'error' => 'Autoload error: ' . $e->getMessage(),
@@ -622,8 +663,13 @@ class PHPMailerEmailSystem {
                     'subject' => $subject
                 ];
             }
+            
+            // Restore error reporting
+            error_reporting($oldErrorReporting);
+            ini_set('display_errors', $oldDisplayErrors);
+            
             // If after requiring autoload the class still isn't available, bail out gracefully
-            if (!class_exists('\\PHPMailer\\PHPMailer\\PHPMailer')) {
+            if (!class_exists('\\PHPMailer\\PHPMailer\\PHPMailer', false)) {
                 return [
                     'success' => false,
                     'error' => 'PHPMailer library not available after autoload.',

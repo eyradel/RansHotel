@@ -3,7 +3,7 @@
         'name' => 'ranshotel/booking-system',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '36c8c30d03edfa7d8fa7662eeccc30b868e928ad',
+        'reference' => 'd7b039238f7b80f7574c9832393b31e976abade8',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -22,7 +22,7 @@
         'ranshotel/booking-system' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '36c8c30d03edfa7d8fa7662eeccc30b868e928ad',
+            'reference' => 'd7b039238f7b80f7574c9832393b31e976abade8',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
