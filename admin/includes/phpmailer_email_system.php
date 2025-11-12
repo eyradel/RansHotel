@@ -34,10 +34,10 @@ class PHPMailerEmailSystem {
     /**
      * Send reservation notification email to customer (when booking is created with Pending status)
      */
-    public function sendReservationNotification($customerEmail, $customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount = null) {
+    public function sendReservationNotification($customerEmail, $customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount = null, $numberOfRooms = 1) {
         $subject = "Reservation Received - RANS HOTEL";
-        $htmlBody = $this->buildReservationNotificationHTML($customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount);
-        $textBody = $this->buildReservationNotificationText($customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount);
+        $htmlBody = $this->buildReservationNotificationHTML($customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount, $numberOfRooms);
+        $textBody = $this->buildReservationNotificationText($customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount, $numberOfRooms);
         
         return $this->sendEmail($customerEmail, $subject, $htmlBody, $textBody);
     }
@@ -217,7 +217,7 @@ class PHPMailerEmailSystem {
     /**
      * Build HTML reservation notification email (for Pending status)
      */
-    private function buildReservationNotificationHTML($customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount = null) {
+    private function buildReservationNotificationHTML($customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount = null, $numberOfRooms = 1) {
         $checkInFormatted = date('F j, Y', strtotime($checkIn));
         $checkOutFormatted = date('F j, Y', strtotime($checkOut));
         $days = (strtotime($checkOut) - strtotime($checkIn)) / (60 * 60 * 24);
@@ -296,7 +296,7 @@ class PHPMailerEmailSystem {
         "                  </div>\n" .
         "                  <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:8px;\">\n" .
         "                    <span style=\"font-weight:600; color:#374151;\">Room Type:</span>\n" .
-        "                    <span style=\"color:#374151; margin-left:8px;\">" . $safeRoomType . "</span>\n" .
+        "                    <span style=\"color:#374151; margin-left:8px;\">" . $safeRoomType . ($numberOfRooms > 1 ? " × " . $numberOfRooms . " rooms" : "") . "</span>\n" .
         "                  </div>\n" .
         "                  <div style=\"font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom:8px;\">\n" .
         "                    <span style=\"font-weight:600; color:#374151;\">Check-in:</span>\n" .
@@ -372,7 +372,7 @@ class PHPMailerEmailSystem {
     /**
      * Build text reservation notification email (for Pending status)
      */
-    private function buildReservationNotificationText($customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount = null) {
+    private function buildReservationNotificationText($customerName, $roomType, $checkIn, $checkOut, $bookingId, $phone, $mealPlan, $totalAmount = null, $numberOfRooms = 1) {
         $checkInFormatted = date('F j, Y', strtotime($checkIn));
         $checkOutFormatted = date('F j, Y', strtotime($checkOut));
         $days = (strtotime($checkOut) - strtotime($checkIn)) / (60 * 60 * 24);
@@ -382,7 +382,7 @@ class PHPMailerEmailSystem {
         $text .= "Thank you for your reservation at RANS HOTEL! Your reservation has been received and is pending confirmation.\n\n";
         $text .= "RESERVATION DETAILS:\n";
         $text .= "Reservation ID: {$bookingId}\n";
-        $text .= "Room Type: {$roomType}\n";
+        $text .= "Room Type: {$roomType}" . ($numberOfRooms > 1 ? " × {$numberOfRooms} rooms" : "") . "\n";
         $text .= "Check-in: {$checkInFormatted}\n";
         $text .= "Check-out: {$checkOutFormatted}\n";
         $text .= "Duration: {$days} night(s)\n";

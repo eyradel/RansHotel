@@ -76,6 +76,52 @@ try {
     error_log('Dashboard cleanup error: ' . $e->getMessage());
 }
 
+// Calculate room availability stats using room table (matches room management view)
+$room_stats_query = "SELECT status, COUNT(*) as total FROM room GROUP BY status";
+$room_stats_result = mysqli_query($con, $room_stats_query);
+
+$available_rooms = 0;
+$occupied_rooms = 0;
+$maintenance_rooms = 0;
+$total_rooms = 0;
+
+while ($room_row = mysqli_fetch_assoc($room_stats_result)) {
+    $status = strtolower(trim($room_row['status'] ?? ''));
+    $count = (int) ($room_row['total'] ?? 0);
+    $total_rooms += $count;
+
+    switch ($status) {
+        case 'available':
+            $available_rooms += $count;
+            break;
+        case 'maintenance':
+        case 'out of service':
+        case 'out-of-service':
+            $maintenance_rooms += $count;
+            break;
+        case 'occupied':
+        case 'booked':
+        case 'reserved':
+            $occupied_rooms += $count;
+            break;
+        default:
+            // Treat unknown statuses as occupied so they are not counted as available
+            $occupied_rooms += $count;
+            break;
+    }
+}
+
+$effective_total_rooms = $total_rooms > 0 ? $total_rooms : 1; // Prevent division by zero
+$operational_rooms = $effective_total_rooms - $maintenance_rooms;
+if ($operational_rooms <= 0) {
+    $operational_rooms = $effective_total_rooms; // fallback to avoid division by zero if all rooms under maintenance
+}
+
+$occupancy_rate = $effective_total_rooms > 0 ? ($occupied_rooms / $effective_total_rooms) * 100 : 0;
+$available_percentage = $effective_total_rooms > 0 ? ($available_rooms / $effective_total_rooms) * 100 : 0;
+
+$available_rooms_data = ['available_rooms' => $available_rooms];
+
 // Start admin page with unified layout
 startUnifiedAdminPage('Dashboard', 'RansHotel Admin Dashboard - Manage your hotel operations');
 ?>
@@ -174,30 +220,18 @@ startUnifiedAdminPage('Dashboard', 'RansHotel Admin Dashboard - Manage your hote
                 <div class="flex-1">
                     <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Available Rooms</p>
                     <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">
-                        <?php
-                        // Calculate available rooms by checking current bookings
-                        $total_rooms_query = "SELECT COUNT(*) as total_rooms FROM room";
-                        $total_rooms_result = mysqli_query($con, $total_rooms_query);
-                        $total_rooms_data = mysqli_fetch_assoc($total_rooms_result);
-                        $total_rooms = $total_rooms_data['total_rooms'] ?? 0;
-                        
-                        // Count rooms with active bookings (check-in today or before, check-out today or after)
-                        $occupied_rooms_query = "SELECT COUNT(DISTINCT rb.TRoom) as occupied_rooms FROM roombook rb 
-                                               WHERE rb.stat IN ('Confirmed', 'Checked In') 
-                                               AND rb.cin <= CURDATE() 
-                                               AND rb.cout >= CURDATE()";
-                        $occupied_rooms_result = mysqli_query($con, $occupied_rooms_query);
-                        $occupied_rooms_data = mysqli_fetch_assoc($occupied_rooms_result);
-                        $occupied_rooms = $occupied_rooms_data['occupied_rooms'] ?? 0;
-                        
-                        $available_rooms = max(0, $total_rooms - $occupied_rooms);
-                        echo number_format($available_rooms);
-                        ?>
+                        <?php echo number_format($available_rooms); ?>
                     </p>
                     <div class="flex items-center mt-2 text-sm text-blue-600">
                         <i class="fas fa-info-circle mr-1"></i>
-                        <span>Out of <?php echo $total_rooms; ?> total rooms</span>
+                        <span>Out of <?php echo number_format($total_rooms); ?> total rooms</span>
                     </div>
+                    <?php if ($maintenance_rooms > 0): ?>
+                    <div class="flex items-center mt-1 text-xs text-yellow-600">
+                        <i class="fas fa-tools mr-1"></i>
+                        <span><?php echo number_format($maintenance_rooms); ?> under maintenance</span>
+                    </div>
+                    <?php endif; ?>
                 </div>
                 <div class="flex-shrink-0">
                     <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -213,28 +247,11 @@ startUnifiedAdminPage('Dashboard', 'RansHotel Admin Dashboard - Manage your hote
                 <div class="flex-1">
                     <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Occupancy Rate</p>
                     <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">
-                        <?php
-                        $total_rooms_query = "SELECT COUNT(*) as total_rooms FROM room";
-                        $total_rooms_result = mysqli_query($con, $total_rooms_query);
-                        $total_rooms_data = mysqli_fetch_assoc($total_rooms_result);
-                        
-                        // Count rooms with active bookings (check-in today or before, check-out today or after)
-                        $occupied_rooms_query = "SELECT COUNT(DISTINCT rb.TRoom) as occupied_rooms FROM roombook rb 
-                                               WHERE rb.stat IN ('Confirmed', 'Checked In') 
-                                               AND rb.cin <= CURDATE() 
-                                               AND rb.cout >= CURDATE()";
-                        $occupied_rooms_result = mysqli_query($con, $occupied_rooms_query);
-                        $occupied_rooms_data = mysqli_fetch_assoc($occupied_rooms_result);
-                        
-                        $total_rooms = $total_rooms_data['total_rooms'] ?? 1;
-                        $occupied_rooms = $occupied_rooms_data['occupied_rooms'] ?? 0;
-                        $occupancy_rate = ($occupied_rooms / $total_rooms) * 100;
-                        echo number_format($occupancy_rate, 1) . "%";
-                        ?>
+                        <?php echo number_format($occupancy_rate, 1); ?>%
                     </p>
-                    <div class="flex items-center mt-2 text-sm <?php echo $occupancy_rate > 70 ? 'text-green-600' : 'text-red-600'; ?>">
-                        <i class="fas fa-arrow-<?php echo $occupancy_rate > 70 ? 'up' : 'down'; ?> mr-1"></i>
-                        <span><?php echo $occupancy_rate > 70 ? 'High occupancy' : 'Low occupancy'; ?></span>
+                    <div class="flex items-center mt-2 text-sm text-purple-600">
+                        <i class="fas fa-bed mr-1"></i>
+                        <span><?php echo number_format($occupied_rooms); ?> rooms occupied right now</span>
                     </div>
                 </div>
                 <div class="flex-shrink-0">
@@ -501,7 +518,7 @@ startUnifiedAdminPage('Dashboard', 'RansHotel Admin Dashboard - Manage your hote
                             <div class="alert alert-warning" role="alert">
                                 <i class="fas fa-exclamation-triangle me-2"></i>
                                 <strong>Low Room Availability</strong><br>
-                                Only <?php echo $available_rooms_data['available_rooms'] ?? 0; ?> rooms available.
+                                Only <?php echo number_format($available_rooms); ?> rooms available right now.
                             </div>
                         </div>
                     </div>
@@ -655,40 +672,40 @@ const revenueChart = new Chart(revenueCtx, {
 
 // Room Type Pie Chart
 const roomTypeCtx = document.getElementById('roomTypeChart').getContext('2d');
+
+<?php
+$room_type_data_query = "
+    SELECT 
+        rb.TRoom,
+        COUNT(*) as count
+    FROM roombook rb
+    GROUP BY rb.TRoom
+    ORDER BY count DESC
+";
+$room_type_data_result = mysqli_query($con, $room_type_data_query);
+
+$room_type_labels = [];
+$room_type_counts = [];
+while ($row = mysqli_fetch_assoc($room_type_data_result)) {
+    $room_type_labels[] = $row['TRoom'];
+    $room_type_counts[] = (int) $row['count'];
+}
+
+if (empty($room_type_labels)) {
+    $room_type_labels = ['No Bookings'];
+    $room_type_counts = [0];
+}
+
+$room_type_colors = ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796'];
+?>
+
 const roomTypeChart = new Chart(roomTypeCtx, {
     type: 'doughnut',
     data: {
-        labels: ['Standard', 'Mini Executive', 'Executive'],
+        labels: <?php echo json_encode($room_type_labels); ?>,
         datasets: [{
-            data: [
-                <?php
-                $room_type_data_query = "
-                    SELECT 
-                        rb.TRoom,
-                        COUNT(*) as count
-                    FROM roombook rb
-                    GROUP BY rb.TRoom
-                    ORDER BY count DESC
-                ";
-                $room_type_data_result = mysqli_query($con, $room_type_data_query);
-                $room_data = [];
-                while ($row = mysqli_fetch_assoc($room_type_data_result)) {
-                    $room_data[] = $row['count'];
-                }
-                
-                // If no data, show default values based on room types
-                if (empty($room_data)) {
-                    $room_data = [0, 0, 0]; // Standard, Mini Executive, Executive
-                }
-                
-                echo implode(',', $room_data);
-                ?>
-            ],
-            backgroundColor: [
-                '#4e73df',
-                '#1cc88a',
-                '#36b9cc'
-            ],
+            data: <?php echo json_encode($room_type_counts); ?>,
+            backgroundColor: <?php echo json_encode(array_slice($room_type_colors, 0, count($room_type_counts))); ?>,
             borderWidth: 2
         }]
     },

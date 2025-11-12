@@ -286,13 +286,15 @@ $f5 = $r - $cr;   // Total available
 													$assigned_room = mysqli_fetch_assoc($room_assignment_result);
 													$assigned_room_id = $assigned_room['id'];
 													$assigned_room_number = $assigned_room['room_number'];
+
+													$assigned_room_number_db = mysqli_real_escape_string($con, $assigned_room_number);
 													
 													// Mark room as occupied
 													$room_update_query = "UPDATE room SET place = 'NotFree', status = 'Occupied', cusid = '$id' WHERE id = '$assigned_room_id'";
 													mysqli_query($con, $room_update_query);
 													
 													// Update booking with assigned room
-													$booking_room_update = "UPDATE roombook SET assigned_room_id = '$assigned_room_id', assigned_room_number = '$assigned_room_number' WHERE id = '$id'";
+													$booking_room_update = "UPDATE roombook SET assigned_room_id = '$assigned_room_id', assigned_room_number = '$assigned_room_number_db' WHERE id = '$id'";
 													mysqli_query($con, $booking_room_update);
 												}
 												
@@ -366,7 +368,16 @@ $f5 = $r - $cr;   // Total available
                                                             $fintot = (float)$final_amount;
 															
 															//echo "<script type='text/javascript'> alert('$count_date')</script>";
-															$psql = "INSERT INTO `payment`(`id`, `title`, `fname`, `lname`, `troom`, `tbed`, `nroom`, `cin`, `cout`, `ttot`,`meal`, `mepr`, `btot`,`fintot`,`noofdays`) VALUES ('$id','$title','$fname','$lname','$troom','$bed','$nroom','$cin','$cout','$ttot','$meal','$mepr','$btot','$fintot','$days')";
+															$titleDb = mysqli_real_escape_string($con, $title);
+															$fnameDb = mysqli_real_escape_string($con, $fname);
+															$lnameDb = mysqli_real_escape_string($con, $lname);
+															$troomDb = mysqli_real_escape_string($con, $troom);
+															$bedDb = mysqli_real_escape_string($con, $bed);
+															$mealDb = mysqli_real_escape_string($con, $meal);
+															$cinDb = mysqli_real_escape_string($con, $cin);
+															$coutDb = mysqli_real_escape_string($con, $cout);
+															
+															$psql = "INSERT INTO `payment`(`id`, `title`, `fname`, `lname`, `troom`, `tbed`, `nroom`, `cin`, `cout`, `ttot`,`meal`, `mepr`, `btot`,`fintot`,`noofdays`) VALUES ('$id','$titleDb','$fnameDb','$lnameDb','$troomDb','$bedDb','$nroom','$cinDb','$coutDb','$ttot','$mealDb','$mepr','$btot','$fintot','$days')";
 														
 														if(mysqli_query($con,$psql))
 														{	

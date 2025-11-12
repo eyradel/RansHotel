@@ -25,19 +25,19 @@ $success_message = '';
 $error_message = '';
 
 if ($_POST) {
-    $title = $_POST['title'];
-    $fname = $_POST['fname'];
-    $lname = $_POST['lname'];
-    $email = $_POST['email'];
-    $national = $_POST['national'];
-    $country = $_POST['country'];
-    $phone = $_POST['phone'];
-    $troom = $_POST['troom'];
-    $bed = $_POST['bed'];
-    $nroom = $_POST['nroom'];
-    $meal = isset($_POST['meal']) ? $_POST['meal'] : 'Room only'; // Default to 'Room only' if meal plan is disabled
-    $cin = $_POST['cin'];
-    $cout = $_POST['cout'];
+    $title = trim($_POST['title']);
+    $fname = trim($_POST['fname']);
+    $lname = trim($_POST['lname']);
+    $email = trim($_POST['email']);
+    $national = trim($_POST['national']);
+    $country = trim($_POST['country']);
+    $phone = trim($_POST['phone']);
+    $troom = trim($_POST['troom']);
+    $bed = trim($_POST['bed']);
+    $nroom = (int)$_POST['nroom'];
+    $meal = isset($_POST['meal']) ? trim($_POST['meal']) : 'Room only'; // Default to 'Room only' if meal plan is disabled
+    $cin = trim($_POST['cin']);
+    $cout = trim($_POST['cout']);
     
     // Calculate days
     $checkin = new DateTime($cin);
@@ -48,38 +48,92 @@ if ($_POST) {
     $roomPrice = PricingHelper::getRoomPrice($troom, $bed, $con);
     $mealPrice = PricingHelper::getMealPrice($meal, $con);
     
-    // Calculate totals
-    $roomTotal = $roomPrice * $days * $nroom;
-    $mealTotal = $mealPrice * $days * $nroom;
-    $subtotal = $roomTotal + $mealTotal;
-    $tax = $subtotal * 0.15; // 15% tax
-    $serviceCharge = $subtotal * 0.10; // 10% service charge
-    $totalAmount = $subtotal + $tax + $serviceCharge;
+    // Calculate per-room totals (for single room)
+    $roomTotalPerRoom = $roomPrice * $days;
+    $mealTotalPerRoom = $mealPrice * $days;
+    $subtotalPerRoom = $roomTotalPerRoom + $mealTotalPerRoom;
+    $taxPerRoom = $subtotalPerRoom * 0.15; // 15% tax
+    $serviceChargePerRoom = $subtotalPerRoom * 0.10; // 10% service charge
+    $totalAmountPerRoom = $subtotalPerRoom + $taxPerRoom + $serviceChargePerRoom;
     
-    // Insert into database
-    // New reservations start as Pending until confirmed in Room Booking
-    $sql = "INSERT INTO `roombook` (`Title`, `FName`, `LName`, `Email`, `National`, `Country`, `Phone`, `TRoom`, `Bed`, `NRoom`, `Meal`, `cin`, `cout`, `stat`, `nodays`, `room_price`, `meal_price`, `total_amount`, `tax_amount`, `service_charge`, `final_amount`, `currency`, `payment_status`) VALUES ('$title', '$fname', '$lname', '$email', '$national', '$country', '$phone', '$troom', '$bed', '$nroom', '$meal', '$cin', '$cout', 'Pending', '$days', '$roomPrice', '$mealPrice', '$subtotal', '$tax', '$serviceCharge', '$totalAmount', 'GHS', 'pending')";
+    // Calculate total for all rooms
+    $roomTotal = $roomTotalPerRoom * $nroom;
+    $mealTotal = $mealTotalPerRoom * $nroom;
+    $subtotal = $subtotalPerRoom * $nroom;
+    $tax = $taxPerRoom * $nroom;
+    $serviceCharge = $serviceChargePerRoom * $nroom;
+    $totalAmount = $totalAmountPerRoom * $nroom;
     
-    if (mysqli_query($con, $sql)) {
-        $bookingId = mysqli_insert_id($con);
+    // Ensure parent_booking_id column exists for linking multiple room bookings
+    $columns_check = mysqli_query($con, "SHOW COLUMNS FROM roombook LIKE 'parent_booking_id'");
+    if(mysqli_num_rows($columns_check) == 0) {
+        mysqli_query($con, "ALTER TABLE roombook ADD COLUMN parent_booking_id INT NULL AFTER id");
+    }
+    
+    // Sanitize values for SQL
+    $titleDb = mysqli_real_escape_string($con, $title);
+    $fnameDb = mysqli_real_escape_string($con, $fname);
+    $lnameDb = mysqli_real_escape_string($con, $lname);
+    $emailDb = mysqli_real_escape_string($con, $email);
+    $nationalDb = mysqli_real_escape_string($con, $national);
+    $countryDb = mysqli_real_escape_string($con, $country);
+    $phoneDb = mysqli_real_escape_string($con, $phone);
+    $troomDb = mysqli_real_escape_string($con, $troom);
+    $bedDb = mysqli_real_escape_string($con, $bed);
+    $mealDb = mysqli_real_escape_string($con, $meal);
+    $cinDb = mysqli_real_escape_string($con, $cin);
+    $coutDb = mysqli_real_escape_string($con, $cout);
+
+    // Create separate booking records for each room
+    $bookingIds = [];
+    $parentBookingId = null;
+    $allSuccess = true;
+    
+    mysqli_begin_transaction($con);
+    
+    try {
+        for($i = 1; $i <= $nroom; $i++) {
+            // For first room, parent_booking_id is NULL (it's the parent)
+            // For subsequent rooms, parent_booking_id is the first booking ID
+            $parentId = ($i == 1) ? 'NULL' : $parentBookingId;
+            
+            $sql = "INSERT INTO `roombook` (`parent_booking_id`, `Title`, `FName`, `LName`, `Email`, `National`, `Country`, `Phone`, `TRoom`, `Bed`, `NRoom`, `Meal`, `cin`, `cout`, `stat`, `nodays`, `room_price`, `meal_price`, `total_amount`, `tax_amount`, `service_charge`, `final_amount`, `currency`, `payment_status`) VALUES ($parentId, '$titleDb', '$fnameDb', '$lnameDb', '$emailDb', '$nationalDb', '$countryDb', '$phoneDb', '$troomDb', '$bedDb', '1', '$mealDb', '$cinDb', '$coutDb', 'Pending', '$days', '$roomPrice', '$mealPrice', '$subtotalPerRoom', '$taxPerRoom', '$serviceChargePerRoom', '$totalAmountPerRoom', 'GHS', 'pending')";
+            
+            if(mysqli_query($con, $sql)) {
+                $bookingId = mysqli_insert_id($con);
+                $bookingIds[] = $bookingId;
+                
+                // Store first booking ID as parent for subsequent rooms
+                if($i == 1) {
+                    $parentBookingId = $bookingId;
+                    // Update first booking to reference itself (for consistency)
+                    mysqli_query($con, "UPDATE roombook SET parent_booking_id = $parentBookingId WHERE id = $parentBookingId");
+                }
+            } else {
+                throw new Exception("Failed to create booking for room $i: " . mysqli_error($con));
+            }
+        }
         
-        // Send reservation notifications (for Pending status)
+        mysqli_commit($con);
+        
+        // Send reservation notifications (for Pending status) - only once for the entire booking
         $notificationResults = null;
         try {
             $notificationManager = new NotificationManager();
             $notificationResults = $notificationManager->sendReservationNotifications([
-                'booking_id' => $bookingId,
+                'booking_id' => $parentBookingId,
                 'customerName' => "$title $fname $lname",
                 'email' => $email,
                 'phone' => $phone,
                 'roomType' => $troom,
                 'checkIn' => $cin,
                 'checkOut' => $cout,
-                'bookingId' => $bookingId,
+                'bookingId' => $parentBookingId,
                 'mealPlan' => $meal,
                 'nationality' => $national,
                 'country' => $country,
-                'totalAmount' => $totalAmount
+                'totalAmount' => $totalAmount,
+                'numberOfRooms' => $nroom
             ]);
         } catch (Throwable $e) {
             // Notifications failing should not break booking
@@ -91,7 +145,13 @@ if ($_POST) {
             ? $notificationManager->getNotificationStatus($notificationResults)
             : ['total_sent' => 0, 'total_failed' => 1, 'details' => ['notifications' => ['success' => false, 'error' => $notificationResults['error'] ?? 'Notification error']]];
         
-        $success_message = "Reservation submitted successfully! Booking ID: $bookingId";
+        if($nroom == 1) {
+            $success_message = "Reservation submitted successfully! Booking ID: $parentBookingId";
+        } else {
+            $success_message = "Reservation submitted successfully! Created $nroom booking" . ($nroom > 1 ? 's' : '') . ":\n";
+            $success_message .= "Main Booking ID: $parentBookingId\n";
+            $success_message .= "All Booking IDs: " . implode(', ', $bookingIds);
+        }
         
         // Add detailed notification status to success message
         if ($notificationStatus['total_sent'] > 0) {
@@ -114,8 +174,10 @@ if ($_POST) {
         if (!empty($notificationDetails)) {
             $success_message .= "\n\n" . implode("\n", $notificationDetails);
         }
-    } else {
-        $error_message = "Error: " . mysqli_error($con);
+        
+    } catch (Exception $e) {
+        mysqli_rollback($con);
+        $error_message = "Error creating bookings: " . $e->getMessage();
     }
 }
 // Start page (always through unified layout; it now supports embed mode and hides chrome when embed=1)
@@ -1174,8 +1236,11 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
                                         <label for="nroom" class="form-label">Number of Rooms *</label>
                                         <select name="nroom" id="nroom" class="form-control form-select" required onchange="updatePricing()">
                                             <option value="">Select Rooms</option>
-                                            <option value="1">1 Room</option>
+                                            <?php for($i = 1; $i <= 10; $i++): ?>
+                                                <option value="<?php echo $i; ?>"><?php echo $i; ?> Room<?php echo $i > 1 ? 's' : ''; ?></option>
+                                            <?php endfor; ?>
                                         </select>
+                                        <small class="text-gray-500 text-xs mt-1 block">You can book up to 10 rooms at once</small>
                                     </div>
                                 </div>
                                 
@@ -1233,7 +1298,7 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
                                     
                                     <div class="summary-section">
                                         <h4>Stay Details</h4>
-                                        <p><strong>Room Type:</strong> <span id="summaryRoom"></span></p>
+                                        <p><strong>Room Type:</strong> <span id="summaryRoom"></span> <span id="summaryRoomsCount"></span></p>
                                         <p><strong>Check-in:</strong> <span id="summaryCheckIn"></span></p>
                                         <p><strong>Check-out:</strong> <span id="summaryCheckOut"></span></p>
                                         <p><strong>Duration:</strong> <span id="summaryDuration"></span> nights</p>
@@ -1244,13 +1309,17 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
                                 <div class="pricing-card" id="pricingSummary" style="display: none;">
                                     <h3 style="color: var(--classic-gold); margin-bottom: var(--space-6); text-align: center;">Pricing Summary</h3>
                                     
+                                    <div id="numberOfRoomsDisplay" style="margin-bottom: var(--space-4); padding: var(--space-3); background: rgba(255,255,255,0.1); border-radius: var(--radius-md); text-align: center; display: none;">
+                                        <span style="font-weight: 600; color: var(--classic-gold);">Booking <span id="numberOfRooms">1</span> Room<span id="roomsPlural">s</span></span>
+                                    </div>
+                                    
                                     <div class="pricing-item">
-                                        <span>Room Cost:</span>
+                                        <span>Room Cost <span id="roomCostLabel">(per room)</span>:</span>
                                         <span id="roomCost">₵0.00</span>
                                     </div>
                                     <?php if ($ENABLE_MEAL_PLAN): ?>
                                     <div class="pricing-item">
-                                        <span>Meal Cost:</span>
+                                        <span>Meal Cost <span id="mealCostLabel">(per room)</span>:</span>
                                         <span id="mealCost">₵0.00</span>
                                     </div>
                                     <?php endif; ?>
@@ -1267,7 +1336,7 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
                                         <span id="serviceCharge">₵0.00</span>
                                     </div>
                                     <div class="pricing-total">
-                                        <span>Total Amount:</span>
+                                        <span>Total Amount <span id="totalAmountLabel">(all rooms)</span>:</span>
                                         <span id="totalAmount">₵0.00</span>
                                     </div>
                                 </div>
@@ -1398,6 +1467,7 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
             const email = document.getElementById('email').value;
             const phone = document.getElementById('phone').value;
             const room = document.getElementById('troom').value;
+            const nrooms = parseInt(document.getElementById('nroom').value) || 1;
             const checkIn = document.getElementById('cin').value;
             const checkOut = document.getElementById('cout').value;
             
@@ -1406,6 +1476,17 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
                 document.getElementById('summaryEmail').textContent = email;
                 document.getElementById('summaryPhone').textContent = phone;
                 document.getElementById('summaryRoom').textContent = room;
+                
+                // Show number of rooms if more than 1
+                const summaryRoomsCount = document.getElementById('summaryRoomsCount');
+                if (nrooms > 1) {
+                    summaryRoomsCount.textContent = `× ${nrooms} rooms`;
+                    summaryRoomsCount.style.color = 'var(--classic-gold)';
+                    summaryRoomsCount.style.fontWeight = '600';
+                } else {
+                    summaryRoomsCount.textContent = '';
+                }
+                
                 document.getElementById('summaryCheckIn').textContent = checkIn;
                 document.getElementById('summaryCheckOut').textContent = checkOut;
                 
@@ -1494,19 +1575,64 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
             }
             
             if (roomPrice > 0 && days > 0) {
-                const roomTotal = roomPrice * days * nrooms;
-                const mealTotal = mealPrice * days * nrooms;
-                const subtotal = roomTotal + mealTotal;
-                const tax = subtotal * 0.15;
-                const serviceCharge = subtotal * 0.10;
-                const total = subtotal + tax + serviceCharge;
+                // Calculate per-room pricing
+                const roomTotalPerRoom = roomPrice * days;
+                const mealTotalPerRoom = mealPrice * days;
+                const subtotalPerRoom = roomTotalPerRoom + mealTotalPerRoom;
+                const taxPerRoom = subtotalPerRoom * 0.15;
+                const serviceChargePerRoom = subtotalPerRoom * 0.10;
+                const totalPerRoom = subtotalPerRoom + taxPerRoom + serviceChargePerRoom;
                 
-                document.getElementById('roomCost').textContent = '₵' + roomTotal.toFixed(2);
+                // Calculate totals for all rooms
+                const roomTotal = roomTotalPerRoom * nrooms;
+                const mealTotal = mealTotalPerRoom * nrooms;
+                const subtotal = subtotalPerRoom * nrooms;
+                const tax = taxPerRoom * nrooms;
+                const serviceCharge = serviceChargePerRoom * nrooms;
+                const total = totalPerRoom * nrooms;
                 
-                // Only update meal cost if the element exists (when meal plan is enabled)
-                const mealCostElement = document.getElementById('mealCost');
-                if (mealCostElement) {
-                    mealCostElement.textContent = '₵' + mealTotal.toFixed(2);
+                // Update display based on number of rooms
+                const numberOfRoomsDisplay = document.getElementById('numberOfRoomsDisplay');
+                const numberOfRoomsSpan = document.getElementById('numberOfRooms');
+                const roomsPluralSpan = document.getElementById('roomsPlural');
+                const roomCostLabel = document.getElementById('roomCostLabel');
+                const mealCostLabel = document.getElementById('mealCostLabel');
+                const totalAmountLabel = document.getElementById('totalAmountLabel');
+                
+                if (nrooms > 1) {
+                    // Show number of rooms
+                    numberOfRoomsDisplay.style.display = 'block';
+                    numberOfRoomsSpan.textContent = nrooms;
+                    roomsPluralSpan.textContent = 's';
+                    
+                    // Show per-room pricing
+                    document.getElementById('roomCost').textContent = '₵' + roomTotalPerRoom.toFixed(2) + ' × ' + nrooms + ' = ₵' + roomTotal.toFixed(2);
+                    roomCostLabel.textContent = '(per room)';
+                    
+                    // Only update meal cost if the element exists (when meal plan is enabled)
+                    const mealCostElement = document.getElementById('mealCost');
+                    if (mealCostElement) {
+                        mealCostElement.textContent = '₵' + mealTotalPerRoom.toFixed(2) + ' × ' + nrooms + ' = ₵' + mealTotal.toFixed(2);
+                        mealCostLabel.textContent = '(per room)';
+                    }
+                    
+                    totalAmountLabel.textContent = '(all ' + nrooms + ' rooms)';
+                } else {
+                    // Hide number of rooms display for single room
+                    numberOfRoomsDisplay.style.display = 'none';
+                    roomsPluralSpan.textContent = '';
+                    
+                    // Show single room pricing
+                    document.getElementById('roomCost').textContent = '₵' + roomTotal.toFixed(2);
+                    roomCostLabel.textContent = '';
+                    
+                    const mealCostElement = document.getElementById('mealCost');
+                    if (mealCostElement) {
+                        mealCostElement.textContent = '₵' + mealTotal.toFixed(2);
+                        mealCostLabel.textContent = '';
+                    }
+                    
+                    totalAmountLabel.textContent = '';
                 }
                 
                 document.getElementById('subtotal').textContent = '₵' + subtotal.toFixed(2);

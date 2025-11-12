@@ -41,7 +41,8 @@ class NotificationManager {
                 $bookingData['bookingId'],
                 $bookingData['phone'],
                 $bookingData['mealPlan'],
-                $bookingData['totalAmount'] ?? null
+                $bookingData['totalAmount'] ?? null,
+                $bookingData['numberOfRooms'] ?? 1
             );
             $results['customer_email'] = $emailResult;
         } else {
@@ -57,7 +58,8 @@ class NotificationManager {
                 $bookingData['checkIn'],
                 $bookingData['checkOut'],
                 $bookingData['bookingId'],
-                $bookingData['totalAmount'] ?? null
+                $bookingData['totalAmount'] ?? null,
+                $bookingData['numberOfRooms'] ?? 1
             );
             $results['customer_sms'] = $smsResult;
         } else {

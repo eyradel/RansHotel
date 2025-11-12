@@ -182,10 +182,25 @@ startUnifiedAdminPage('Room Allocation', 'Manage room assignments and availabili
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     <?php
-                    $assigned_bookings_query = "SELECT * FROM roombook WHERE stat IN ('Pending', 'Confirmed', 'Checked In', 'Confirm') AND assigned_room_id IS NOT NULL AND assigned_room_id != '' AND cout >= CURDATE() ORDER BY id DESC LIMIT 10";
+                    $assigned_bookings_query = "SELECT rb.*, 
+                                               (SELECT COUNT(*) FROM roombook rb2 WHERE rb2.parent_booking_id = rb.parent_booking_id OR (rb2.id = rb.parent_booking_id AND rb2.parent_booking_id = rb2.id)) as total_rooms_in_booking
+                                               FROM roombook rb 
+                                               WHERE rb.stat IN ('Pending', 'Confirmed', 'Checked In', 'Confirm') 
+                                               AND rb.assigned_room_id IS NOT NULL 
+                                               AND rb.assigned_room_id != '' 
+                                               AND rb.cout >= CURDATE() 
+                                               ORDER BY rb.parent_booking_id ASC, rb.id ASC 
+                                               LIMIT 50";
                     $assigned_bookings_result = mysqli_query($con, $assigned_bookings_query);
                     
+                    $last_parent_id = null;
                     while($booking = mysqli_fetch_assoc($assigned_bookings_result)) {
+                        // Check if this is part of a multi-room booking
+                        $parent_id = $booking['parent_booking_id'] ?? $booking['id'];
+                        $is_multi_room = ($booking['total_rooms_in_booking'] ?? 1) > 1;
+                        $is_new_group = $last_parent_id !== $parent_id;
+                        $last_parent_id = $parent_id;
+                        
                         // Status badge styling
                         $status = $booking['stat'];
                         if($status === 'Confirm' || $status === 'Confirmed') {
@@ -198,8 +213,23 @@ startUnifiedAdminPage('Room Allocation', 'Manage room assignments and availabili
                             $status_class = 'bg-gray-100 text-gray-800';
                         }
                         ?>
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#<?php echo $booking['id']; ?></td>
+                        <?php if($is_new_group && $is_multi_room): ?>
+                        <tr class="bg-blue-50 border-t-2 border-blue-300">
+                            <td colspan="8" class="px-6 py-2 text-xs font-semibold text-blue-800">
+                                <i class="fa fa-users mr-2"></i>
+                                Multi-Room Booking Group (<?php echo $booking['total_rooms_in_booking']; ?> rooms) - Main Booking ID: #<?php echo $parent_id; ?>
+                            </td>
+                        </tr>
+                        <?php endif; ?>
+                        <tr class="hover:bg-gray-50 <?php echo $is_multi_room ? 'bg-blue-50' : ''; ?>">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                #<?php echo $booking['id']; ?>
+                                <?php if($is_multi_room): ?>
+                                    <span class="ml-2 inline-flex px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                        <?php echo $booking['total_rooms_in_booking']; ?> rooms
+                                    </span>
+                                <?php endif; ?>
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo $booking['FName'] . ' ' . $booking['LName']; ?></td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo $booking['TRoom']; ?></td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium text-blue-600"><?php echo $booking['assigned_room_number'] ?? 'N/A'; ?></td>
@@ -256,10 +286,24 @@ startUnifiedAdminPage('Room Allocation', 'Manage room assignments and availabili
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     <?php
-                    $bookings_query = "SELECT * FROM roombook WHERE stat IN ('Pending', 'Confirmed', 'Checked In', 'Confirm') AND (assigned_room_id IS NULL OR assigned_room_id = '') AND cout >= CURDATE() ORDER BY id DESC LIMIT 10";
+                    $bookings_query = "SELECT rb.*, 
+                                     (SELECT COUNT(*) FROM roombook rb2 WHERE rb2.parent_booking_id = rb.parent_booking_id OR (rb2.id = rb.parent_booking_id AND rb2.parent_booking_id = rb2.id)) as total_rooms_in_booking
+                                     FROM roombook rb 
+                                     WHERE rb.stat IN ('Pending', 'Confirmed', 'Checked In', 'Confirm') 
+                                     AND (rb.assigned_room_id IS NULL OR rb.assigned_room_id = '') 
+                                     AND rb.cout >= CURDATE() 
+                                     ORDER BY rb.parent_booking_id ASC, rb.id ASC 
+                                     LIMIT 50";
                     $bookings_result = mysqli_query($con, $bookings_query);
                     
+                    $last_parent_id = null;
                     while($booking = mysqli_fetch_assoc($bookings_result)) {
+                        // Check if this is part of a multi-room booking
+                        $parent_id = $booking['parent_booking_id'] ?? $booking['id'];
+                        $is_multi_room = ($booking['total_rooms_in_booking'] ?? 1) > 1;
+                        $is_new_group = $last_parent_id !== $parent_id;
+                        $last_parent_id = $parent_id;
+                        
                         // Status badge styling
                         $status = $booking['stat'];
                         if($status === 'Confirm' || $status === 'Confirmed') {
@@ -272,8 +316,23 @@ startUnifiedAdminPage('Room Allocation', 'Manage room assignments and availabili
                             $status_class = 'bg-gray-100 text-gray-800';
                         }
                         ?>
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#<?php echo $booking['id']; ?></td>
+                        <?php if($is_new_group && $is_multi_room): ?>
+                        <tr class="bg-blue-50 border-t-2 border-blue-300">
+                            <td colspan="7" class="px-6 py-2 text-xs font-semibold text-blue-800">
+                                <i class="fa fa-users mr-2"></i>
+                                Multi-Room Booking Group (<?php echo $booking['total_rooms_in_booking']; ?> rooms) - Main Booking ID: #<?php echo $parent_id; ?>
+                            </td>
+                        </tr>
+                        <?php endif; ?>
+                        <tr class="hover:bg-gray-50 <?php echo $is_multi_room ? 'bg-blue-50' : ''; ?>">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                #<?php echo $booking['id']; ?>
+                                <?php if($is_multi_room): ?>
+                                    <span class="ml-2 inline-flex px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                        <?php echo $booking['total_rooms_in_booking']; ?> rooms
+                                    </span>
+                                <?php endif; ?>
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo $booking['FName'] . ' ' . $booking['LName']; ?></td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo $booking['TRoom']; ?></td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo date('M j, Y', strtotime($booking['cin'])); ?></td>

@@ -19,10 +19,11 @@ class SMSNotification {
     /**
      * Send SMS to customer about reservation received (Pending status)
      */
-    public function sendReservationNotification($phone, $customerName, $roomType, $checkIn, $checkOut, $bookingId, $totalAmount = null) {
+    public function sendReservationNotification($phone, $customerName, $roomType, $checkIn, $checkOut, $bookingId, $totalAmount = null, $numberOfRooms = 1) {
         $priceInfo = $totalAmount ? " Total: ₵" . number_format($totalAmount, 0) : "";
+        $roomsInfo = $numberOfRooms > 1 ? " {$numberOfRooms} × {$roomType}" : " {$roomType}";
         $message = "Hi {$customerName}, your reservation at RansHotel has been received! " .
-                  "Room: {$roomType}, Check-in: {$checkIn}, Check-out: {$checkOut}. " .
+                  "Room" . ($numberOfRooms > 1 ? "s" : "") . ":{$roomsInfo}, Check-in: {$checkIn}, Check-out: {$checkOut}. " .
                   "Reservation ID: {$bookingId}.{$priceInfo} We will confirm it shortly. Thank you for choosing RansHotel!";
         
         return $this->sendSMS($phone, $message);
