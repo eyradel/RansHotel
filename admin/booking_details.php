@@ -286,7 +286,7 @@ $f5 = $r - $cr;   // Total available
 													$assigned_room = mysqli_fetch_assoc($room_assignment_result);
 													$assigned_room_id = $assigned_room['id'];
 													$assigned_room_number = $assigned_room['room_number'];
-
+													
 													$assigned_room_number_db = mysqli_real_escape_string($con, $assigned_room_number);
 													
 													// Mark room as occupied

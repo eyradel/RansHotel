@@ -238,6 +238,19 @@ img { max-width: 100%; height: auto; }
     .w3layouts-banner-top { min-height: 50vh; }
 }
 
+/* Fixed navbar */
+.w3_navigation {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    box-shadow: 0 4px 16px rgba(15, 36, 83, 0.12);
+}
+.w3_navigation .navbar {
+    background: transparent;
+}
+
 /* Navbar spacing on small screens */
 @media (max-width: 768px) {
     .w3_navigation .navbar-default .navbar-nav > li > a {
@@ -271,6 +284,56 @@ img { max-width: 100%; height: auto; }
 
 /* Visitors slider images */
 .w3layouts_work_grid_left img { width: 100%; height: auto; }
+.flexslider .slides > li { display: none; }
+.flexslider .slides > li:first-child { display: block; }
+.flexslider {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+}
+
+/* Rooms & Rates layout */
+.priceing-table-main {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+}
+.priceing-table-main .price-grid {
+    float: none;
+    margin: 0;
+    padding: 0;
+    flex: 1 1 260px;
+    max-width: 300px;
+}
+.priceing-table-main .price-block {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+}
+.priceing-table-main .price-gd-top img {
+    border-radius: 8px 8px 0 0;
+}
+.priceing-table-main .price-selet {
+    justify-content: center;
+}
+@media (max-width: 768px) {
+    .priceing-table-main {
+        gap: 20px;
+    }
+    .priceing-table-main .price-grid {
+        flex: 1 1 45%;
+        max-width: 320px;
+    }
+}
+@media (max-width: 576px) {
+    .priceing-table-main .price-grid {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
+}
 </style>
 <!--//fonts-->
 </head>
@@ -545,7 +608,7 @@ img { max-width: 100%; height: auto; }
 </div>
 <!-- //Feature Cards Section -->
 <!--sevices-->
-<div class="advantages">
+<!-- <div class="advantages">
 	<div class="container">
 		<div class="advantages-main">
 				<h3 class="title-w3-agileits">Our Services</h3>
@@ -573,7 +636,7 @@ img { max-width: 100%; height: auto; }
 			</div>
 		</div>
 	</div>
-</div>
+</div> -->
 <!--//sevices-->
 <!-- team removed -->
 <!-- Gallery -->
@@ -769,11 +832,9 @@ img { max-width: 100%; height: auto; }
 								<i class="fa fa-star" aria-hidden="true"></i>
 								<i class="fa fa-star" aria-hidden="true"></i>
 								<i class="fa fa-star" aria-hidden="true"></i>
-								Worth to come again
+								Exceptional Experience
 								</h4>
-								<p>Sed tempus vestibulum lacus blandit faucibus. 
-									Nunc imperdiet, diam nec rhoncus ullamcorper, nisl nulla suscipit ligula, 
-									at imperdiet urna. </p>
+								<p>Absolutely wonderful stay! The rooms are spacious and beautifully decorated with stunning mountain views. The staff went above and beyond to make our stay comfortable. The breakfast was delicious and the WiFi coverage throughout the hotel was excellent. We'll definitely be back!</p>
 								<h5>Julia Rose</h5>
 								<p>Germany</p>
 							</div>
@@ -793,12 +854,10 @@ img { max-width: 100%; height: auto; }
 								<i class="fa fa-star" aria-hidden="true"></i>
 								<i class="fa fa-star" aria-hidden="true"></i>
 								<i class="fa fa-star-o" aria-hidden="true"></i>
-								Worth to come again
+								Perfect Getaway
 								</h4>
-								<p>Sed tempus vestibulum lacus blandit faucibus. 
-									Nunc imperdiet, diam nec rhoncus ullamcorper, nisl nulla suscipit ligula, 
-									at imperdiet urna. </p>
-								<h5>Jahnatan Smith</h5>
+								<p>This hotel exceeded all our expectations! The reception staff was incredibly welcoming and helpful. Our room was spotlessly clean and the bed was so comfortable. The mountain view from our window was breathtaking. Great value for money and we highly recommend it to anyone visiting the area.</p>
+								<h5>Jonathan Smith</h5>
 								<p>United States</p>
 							</div>
 							<div class="clearfix"> </div>
@@ -817,11 +876,9 @@ img { max-width: 100%; height: auto; }
 								<i class="fa fa-star" aria-hidden="true"></i>
 								<i class="fa fa-star" aria-hidden="true"></i>
 								<i class="fa fa-star-o" aria-hidden="true"></i>
-								Worth to come again
+								Home Away From Home
 								</h4>
-								<p>Sed tempus vestibulum lacus blandit faucibus. 
-									Nunc imperdiet, diam nec rhoncus ullamcorper, nisl nulla suscipit ligula, 
-									at imperdiet urna. </p>
+								<p>We had an amazing time at Rans Hotel! The location is perfect, the facilities are top-notch, and the service is outstanding. The rooms are well-appointed with modern amenities. The staff was attentive and always ready to assist. A truly memorable stay that we'll cherish forever.</p>
 								<h5>Rosalind Cloer</h5>
 								<p>Italy</p>
 							</div>
@@ -841,11 +898,9 @@ img { max-width: 100%; height: auto; }
 								<i class="fa fa-star" aria-hidden="true"></i>
 								<i class="fa fa-star-o" aria-hidden="true"></i>
 								<i class="fa fa-star-o" aria-hidden="true"></i>
-								Worth to come again
+								Comfortable & Relaxing
 								</h4>
-								<p>Sed tempus vestibulum lacus blandit faucibus. 
-									Nunc imperdiet, diam nec rhoncus ullamcorper, nisl nulla suscipit ligula, 
-									at imperdiet urna. </p>
+								<p>Great hotel with excellent facilities! The rooms are comfortable and the mountain views are spectacular. The staff is friendly and professional. The hotel offers good amenities and the overall atmosphere is peaceful and relaxing. We enjoyed our stay and would recommend it to others.</p>
 								<h5>Amie Bublitz</h5>
 								<p>Switzerland</p>
 							</div>
@@ -933,6 +988,7 @@ img { max-width: 100%; height: auto; }
 <!--/footer -->
 <!-- js -->
 <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+<script src="js/jquery.flexslider.js"></script>
 <!-- ResponsiveSlides for carousel -->
 <script src="js/responsiveslides.min.js"></script>
 <script>
@@ -1008,6 +1064,20 @@ $(function() {
 <script type="text/javascript" src="js/move-top.js"></script>
 <script type="text/javascript" src="js/easing.js"></script>
 <script type="text/javascript">
+$(window).on('load', function () {
+    if (typeof $.fn.flexslider === 'function') {
+        $('.flexslider').flexslider({
+            animation: 'slide',
+            controlNav: true,
+            directionNav: false,
+            slideshowSpeed: 6000,
+            animationSpeed: 600
+        });
+    } else {
+        $('.flexslider .slides > li:first-child').show();
+    }
+});
+
 	jQuery(document).ready(function(₵) {
 		$(".scroll").click(function(event){		
 			event.preventDefault();

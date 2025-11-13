@@ -14,7 +14,7 @@ $ENABLE_MEAL_PLAN = false;
 
 // Initialize pricing tables if they don't exist
 try {
-	PricingHelper::initializePricingTables($con);
+PricingHelper::initializePricingTables($con);
 } catch (Throwable $e) {
 	// Do not fail the page; show friendly error and continue
 	$error_message = 'Pricing initialization error: ' . $e->getMessage();
@@ -98,9 +98,9 @@ if ($_POST) {
             $parentId = ($i == 1) ? 'NULL' : $parentBookingId;
             
             $sql = "INSERT INTO `roombook` (`parent_booking_id`, `Title`, `FName`, `LName`, `Email`, `National`, `Country`, `Phone`, `TRoom`, `Bed`, `NRoom`, `Meal`, `cin`, `cout`, `stat`, `nodays`, `room_price`, `meal_price`, `total_amount`, `tax_amount`, `service_charge`, `final_amount`, `currency`, `payment_status`) VALUES ($parentId, '$titleDb', '$fnameDb', '$lnameDb', '$emailDb', '$nationalDb', '$countryDb', '$phoneDb', '$troomDb', '$bedDb', '1', '$mealDb', '$cinDb', '$coutDb', 'Pending', '$days', '$roomPrice', '$mealPrice', '$subtotalPerRoom', '$taxPerRoom', '$serviceChargePerRoom', '$totalAmountPerRoom', 'GHS', 'pending')";
-            
+    
             if(mysqli_query($con, $sql)) {
-                $bookingId = mysqli_insert_id($con);
+        $bookingId = mysqli_insert_id($con);
                 $bookingIds[] = $bookingId;
                 
                 // Store first booking ID as parent for subsequent rooms
@@ -119,22 +119,22 @@ if ($_POST) {
         // Send reservation notifications (for Pending status) - only once for the entire booking
         $notificationResults = null;
         try {
-            $notificationManager = new NotificationManager();
+        $notificationManager = new NotificationManager();
             $notificationResults = $notificationManager->sendReservationNotifications([
                 'booking_id' => $parentBookingId,
-                'customerName' => "$title $fname $lname",
-                'email' => $email,
-                'phone' => $phone,
-                'roomType' => $troom,
-                'checkIn' => $cin,
-                'checkOut' => $cout,
+            'customerName' => "$title $fname $lname",
+            'email' => $email,
+            'phone' => $phone,
+            'roomType' => $troom,
+            'checkIn' => $cin,
+            'checkOut' => $cout,
                 'bookingId' => $parentBookingId,
-                'mealPlan' => $meal,
-                'nationality' => $national,
-                'country' => $country,
+            'mealPlan' => $meal,
+            'nationality' => $national,
+            'country' => $country,
                 'totalAmount' => $totalAmount,
                 'numberOfRooms' => $nroom
-            ]);
+        ]);
         } catch (Throwable $e) {
             // Notifications failing should not break booking
             $notificationResults = ['details' => [], 'error' => $e->getMessage()];
@@ -1608,8 +1608,8 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
                     // Show per-room pricing
                     document.getElementById('roomCost').textContent = '₵' + roomTotalPerRoom.toFixed(2) + ' × ' + nrooms + ' = ₵' + roomTotal.toFixed(2);
                     roomCostLabel.textContent = '(per room)';
-                    
-                    // Only update meal cost if the element exists (when meal plan is enabled)
+                
+                // Only update meal cost if the element exists (when meal plan is enabled)
                     const mealCostElement = document.getElementById('mealCost');
                     if (mealCostElement) {
                         mealCostElement.textContent = '₵' + mealTotalPerRoom.toFixed(2) + ' × ' + nrooms + ' = ₵' + mealTotal.toFixed(2);
@@ -1626,9 +1626,9 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
                     document.getElementById('roomCost').textContent = '₵' + roomTotal.toFixed(2);
                     roomCostLabel.textContent = '';
                     
-                    const mealCostElement = document.getElementById('mealCost');
-                    if (mealCostElement) {
-                        mealCostElement.textContent = '₵' + mealTotal.toFixed(2);
+                const mealCostElement = document.getElementById('mealCost');
+                if (mealCostElement) {
+                    mealCostElement.textContent = '₵' + mealTotal.toFixed(2);
                         mealCostLabel.textContent = '';
                     }
                     

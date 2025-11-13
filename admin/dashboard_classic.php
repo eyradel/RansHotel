@@ -673,20 +673,20 @@ const revenueChart = new Chart(revenueCtx, {
 // Room Type Pie Chart
 const roomTypeCtx = document.getElementById('roomTypeChart').getContext('2d');
 
-<?php
-$room_type_data_query = "
-    SELECT 
-        rb.TRoom,
-        COUNT(*) as count
-    FROM roombook rb
-    GROUP BY rb.TRoom
-    ORDER BY count DESC
-";
-$room_type_data_result = mysqli_query($con, $room_type_data_query);
+                <?php
+                $room_type_data_query = "
+                    SELECT 
+                        rb.TRoom,
+                        COUNT(*) as count
+                    FROM roombook rb
+                    GROUP BY rb.TRoom
+                    ORDER BY count DESC
+                ";
+                $room_type_data_result = mysqli_query($con, $room_type_data_query);
 
 $room_type_labels = [];
 $room_type_counts = [];
-while ($row = mysqli_fetch_assoc($room_type_data_result)) {
+                while ($row = mysqli_fetch_assoc($room_type_data_result)) {
     $room_type_labels[] = $row['TRoom'];
     $room_type_counts[] = (int) $row['count'];
 }
