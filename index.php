@@ -29,7 +29,28 @@ PricingHelper::initializePricingTables($con);
 <script type="text/javascript" src="js/modernizr-2.6.2.min.js"></script>
 <!--fonts-->
 <style>
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+body { 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+}
+html {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Prevent horizontal overflow */
+* {
+    box-sizing: border-box;
+}
+
+.container,
+.container-fluid {
+    max-width: 100%;
+    overflow-x: hidden;
+}
 
 /* Carousel Fixes */
 .rslides {
