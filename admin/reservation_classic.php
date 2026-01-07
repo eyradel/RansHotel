@@ -155,19 +155,19 @@ if ($_POST) {
         
         // Add detailed notification status to success message
         if ($notificationStatus['total_sent'] > 0) {
-            $success_message .= "\n\n✅ Notifications sent: " . $notificationStatus['total_sent'];
+            $success_message .= "\n\nNotifications sent: " . $notificationStatus['total_sent'];
         }
         if ($notificationStatus['total_failed'] > 0) {
-            $success_message .= "\n❌ Notifications failed: " . $notificationStatus['total_failed'];
+            $success_message .= "\nNotifications failed: " . $notificationStatus['total_failed'];
         }
         
         // Add detailed notification results for debugging
         $notificationDetails = [];
         foreach ($notificationStatus['details'] as $type => $result) {
             if ($result['success']) {
-                $notificationDetails[] = "✅ " . ucfirst(str_replace('_', ' ', $type)) . ": Sent successfully";
+                $notificationDetails[] = ucfirst(str_replace('_', ' ', $type)) . ": Sent successfully";
             } else {
-                $notificationDetails[] = "❌ " . ucfirst(str_replace('_', ' ', $type)) . ": " . ($result['error'] ?? 'Failed');
+                $notificationDetails[] = ucfirst(str_replace('_', ' ', $type)) . ": " . ($result['error'] ?? 'Failed');
             }
         }
         
@@ -1204,7 +1204,7 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
                                 <div class="form-row single">
                                     <div class="form-group">
                                         <label for="troom" class="form-label">Room Type *</label>
-                                        <select name="troom" id="troom" class="form-control form-select" required onchange="updatePricing()">
+                                        <select name="troom" id="troom" class="form-control form-select" required onchange="updateRoomAvailability(); updatePricing();">
                                             <option value="">Select Room Type</option>
                                             <?php
                                             $roomPricing = PricingHelper::getAllRoomPricing($con);
@@ -1236,11 +1236,8 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
                                         <label for="nroom" class="form-label">Number of Rooms *</label>
                                         <select name="nroom" id="nroom" class="form-control form-select" required onchange="updatePricing()">
                                             <option value="">Select Rooms</option>
-                                            <?php for($i = 1; $i <= 10; $i++): ?>
-                                                <option value="<?php echo $i; ?>"><?php echo $i; ?> Room<?php echo $i > 1 ? 's' : ''; ?></option>
-                                            <?php endfor; ?>
                                         </select>
-                                        <small class="text-gray-500 text-xs mt-1 block">You can book up to 10 rooms at once</small>
+                                        <small class="text-gray-500 text-xs mt-1 block" id="roomAvailabilityText">Please select a room type first</small>
                                     </div>
                                 </div>
                                 
@@ -1500,6 +1497,11 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
         
         // Date validation and pricing calculator
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize room availability if room type is already selected
+            const roomSelect = document.getElementById('troom');
+            if (roomSelect && roomSelect.value) {
+                updateRoomAvailability();
+            }
             const cinInput = document.getElementById('cin');
             const coutInput = document.getElementById('cout');
             
@@ -1553,6 +1555,64 @@ startUnifiedAdminPage('Make a Reservation', 'Book your stay at RansHotel - Locat
             form.classList.add('was-validated');
         });
         });
+        
+        function updateRoomAvailability() {
+            const roomSelect = document.getElementById('troom');
+            const nroomSelect = document.getElementById('nroom');
+            const availabilityText = document.getElementById('roomAvailabilityText');
+            const selectedRoomType = roomSelect.value;
+            
+            // Clear existing options
+            nroomSelect.innerHTML = '<option value="">Select Rooms</option>';
+            availabilityText.textContent = 'Loading availability...';
+            
+            if (!selectedRoomType) {
+                availabilityText.textContent = 'Please select a room type first';
+                return;
+            }
+            
+            // Fetch available room count for selected room type
+            // Path is relative to admin folder (reservation_classic.php is in admin/)
+            fetch(`ajax/get_available_room_count.php?type=${encodeURIComponent(selectedRoomType)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        const availableCount = data.available;
+                        const totalCount = data.total;
+                        
+                        // Populate dropdown with available room count
+                        if (availableCount > 0) {
+                            const maxRooms = Math.min(availableCount, 10); // Cap at 10 rooms max
+                            for (let i = 1; i <= maxRooms; i++) {
+                                const option = document.createElement('option');
+                                option.value = i;
+                                option.textContent = `${i} Room${i > 1 ? 's' : ''}`;
+                                nroomSelect.appendChild(option);
+                            }
+                            availabilityText.textContent = `${availableCount} room${availableCount > 1 ? 's' : ''} available (out of ${totalCount} total)`;
+                            availabilityText.className = 'text-green-600 text-xs mt-1 block font-medium';
+                        } else {
+                            availabilityText.textContent = 'No rooms available for this type';
+                            availabilityText.className = 'text-red-600 text-xs mt-1 block font-medium';
+                        }
+                    } else {
+                        const errorMsg = data.message || 'Unknown error';
+                        console.error('API Error:', errorMsg, data);
+                        availabilityText.textContent = `Error: ${errorMsg}`;
+                        availabilityText.className = 'text-red-600 text-xs mt-1 block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching room availability:', error);
+                    availabilityText.textContent = `Error loading availability: ${error.message}. Please check console for details.`;
+                    availabilityText.className = 'text-red-600 text-xs mt-1 block';
+                });
+        }
         
         function updatePricing() {
             const roomSelect = document.getElementById('troom');

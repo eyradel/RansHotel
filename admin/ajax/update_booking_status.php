@@ -24,15 +24,19 @@ include('../db.php');
 
 $input = json_decode(file_get_contents('php://input'), true);
 $bookingId = $input['bookingId'] ?? null;
-$action = $input['action'] ?? null; // 'confirm' or 'cancel'
+$action = $input['action'] ?? null; // 'confirm', 'cancel', 'processing', 'pending', 'declined'
+$status = $input['status'] ?? null; // Direct status value (optional)
+$declineReason = $input['declineReason'] ?? null; // Reason for decline (optional)
 
-if(!$bookingId || !$action) {
-	echo json_encode(['success' => false, 'message' => 'Missing booking ID or action']);
+if(!$bookingId || (!$action && !$status)) {
+	echo json_encode(['success' => false, 'message' => 'Missing booking ID or action/status']);
 	exit;
 }
 
 $bookingId = mysqli_real_escape_string($con, $bookingId);
-$action = mysqli_real_escape_string($con, $action);
+$action = $action ? mysqli_real_escape_string($con, $action) : null;
+$status = $status ? mysqli_real_escape_string($con, $status) : null;
+$declineReason = $declineReason ? mysqli_real_escape_string($con, $declineReason) : null;
 
 // Start transaction
 mysqli_begin_transaction($con);
@@ -49,22 +53,30 @@ try {
 	
 	$current_status = $booking['stat'];
 	
-	// Determine new status
-	if($action === 'confirm') {
+	// Determine new status from action or direct status
+	if($status) {
+		$new_status = $status;
+	} elseif($action === 'confirm') {
 		$new_status = 'Confirmed';
 	} elseif($action === 'cancel') {
 		$new_status = 'Cancelled';
-		
-		// If booking has an assigned room, free it
-		if(!empty($booking['assigned_room_id'])) {
-			$room_id = mysqli_real_escape_string($con, $booking['assigned_room_id']);
-			$free_room = "UPDATE room SET place = 'Free', status = 'Available', cusid = NULL WHERE id = '$room_id'";
-			if(!mysqli_query($con, $free_room)) {
-				throw new Exception('Failed to free room: ' . mysqli_error($con));
-			}
-		}
+	} elseif($action === 'processing') {
+		$new_status = 'Processing';
+	} elseif($action === 'pending') {
+		$new_status = 'Pending';
+	} elseif($action === 'decline' || $action === 'declined') {
+		$new_status = 'Declined';
 	} else {
-		throw new Exception('Invalid action');
+		throw new Exception('Invalid action or status');
+	}
+	
+	// If booking is cancelled or declined, free the assigned room
+	if(($new_status === 'Cancelled' || $new_status === 'Declined') && !empty($booking['assigned_room_id'])) {
+		$room_id = mysqli_real_escape_string($con, $booking['assigned_room_id']);
+		$free_room = "UPDATE room SET place = 'Free', status = 'Available', cusid = NULL WHERE id = '$room_id'";
+		if(!mysqli_query($con, $free_room)) {
+			throw new Exception('Failed to free room: ' . mysqli_error($con));
+		}
 	}
 	
 	// Update booking status
@@ -73,36 +85,33 @@ try {
 		throw new Exception('Failed to update booking: ' . mysqli_error($con));
 	}
 	
-	// Send notifications if needed
-	if($action === 'confirm' && !empty($booking['Email'])) {
-		// Send confirmation notifications when booking is confirmed
+	// Send notifications based on new status
+	if(!empty($booking['Phone']) && !empty($booking['Email'])) {
 		require_once('../includes/notification_manager.php');
 		try {
 			$notificationManager = new NotificationManager();
-			$notificationManager->sendConfirmationNotifications([
+			$customerName = trim(($booking['Title'] ?? '') . ' ' . ($booking['FName'] ?? '') . ' ' . ($booking['LName'] ?? ''));
+			if(empty($customerName)) {
+				$customerName = 'Guest';
+			}
+			
+			// Use the new status update notification method
+			$notificationManager->sendStatusUpdateNotifications([
 				'email' => $booking['Email'],
-				'customerName' => ($booking['Title'] ?? '') . ' ' . ($booking['FName'] ?? '') . ' ' . ($booking['LName'] ?? ''),
 				'phone' => $booking['Phone'] ?? '',
+				'customerName' => $customerName,
 				'roomType' => $booking['TRoom'] ?? '',
 				'checkIn' => $booking['cin'] ?? '',
 				'checkOut' => $booking['cout'] ?? '',
 				'bookingId' => $bookingId,
 				'mealPlan' => $booking['Meal'] ?? 'Room only',
-				'totalAmount' => $booking['final_amount'] ?? null
-			]);
+				'totalAmount' => $booking['final_amount'] ?? null,
+				'declineReason' => $declineReason
+			], $new_status);
 		} catch (Throwable $e) {
-			// Notification failure should not break confirmation
-			error_log('Confirmation notification failed: ' . $e->getMessage());
+			// Notification failure should not break status update
+			error_log('Status update notification failed: ' . $e->getMessage());
 		}
-	} elseif($action === 'cancel' && !empty($booking['Email'])) {
-		require_once('../includes/notification_manager.php');
-		$notificationManager = new NotificationManager();
-		$notificationManager->sendCancellationNotifications(
-			$booking['Email'],
-			$booking['Phone'] ?? '',
-			($booking['Title'] ?? '') . ' ' . ($booking['FName'] ?? '') . ' ' . ($booking['LName'] ?? ''),
-			$bookingId
-		);
 	}
 	
 	// Commit transaction

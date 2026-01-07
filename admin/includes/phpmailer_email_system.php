@@ -130,7 +130,7 @@ class PHPMailerEmailSystem {
         "            <td style=\"padding:0;\">\n" .
         "              <!-- Confirmation Header Section -->\n" .
         "              <div style=\"background:#d1fae5; padding:24px 28px; border-left:4px solid #10b981;\">\n" .
-        "                <h2 style=\"margin:0 0 12px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:20px; color:#065f46; text-align:center;\">✅ Booking Confirmed</h2>\n" .
+        "                <h2 style=\"margin:0 0 12px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:20px; color:#065f46; text-align:center;\">Booking Confirmed</h2>\n" .
         "                <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:16px; color:#065f46; text-align:center; font-weight:500;\">Great news! Your reservation has been confirmed. We look forward to welcoming you!</p>\n" .
         "              </div>\n" .
         "              \n" .
@@ -500,7 +500,7 @@ class PHPMailerEmailSystem {
         
         <div class=\"content\">
             <div class=\"alert-box\">
-                <h3>⚠️ Action Required</h3>
+                <h3>Action Required</h3>
                 <p>A new booking has been received and requires your attention. Please review the details below and take appropriate action.</p>
             </div>
             
@@ -533,7 +533,7 @@ class PHPMailerEmailSystem {
             <h2 style=\"color: #dc3545;\">Booking Information</h2>
             
             <div class=\"booking-details\">
-                <h3>🏨 Booking Details</h3>
+                <h3>Booking Details</h3>
                 <div class=\"detail-row\">
                     <span class=\"detail-label\">Booking ID:</span>
                     <span class=\"detail-value\"><strong>{$bookingId}</strong></span>
@@ -778,7 +778,7 @@ class PHPMailerEmailSystem {
         "            <td style=\"padding:0;\">\n" .
         "              <!-- Cancellation Header Section -->\n" .
         "              <div style=\"background:#fef2f2; padding:24px 28px; border-left:4px solid #dc2626;\">\n" .
-        "                <h2 style=\"margin:0 0 12px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:20px; color:#dc2626; text-align:center;\">❌ Booking Cancelled</h2>\n" .
+        "                <h2 style=\"margin:0 0 12px; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:20px; color:#dc2626; text-align:center;\">Booking Cancelled</h2>\n" .
         "                <p style=\"margin:0; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:16px; color:#dc2626; text-align:center; font-weight:500;\">We're sorry to see you go, but we understand plans change.</p>\n" .
         "              </div>\n" .
         "              \n" .

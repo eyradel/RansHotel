@@ -49,21 +49,26 @@ class NotificationManager {
             $results['customer_email'] = ['success' => false, 'error' => 'Email disabled'];
         }
         
-        // Send reservation SMS to customer
-        if (defined('SEND_SMS_NOTIFICATIONS') && SEND_SMS_NOTIFICATIONS) {
-            $smsResult = $this->smsNotification->sendReservationNotification(
-            $bookingData['phone'],
-            $bookingData['customerName'],
-            $bookingData['roomType'],
-            $bookingData['checkIn'],
-            $bookingData['checkOut'],
-                $bookingData['bookingId'],
-                $bookingData['totalAmount'] ?? null,
-                $bookingData['numberOfRooms'] ?? 1
-        );
-        $results['customer_sms'] = $smsResult;
+        // Send reservation SMS to customer (always send for reservations)
+        $smsEnabled = defined('SEND_SMS_NOTIFICATIONS') ? SEND_SMS_NOTIFICATIONS : true;
+        if ($smsEnabled && !empty($bookingData['phone'])) {
+            try {
+                $smsResult = $this->smsNotification->sendReservationNotification(
+                    $bookingData['phone'],
+                    $bookingData['customerName'],
+                    $bookingData['roomType'],
+                    $bookingData['checkIn'],
+                    $bookingData['checkOut'],
+                    $bookingData['bookingId'],
+                    $bookingData['totalAmount'] ?? null,
+                    $bookingData['numberOfRooms'] ?? 1
+                );
+                $results['customer_sms'] = $smsResult;
+            } catch (Throwable $e) {
+                $results['customer_sms'] = ['success' => false, 'error' => $e->getMessage()];
+            }
         } else {
-            $results['customer_sms'] = ['success' => false, 'error' => 'SMS disabled'];
+            $results['customer_sms'] = ['success' => false, 'error' => 'SMS disabled or phone number missing'];
         }
         
         // Send notification to manager (only if enabled)
@@ -136,6 +141,87 @@ class NotificationManager {
                 $bookingData['totalAmount'] ?? null
         );
         $results['customer_sms'] = $smsResult;
+        } else {
+            $results['customer_sms'] = ['success' => false, 'error' => 'SMS disabled'];
+        }
+        
+        return $results;
+    }
+    
+    /**
+     * Send status update notifications based on booking status
+     */
+    public function sendStatusUpdateNotifications($bookingData, $status) {
+        $results = [];
+        $statusLower = strtolower($status);
+        
+        // Send SMS based on status (always send for status updates)
+        $smsEnabled = defined('SEND_SMS_NOTIFICATIONS') ? SEND_SMS_NOTIFICATIONS : true;
+        if ($smsEnabled && !empty($bookingData['phone'])) {
+            switch ($statusLower) {
+                case 'confirmed':
+                case 'confirm':
+                    $smsResult = $this->smsNotification->sendBookingConfirmation(
+                        $bookingData['phone'],
+                        $bookingData['customerName'],
+                        $bookingData['roomType'],
+                        $bookingData['checkIn'],
+                        $bookingData['checkOut'],
+                        $bookingData['bookingId'],
+                        $bookingData['totalAmount'] ?? null
+                    );
+                    $results['customer_sms'] = $smsResult;
+                    break;
+                    
+                case 'processing':
+                    $smsResult = $this->smsNotification->sendProcessingNotification(
+                        $bookingData['phone'],
+                        $bookingData['customerName'],
+                        $bookingData['roomType'],
+                        $bookingData['checkIn'],
+                        $bookingData['checkOut'],
+                        $bookingData['bookingId']
+                    );
+                    $results['customer_sms'] = $smsResult;
+                    break;
+                    
+                case 'pending':
+                    $smsResult = $this->smsNotification->sendPendingNotification(
+                        $bookingData['phone'],
+                        $bookingData['customerName'],
+                        $bookingData['roomType'],
+                        $bookingData['checkIn'],
+                        $bookingData['checkOut'],
+                        $bookingData['bookingId'],
+                        $bookingData['totalAmount'] ?? null
+                    );
+                    $results['customer_sms'] = $smsResult;
+                    break;
+                    
+                case 'declined':
+                case 'rejected':
+                    $smsResult = $this->smsNotification->sendDeclinedNotification(
+                        $bookingData['phone'],
+                        $bookingData['customerName'],
+                        $bookingData['bookingId'],
+                        $bookingData['declineReason'] ?? null
+                    );
+                    $results['customer_sms'] = $smsResult;
+                    break;
+                    
+                case 'cancelled':
+                case 'canceled':
+                    $smsResult = $this->smsNotification->sendCancellationNotification(
+                        $bookingData['phone'],
+                        $bookingData['customerName'],
+                        $bookingData['bookingId']
+                    );
+                    $results['customer_sms'] = $smsResult;
+                    break;
+                    
+                default:
+                    $results['customer_sms'] = ['success' => false, 'error' => 'Unknown status: ' . $status];
+            }
         } else {
             $results['customer_sms'] = ['success' => false, 'error' => 'SMS disabled'];
         }
