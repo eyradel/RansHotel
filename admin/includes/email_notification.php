@@ -23,7 +23,7 @@ class EmailNotification {
         $this->fromEmail = 'eyramdela14@gmail.com';
         $this->fromName = 'RansHotel';
         $this->managerEmail = 'eyramdela14@gmail.com';
-        $this->managerPhone = '0540202096';
+        $this->managerPhone = '0257286439';
     }
     
     /**

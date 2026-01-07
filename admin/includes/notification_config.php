@@ -19,7 +19,7 @@ define('EMAIL_FROM_NAME', 'RansHotel');
 
 // Manager Contact Information
 define('MANAGER_EMAIL', 'eyramdela14@gmail.com');
-define('MANAGER_PHONE', '0540202096');
+define('MANAGER_PHONE', '0257286439');
 
 // Hotel Information
 define('HOTEL_NAME', 'RANS HOTEL');
@@ -62,7 +62,7 @@ define('MAX_EMAILS_PER_HOUR', 200);
 // Debug mode
 define('NOTIFICATION_DEBUG_MODE', false); // Set to true for testing
 define('TEST_EMAIL_ADDRESS', 'test@example.com'); // Use this for testing emails
-define('TEST_PHONE_NUMBER', '0540202096'); // Use this for testing SMS
+define('TEST_PHONE_NUMBER', '0257286439'); // Use this for testing SMS
 
 // Database table names
 define('BOOKINGS_TABLE', 'roombook');

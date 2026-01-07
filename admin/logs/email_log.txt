@@ -81,7 +81,7 @@ Please log into the admin panel to manage this booking.
 
 Admin Panel: http://localhost/Hotel/admin/
 Manager: Eyram Dela
-Phone: 0540202096
+Phone: 0257286439
 ==================
 
 === EMAIL LOG ===
@@ -188,6 +188,6 @@ Please log into the admin panel to manage this booking.
 
 Admin Panel: http://localhost/Hotel/admin/
 Manager: Eyram Dela
-Phone: 0540202096
+Phone: 0257286439
 ==================
 

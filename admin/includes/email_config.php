@@ -9,7 +9,7 @@ define('EMAIL_SERVICE', 'smtp'); // Options: 'web_service', 'smtp', 'mail_functi
 
 // Manager Contact Details
 define('MANAGER_EMAIL', 'eyramdela14@gmail.com');
-define('MANAGER_PHONE', '0540202096');
+define('MANAGER_PHONE', '0257286439');
 
 // Hotel Information
 define('HOTEL_NAME', 'RANS HOTEL');

@@ -21,7 +21,7 @@ class NotificationManager {
             ? new PHPMailerEmailSystem()
             : null;
         $this->managerEmail = defined('MANAGER_EMAIL') ? MANAGER_EMAIL : 'eyramdela14@gmail.com';
-        $this->managerPhone = defined('MANAGER_PHONE') ? MANAGER_PHONE : '0540202096';
+        $this->managerPhone = defined('MANAGER_PHONE') ? MANAGER_PHONE : '0257286439';
     }
     
     /**

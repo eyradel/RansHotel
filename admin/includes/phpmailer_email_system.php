@@ -24,7 +24,7 @@ class PHPMailerEmailSystem {
     public function __construct() {
         // Manager contact details
         $this->managerEmail = 'eyramdela14@gmail.com';
-        $this->managerPhone = '0540202096';
+        $this->managerPhone = '0257286439';
         
         // SMTP Configuration (Gmail)
         $this->smtpHost = 'smtp.gmail.com';
